@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: "Roboto", Courier, monospace;
+}
+.ant-radio-group-solid
+  :where(
+    .css-dev-only-do-not-override-161f05s
+  ).ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background-color: #5f61e6;
+}
+
+.ant-radio-group-solid
+  :where(
+    .css-dev-only-do-not-override-161f05s
+  ).ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  background-color: #5f61e6;
+}
+
+.ant-radio-group-solid
+  :where(
+    .css-dev-only-do-not-override-161f05s
+  ).ant-radio-button-wrapper-checked:not(
+    .ant-radio-button-wrapper-disabled
+  ):hover {
+  background-color: #5f61e6;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
+  background-color: #5f61e6 !important;
+  border-color: #5f61e6 !important;
+}
+
+.ant-menu-item.ant-menu-item-selected,
+:where(.css-dev-only-do-not-override-161f05s).ant-menu-light
+  .ant-menu-item-selected,
+:where(.css-dev-only-do-not-override-161f05s).ant-menu-light
+  > .ant-menu
+  .ant-menu-item-selected {
+  background-color: #5f61e6 !important;
+  color: white;
+}
