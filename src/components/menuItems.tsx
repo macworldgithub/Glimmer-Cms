@@ -37,6 +37,19 @@ export const getMenuItems = (
               key: "ecommerce-order",
               icon: <OrderedListOutlined />,
               label: "Order",
+              children: [
+                {
+                  key: "order-list",
+                  label: "Order List",
+                  //@ts-ignore
+                  path: "/orderList",
+                },
+                {
+                  key: "order-details",
+                  label: "Order Details",
+                  path: "/orderDetails",
+                },
+              ],
             },
             {
               key: "ecommerce-products",

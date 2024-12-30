@@ -44,3 +44,22 @@
   background-color: #5f61e6 !important;
   color: white;
 }
+
+::-webkit-scrollbar {
+  width: 8px; /* Make the scrollbar thinner */
+  height: 8px; /* If there's a horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5; /* Background color of the track */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ccc; /* Color of the scrollbar handle */
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #b3b3b3; /* Color on hover */
+}

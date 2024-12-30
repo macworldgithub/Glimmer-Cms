@@ -9,14 +9,16 @@ import {
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
-import Order from "./pages/Order.tsx";
+
+import OrderDetails from "./pages/OrderDetails.tsx";
+import OrderList from "./pages/OrderList.tsx";
 
 function App() {
   // const isAuthenticated = useSelector(
   //   (state: RootState) => state.Login.isAuthenticated
   // );
 
-  const isAuthenticated = false;
+  const isAuthenticated = true;
 
   return (
     <Router>
@@ -41,7 +43,9 @@ function App() {
 
           {/* Nested routes */}
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="order" element={<Order />} />
+
+          <Route path="orderList" element={<OrderList />} />
+          <Route path="orderDetails" element={<OrderDetails />} />
         </Route>
       </Routes>
     </Router>
