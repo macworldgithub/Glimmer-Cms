@@ -60,16 +60,19 @@ export const getMenuItems = (
                   key: "products",
                   icon: <FileOutlined />,
                   label: "Product List",
+                  path: "/Product_List",
                 },
                 {
                   key: "add-product",
                   icon: <FileOutlined />,
                   label: "Add Product",
+                  path: "/Add_Product"
                 },
                 {
                   key: "category-list",
                   icon: <FileOutlined />,
                   label: "Category List",
+                  path: "/Category_List",
                 },
               ],
             },

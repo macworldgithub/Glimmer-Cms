@@ -98,14 +98,14 @@ const ProductTableWithHeader = () => {
   ];
 
   return (
-    <div className="p-4 bg-white shadow rounded-lg">
+    <div>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
         Filter
       </div>
 
       {/* Table Section */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto shadow-lg">
         <Table
           columns={columns}
           dataSource={data}
@@ -114,7 +114,7 @@ const ProductTableWithHeader = () => {
           scroll={{ x: 1000 }} 
         />
       </div>
-    </div>
+      </div>
   );
 };
 

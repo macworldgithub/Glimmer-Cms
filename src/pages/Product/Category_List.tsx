@@ -72,8 +72,8 @@ const ProductTableWithHeader = () => {
   };
 
   return (
-    <div className="p-6  min-h-screen">
-      <div className="overflow-x-auto bg-white border-t shadow rounded-b-lg">
+   
+      <div className="overflow-x-auto bg-white border-t shadow-lg rounded-lg">
         <Table
           columns={columns}
           dataSource={data}
@@ -82,7 +82,7 @@ const ProductTableWithHeader = () => {
           className="ant-table-thead rounded-md"
         />
       </div>
-    </div>
+   
   );
 };
 

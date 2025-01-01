@@ -1,5 +1,5 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Layout, theme } from "antd";
+import { Button, Layout } from "antd";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Bell from "../components/Bell";
@@ -10,11 +10,11 @@ const { Header, Content } = Layout;
 
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
+  // const {
+  //   token: { colorBgContainer, borderRadiusLG },
+  // } = theme.useToken();
   return (
-    <Layout className="w-[100vw] h-[100vh]">
+    <Layout >
       <SideBar collapsed={collapsed} />
       <Layout>
         <Header
@@ -52,7 +52,7 @@ const MainLayout = () => {
             padding: 24,
             minHeight: 280,
             background: "#F5F5F5",
-            borderRadius: borderRadiusLG,
+            // borderRadius: borderRadiusLG,
           }}
         >
           <Outlet />

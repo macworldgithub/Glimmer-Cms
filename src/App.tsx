@@ -42,9 +42,9 @@ function App() {
         >
           {/* Default (index) route inside MainLayout */}
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route index element={<Navigate to="products" replace />} />
-          <Route index element={<Navigate to="add-product" replace />} />
-          <Route index element={<Navigate to="category-list" replace />} />
+          <Route index element={<Navigate to="Product_List" replace />} />
+          <Route index element={<Navigate to="Add_Product" replace />} />
+          <Route index element={<Navigate to="Category_List" replace />} />
 
           {/* Nested routes */}
           <Route path="dashboard" element={<Dashboard />} />
@@ -52,9 +52,9 @@ function App() {
           <Route path="orderList" element={<OrderList />} />
           <Route path="orderDetails" element={<OrderDetails />} />
 
-          <Route path="products" element={<ProductList />} />
-          <Route path="add-product" element={<Add_Product />} />
-          <Route path="category-list" element={<Category_List />} />
+          <Route path="Product_List" element={<ProductList />} />
+          <Route path="Add_Product" element={<Add_Product />} />
+          <Route path="Category_List" element={<Category_List />} />
         </Route>
       </Routes>
     </Router>
