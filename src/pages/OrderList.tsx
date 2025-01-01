@@ -179,7 +179,7 @@ const OrderList = () => {
     {
       title: "Actions",
       key: "actions",
-      render: (_, record) => (
+      render: (_:any, record:any) => (
         <div>
           <Button type="link" onClick={() => viewOrder(record.order)}>
             View

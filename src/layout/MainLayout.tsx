@@ -1,10 +1,10 @@
-import React, { useState } from "react";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Outlet } from "react-router-dom";
 import { Button, Layout, theme } from "antd";
-import SideBar from "../components/SideBar";
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
 import Bell from "../components/Bell";
 import Profile from "../components/Profile";
+import SideBar from "../components/SideBar";
 
 const { Header, Content } = Layout;
 

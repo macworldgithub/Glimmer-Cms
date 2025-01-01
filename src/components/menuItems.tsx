@@ -1,9 +1,9 @@
 import {
   DashboardOutlined,
-  ShoppingOutlined,
-  ScissorOutlined,
   FileOutlined,
   OrderedListOutlined,
+  ScissorOutlined,
+  ShoppingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import { MenuProps } from "antd";
@@ -55,6 +55,23 @@ export const getMenuItems = (
               key: "ecommerce-products",
               icon: <FileOutlined />,
               label: "Products",
+              children: [
+                {
+                  key: "products",
+                  icon: <FileOutlined />,
+                  label: "Product List",
+                },
+                {
+                  key: "add-product",
+                  icon: <FileOutlined />,
+                  label: "Add Product",
+                },
+                {
+                  key: "category-list",
+                  icon: <FileOutlined />,
+                  label: "Category List",
+                },
+              ],
             },
             {
               key: "ecommerce-customer",
@@ -70,6 +87,7 @@ export const getMenuItems = (
         },
       ]
     : []),
+  
   ...(showSaloon
     ? [
         {
