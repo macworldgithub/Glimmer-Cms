@@ -1,15 +1,51 @@
 import React from "react";
-import { Popover, Avatar } from "antd";
-
+import { Popover, Avatar, Divider } from "antd";
+import {
+  UserOutlined,
+  SettingOutlined,
+  LogoutOutlined,
+} from "@ant-design/icons";
 import Profilepic from "../assets/Profile/pic.png";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 const Profile = () => {
+  const data = useSelector((state: RootState) => state.Login);
+
   const content = (
-    <div>
-      <p>Username: John Doe</p>
-      <p>Email: john.doe@example.com</p>
+    <div className="h-max flex flex-col">
+      {/* User Info Section */}
+      <div className="flex items-center w-full p-2">
+        <Avatar size={"large"} src={Profilepic} icon="user" />
+        <div className="ml-2">
+          <h1 className="text-sm font-medium">{data.store_name}</h1>
+          <h1 className="text-xs font-light text-gray-500">Admin</h1>
+        </div>
+      </div>
+      <Divider className="my-1" />
+
+      {/* Profile Section */}
+      <div className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors">
+        <UserOutlined className="text-base mr-2" />
+        <h2 className="text-sm font-normal">Profile</h2>
+      </div>
+      <Divider className="my-1" />
+
+      {/* Settings Section */}
+      <div className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors">
+        <SettingOutlined className="text-base mr-2" />
+        <h2 className="text-sm font-normal">Settings</h2>
+      </div>
+      <Divider className="my-1" />
+
+      {/* Logout Section */}
+      <div className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors">
+        <LogoutOutlined className="text-base mr-2 text-red-500" />
+        <h2 className="text-sm font-normal text-red-500">Logout</h2>
+      </div>
     </div>
   );
+
   return (
     <Popover content={content} title="Profile Info" trigger="click">
       <Avatar size={"large"} src={Profilepic} icon="user" />
