@@ -6,11 +6,18 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import Profilepic from "../assets/Profile/pic.png";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { logout } from "../slices/loginSlice";
 
 const Profile = () => {
   const data = useSelector((state: RootState) => state.Login);
+  const dispatch = useDispatch();
+  const HandleClick = (name: string) => {
+    if (name === "logout") {
+      dispatch(logout());
+    }
+  };
 
   const content = (
     <div className="h-max flex flex-col">
@@ -39,7 +46,10 @@ const Profile = () => {
       <Divider className="my-1" />
 
       {/* Logout Section */}
-      <div className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors">
+      <div
+        onClick={() => HandleClick("logout")}
+        className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors"
+      >
         <LogoutOutlined className="text-base mr-2 text-red-500" />
         <h2 className="text-sm font-normal text-red-500">Logout</h2>
       </div>

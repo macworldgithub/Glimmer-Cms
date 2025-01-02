@@ -66,5 +66,5 @@ const loginSlice = createSlice({
   },
 });
 
-export const { changeAuthentication } = loginSlice.actions;
+export const { changeAuthentication, logout } = loginSlice.actions;
 export default loginSlice;
