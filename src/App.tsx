@@ -45,9 +45,9 @@ function App() {
         >
           {/* Default (index) route inside MainLayout */}
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route index element={<Navigate to="Product_List" replace />} />
+          {/* <Route index element={<Navigate to="Product_List" replace />} />
           <Route index element={<Navigate to="Add_Product" replace />} />
-          <Route index element={<Navigate to="Category_List" replace />} />
+          <Route index element={<Navigate to="Category_List" replace />} /> */}
 
           {/* Nested routes */}
           <Route path="dashboard" element={<Dashboard />} />

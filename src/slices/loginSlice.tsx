@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { signInStore } from "../api/api";
+import { signInStore } from "../api/auth/api";
 
 interface Authentication {
   _id: string;

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { AppDispatch } from "../store/store";
 
 import { useDispatch } from "react-redux";
-import { signInStore } from "../api/api";
+import { signInStore } from "../api/auth/api";
 
 const options = [
   { label: "Admin", value: 1 },
