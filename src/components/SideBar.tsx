@@ -92,8 +92,11 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
       trigger={null}
       collapsible
       collapsed={collapsed}
-      style={{ backgroundColor: "white", height: "100vh" }}
-      width={"15%"}
+      style={{
+        backgroundColor: "white",
+        height: "100vh",
+      }}
+      width={"180px"}
     >
       <div className="demo-logo-vertical p-1" />
       <img src={Logo} className="mb-4" />

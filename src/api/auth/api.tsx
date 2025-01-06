@@ -1,8 +1,7 @@
 // authThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-const development_url = "http://localhost:3000";
-const production_url = "";
+import { developmentServer } from "../../config/server";
 
 // Async thunk for signup
 export const signInStore = createAsyncThunk(
@@ -10,7 +9,7 @@ export const signInStore = createAsyncThunk(
   async (payload: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `${development_url}/auth/signin/store`,
+        `${developmentServer}/auth/signin/store`,
         payload
       );
       return response.data; // Return the response data if successful

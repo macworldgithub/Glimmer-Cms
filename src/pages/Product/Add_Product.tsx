@@ -1,20 +1,62 @@
 import { useEffect, useState } from "react";
 import { IoCubeOutline } from "react-icons/io5";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { updateProduct } from "../../slices/addProductSlice";
+import {
+  updateProduct,
+  addImages,
+  removeImage,
+} from "../../slices/addProductSlice";
+
 const ProductPage = () => {
+  const dispatch = useDispatch();
   const addProduct = useSelector((state: RootState) => state.AddProduct);
 
   const [isInStock, setIsInStock] = useState(true);
 
   const HandleChange = (name: string, value: string | number) => {
-    updateProduct({ [name]: value });
+    dispatch(updateProduct({ [name]: value }));
   };
 
   useEffect(() => {
     console.log(addProduct, "eeee");
   }, [addProduct]);
+
+  // const [images, setImages] = useState([]); // Array to hold Base64 images
+
+  const images = useSelector((state: RootState) => state.AddProduct.images);
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files); // Get selected files
+    if (files.length + images.length > 5) {
+      alert("You can only upload up to 5 images.");
+      return;
+    }
+
+    // Convert files to Base64
+    Promise.all(
+      files.map((file) => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file); // Convert to Base64
+        });
+      })
+    ).then((base64Images) => {
+      // setImages((prevImages: unknown) => [...prevImages, ...base64Images]);
+      dispatch(addImages(base64Images));
+    });
+  };
+
+  const handleRemoveImage = (index: number) => {
+    // setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    dispatch(removeImage(index));
+  };
+
+  useEffect(() => {
+    console.log(images, "dekh");
+  }, [images]);
 
   return (
     <div className=" mx-auto overflow-hidden">
@@ -23,7 +65,7 @@ const ProductPage = () => {
           <h1 className="text-2xl text-gray-600">Add a new Product</h1>
           <p className="text-gray-400">Orders placed across your store</p>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0 max-sm:gap-1 max-sm:flex-col">
+        {/* <div className="flex gap-2 mt-4 md:mt-0 max-sm:gap-1 max-sm:flex-col">
           <div className="flex flex-row">
             <button className=" text-gray-700 px-4 py-2 rounded-md">
               Discard
@@ -37,7 +79,7 @@ const ProductPage = () => {
               Publish Product
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
       {/* Main Content */}
       <div className="flex gap-x-4 flex-col lg:flex-row ">
@@ -58,7 +100,7 @@ const ProductPage = () => {
                 onChange={(e) => HandleChange("name", e.target.value)}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4 mb-4">
+            {/* <div className="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-500 mb-1">
                   SKU
@@ -79,7 +121,7 @@ const ProductPage = () => {
                   className="w-full  rounded-md shadow-sm p-3 border-solid border border-gray-400"
                 />
               </div>
-            </div>
+            </div> */}
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">
                 Description (Optional)
@@ -87,13 +129,64 @@ const ProductPage = () => {
               <textarea
                 placeholder=""
                 className="w-full rounded-md shadow-sm p-3 border-solid border   border-gray-400"
+                value={addProduct.description}
+                onChange={(e) => HandleChange("description", e.target.value)}
               >
                 {" "}
               </textarea>
             </div>
           </div>
 
-          <div className="border-gray-200  rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
+          <div className="border-gray-200 rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
+            <div className="mt-4 flex flex-row justify-between max-sm:flex-col max-sm:mt-1">
+              <div>
+                <h2 className="text-lg text-gray-700 mb-4">Product Image</h2>
+              </div>
+              <div>
+                <button className="text-sm text-[#5F61E6] hover:underline">
+                  Add media from URL
+                </button>
+              </div>
+            </div>
+            <div className="mb-6 border-gray-300 rounded-md">
+              <p className="text-gray-800 font-medium text-xl max-sm:text-md">
+                Drag and drop your image here
+              </p>
+              <p className="text-gray-500 mt-2 text-xsm">or</p>
+              <p className="text-gray-500 text-xsm">Browse image</p>
+
+              <div className="mt-4">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="max-sm:text-[10px] text-sm text-gray-700"
+                />
+              </div>
+            </div>
+
+            {/* Display Uploaded Images */}
+            <div className="flex flex-wrap gap-4">
+              {images.map((image, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={image}
+                    alt={`Uploaded ${index + 1}`}
+                    className="w-32 h-32 object-cover rounded-md"
+                  />
+                  <button
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full text-xs"
+                  >
+                    X
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* <div className="border-gray-200  rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
             <div className="mt-4 flex flex-row justify-between max-sm:flex-col max-sm:mt-1">
               <div>
                 <h2 className="text-lg text-gray-700 mb-4">Product Image</h2>
@@ -118,7 +211,7 @@ const ProductPage = () => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* <div className="border-gray-200 shadow-md  rounded-md max-md:w-full bg-white p-4  my-4">
             <h2 className="text-lg  mb-4 text-gray-700">Variants</h2>
@@ -164,6 +257,8 @@ const ProductPage = () => {
                 <input
                   type="number"
                   placeholder="Quantity"
+                  value={addProduct.quantity}
+                  onChange={(e) => HandleChange("quantity", e.target.value)}
                   className="w-full border-gray-400 rounded-md shadow-sm p-3  border-solid border"
                 />
               </div>
@@ -173,12 +268,12 @@ const ProductPage = () => {
                 </button>
               </div>
             </div>
-            <div className="mt-4 text-sm text-gray-600">
+            {/* <div className="mt-4 text-sm text-gray-600">
               <p>Product in stock now: 54</p>
               <p>Product in transit: 390</p>
               <p>Last time restocked: 24th June, 2023</p>
               <p>Total stock over lifetime: 2430</p>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -195,6 +290,8 @@ const ProductPage = () => {
                 type="number"
                 placeholder="Price"
                 className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
+                value={addProduct.base_price}
+                onChange={(e) => HandleChange("base_price", e.target.value)}
               />
             </div>
             <div className="mb-4">
@@ -205,22 +302,13 @@ const ProductPage = () => {
                 type="number"
                 placeholder="Discounted Price"
                 className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
+                value={addProduct.discounted_price}
+                onChange={(e) =>
+                  HandleChange("discounted_price", e.target.value)
+                }
               />
             </div>
-            <div className="mb-4 flex items-center">
-              <input
-                type="checkbox"
-                id="charge-tax"
-                className="w-4 h-4 text-[#5F61E6] border-gray-300 rounded"
-                defaultChecked
-              />
-              <label
-                htmlFor="charge-tax"
-                className="ml-2 text-sm text-gray-700"
-              >
-                Charge tax on this product
-              </label>
-            </div>
+
             <div className="flex items-center justify-between border-t border-gray-300 pt-4">
               <span className="text-sm font-medium text-gray-700">
                 In stock
@@ -297,10 +385,15 @@ const ProductPage = () => {
               <label className="block text-sm font-medium text-gray-500 mb-1">
                 Status
               </label>
-              <select className="w-full border border-gray-300 rounded-md shadow-sm p-2">
-                <option>Published</option>
-                <option>Scheduled</option>
-                <option>Inactive</option>
+              <select
+                value={addProduct.status} // Ensure this value is either "Active" or "Inactive"
+                onChange={(e) => HandleChange("status", e.target.value)} // Update the status on change
+                className="w-full border border-gray-300 rounded-md shadow-sm p-2"
+              >
+                <option value="Active">Active</option>{" "}
+                {/* Specify the value explicitly */}
+                <option value="Inactive">Inactive</option>{" "}
+                {/* Specify the value explicitly */}
               </select>
             </div>
           </div>

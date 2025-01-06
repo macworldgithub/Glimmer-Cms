@@ -14,7 +14,7 @@ const MainLayout = () => {
   //   token: { colorBgContainer, borderRadiusLG },
   // } = theme.useToken();
   return (
-    <Layout >
+    <Layout>
       <SideBar collapsed={collapsed} />
       <Layout>
         <Header
@@ -23,6 +23,7 @@ const MainLayout = () => {
             background: "white",
             display: "flex",
             justifyContent: "space-between",
+            width: "100%",
           }}
         >
           <Button
@@ -48,11 +49,13 @@ const MainLayout = () => {
         </Header>
         <Content
           style={{
-            margin: "24px 16px",
-            padding: 24,
+            margin: "10px 16px",
+
             minHeight: 280,
+
             background: "#F5F5F5",
-            // borderRadius: borderRadiusLG,
+            overflowY: "auto", // Enables vertical scrolling
+            height: "60vh", // Full height minus the header height (adjust as needed)
           }}
         >
           <Outlet />

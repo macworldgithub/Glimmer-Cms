@@ -63,3 +63,13 @@
 ::-webkit-scrollbar-thumb:hover {
   background-color: #b3b3b3; /* Color on hover */
 }
+
+:where(.css-dev-only-do-not-override-161f05s).ant-menu-light
+  .ant-menu-submenu-selected
+  > .ant-menu-submenu-title,
+:where(.css-dev-only-do-not-override-161f05s).ant-menu-light
+  > .ant-menu
+  .ant-menu-submenu-selected
+  > .ant-menu-submenu-title {
+  color: #5f61e6;
+}
