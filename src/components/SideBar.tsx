@@ -96,7 +96,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
         backgroundColor: "white",
         height: "100vh",
       }}
-      width={"180px"}
+      width={"250px"}
     >
       <div className="demo-logo-vertical p-1" />
       <img src={Logo} className="mb-4" />

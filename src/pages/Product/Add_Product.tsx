@@ -7,6 +7,7 @@ import {
   addImages,
   removeImage,
 } from "../../slices/addProductSlice";
+import { addProductApi } from "../../api/products/api";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
@@ -18,15 +19,11 @@ const ProductPage = () => {
     dispatch(updateProduct({ [name]: value }));
   };
 
-  useEffect(() => {
-    console.log(addProduct, "eeee");
-  }, [addProduct]);
-
   // const [images, setImages] = useState([]); // Array to hold Base64 images
 
   const images = useSelector((state: RootState) => state.AddProduct.images);
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: any) => {
     const files = Array.from(e.target.files); // Get selected files
     if (files.length + images.length > 5) {
       alert("You can only upload up to 5 images.");
@@ -40,6 +37,7 @@ const ProductPage = () => {
           const reader = new FileReader();
           reader.onload = () => resolve(reader.result);
           reader.onerror = reject;
+          //@ts-ignore
           reader.readAsDataURL(file); // Convert to Base64
         });
       })
@@ -54,9 +52,10 @@ const ProductPage = () => {
     dispatch(removeImage(index));
   };
 
-  useEffect(() => {
-    console.log(images, "dekh");
-  }, [images]);
+  const HandleConfirm = () => {
+    //@ts-ignore
+    dispatch(addProductApi({}));
+  };
 
   return (
     <div className=" mx-auto overflow-hidden">
@@ -258,12 +257,17 @@ const ProductPage = () => {
                   type="number"
                   placeholder="Quantity"
                   value={addProduct.quantity}
-                  onChange={(e) => HandleChange("quantity", e.target.value)}
+                  onChange={(e) =>
+                    HandleChange("quantity", parseInt(e.target.value))
+                  }
                   className="w-full border-gray-400 rounded-md shadow-sm p-3  border-solid border"
                 />
               </div>
               <div className="flex items-end">
-                <button className="px-4 py-2 bg-[#5F61E6] text-white rounded-md ">
+                <button
+                  onClick={HandleConfirm}
+                  className="px-4 py-2 bg-[#5F61E6] text-white rounded-md "
+                >
                   Confirm
                 </button>
               </div>
@@ -291,7 +295,9 @@ const ProductPage = () => {
                 placeholder="Price"
                 className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
                 value={addProduct.base_price}
-                onChange={(e) => HandleChange("base_price", e.target.value)}
+                onChange={(e) =>
+                  HandleChange("base_price", parseFloat(e.target.value))
+                }
               />
             </div>
             <div className="mb-4">
@@ -304,7 +310,7 @@ const ProductPage = () => {
                 className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
                 value={addProduct.discounted_price}
                 onChange={(e) =>
-                  HandleChange("discounted_price", e.target.value)
+                  HandleChange("discounted_price", parseFloat(e.target.value))
                 }
               />
             </div>

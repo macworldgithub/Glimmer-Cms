@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addProduct } from "../api/products/api";
+import { addProductApi } from "../api/products/api";
+
 
 export interface Product {
   name: string;
@@ -42,9 +43,11 @@ const addProductSlice = createSlice({
     },
   },
   extraReducers(builder) {
-    builder.addCase(addProduct.fulfilled, () => {
+    builder.addCase(addProductApi.fulfilled, () => {
       alert("Success : Product Added");
     });
+
+    
   },
 });
 

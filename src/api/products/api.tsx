@@ -29,7 +29,7 @@ export const getAllProducts = createAsyncThunk(
   }
 );
 
-export const addProduct = createAsyncThunk(
+export const addProductApi = createAsyncThunk(
   "addProduct",
   async (payload: {}, { rejectWithValue, getState }) => {
     try {
@@ -54,6 +54,53 @@ export const addProduct = createAsyncThunk(
       return response.data; // Return the response data if successful
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
+export const updateProductApi = createAsyncThunk(
+  "updateProduct",
+  async (
+    payload: {
+      name: string;
+      quantity: number;
+      description: string;
+      images: string[];
+      base_price: number;
+      discounted_price: number;
+      status: "Active" | "Inactive";
+      store: string;
+      _id: string;
+    },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      // Access token from the Redux state
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const body = { ...payload } as any;
+      // Remove the store property
+
+      // Make API request with the payload
+      const response = await axios.put(
+        `${developmentServer}/product/update_store_product_by_id?id=${body._id}`,
+        body, // Use the payload directly
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Bearer token
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data; // Return the response data if successful
+    } catch (error: any) {
+      // Handle error response properly
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An error occurred");
     }
   }
 );
