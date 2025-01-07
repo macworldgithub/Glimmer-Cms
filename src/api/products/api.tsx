@@ -104,3 +104,23 @@ export const updateProductApi = createAsyncThunk(
     }
   }
 );
+
+export const deleteProductApi = async (_id: string, token: string) => {
+  try {
+    const response = await axios.delete(
+      `${developmentServer}/product/delete_store_product_by_id?id=${_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add Bearer token
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; // Return the response data if successful
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data); // Throw error with response data
+    }
+    throw new Error("An error occurred"); // Generic error
+  }
+};

@@ -6,6 +6,7 @@ import { getAllProducts } from "../../api/products/api";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 import UpdateModal from "../../components/UpdateProductModal";
+import DeleteProductModal from "../../components/DeleteProductModal";
 
 interface TableData {
   name: string;
@@ -26,6 +27,7 @@ const ProductTableWithHeader = () => {
     null
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   useEffect(() => {
     //@ts-ignore
@@ -40,7 +42,8 @@ const ProductTableWithHeader = () => {
   };
 
   const handleDelete = (record: any) => {
-    console.log("Deleting:", record);
+    setSelectedProduct(record);
+    setIsDeleteModalVisible(true);
     // Your delete logic here
   };
 
@@ -51,15 +54,22 @@ const ProductTableWithHeader = () => {
   // Table columns
   const columns = [
     {
-      title: "Price",
-      dataIndex: "base_price",
-      key: "base_price",
+      title: "name",
+      dataIndex: "name",
+      key: "name",
     },
+
     {
       title: "Description",
       dataIndex: "description",
       key: "description",
     },
+    {
+      title: "Price",
+      dataIndex: "base_price",
+      key: "base_price",
+    },
+
     ,
     {
       title: "Discounted Price",
@@ -68,19 +78,15 @@ const ProductTableWithHeader = () => {
     },
 
     {
-      title: "name",
-      dataIndex: "name",
-      key: "name",
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
     },
+
     {
       title: "Stock",
       dataIndex: "quantity",
       key: "quantity",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
     },
 
     {
@@ -127,6 +133,16 @@ const ProductTableWithHeader = () => {
           page={1}
         />
       )}
+
+      {selectedProduct && (
+        <DeleteProductModal
+          visible={isDeleteModalVisible}
+          product={selectedProduct}
+          onClose={() => setIsDeleteModalVisible(false)}
+          page={1}
+        />
+      )}
+
       <div className="overflow-x-auto shadow-lg">
         <Table
           columns={columns}

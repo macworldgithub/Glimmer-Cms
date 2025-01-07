@@ -73,3 +73,13 @@
   > .ant-menu-submenu-title {
   color: #5f61e6;
 }
+
+.ant-btn-dangerous-delete-modal {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+  color: white;
+}
+.ant-btn-dangerous-delete-modal:hover {
+  background-color: #ff7875 !important; /* Brighter shade of red */
+  border-color: #ff7875; /* Optional: Match border color */
+}

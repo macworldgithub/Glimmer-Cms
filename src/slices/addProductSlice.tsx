@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { addProductApi } from "../api/products/api";
 
-
 export interface Product {
   name: string;
   quantity: number;
@@ -45,9 +44,8 @@ const addProductSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(addProductApi.fulfilled, () => {
       alert("Success : Product Added");
+      return initialState; // Correct way to reset the state
     });
-
-    
   },
 });
 
