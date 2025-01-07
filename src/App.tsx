@@ -16,12 +16,15 @@ import Add_Product from "./pages/Product/Add_Product.tsx";
 import Category_List from "./pages/Product/Category_List.tsx";
 import ProductList from "./pages/Product/Product_List.tsx";
 
-function App() {
-  // const isAuthenticated = useSelector(
-  //   (state: RootState) => state.Login.isAuthenticated
-  // );
+import { useSelector } from "react-redux";
+import { RootState } from "./store/store.tsx";
 
-  const isAuthenticated = true;
+function App() {
+  const isAuthenticated = useSelector(
+    (state: RootState) => state.Login.isAuthenticated
+  );
+
+  // const isAuthenticated = false;
 
   return (
     <Router>
@@ -46,10 +49,8 @@ function App() {
 
           {/* Nested routes */}
           <Route path="dashboard" element={<Dashboard />} />
-
           <Route path="orderList" element={<OrderList />} />
           <Route path="orderDetails" element={<OrderDetails />} />
-
           <Route path="Product_List" element={<ProductList />} />
           <Route path="Add_Product" element={<Add_Product />} />
           <Route path="Category_List" element={<Category_List />} />

@@ -3,6 +3,10 @@ import Logo from "../assets/Logo/logo.png";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import { Radio, Input, Checkbox, CheckboxProps } from "antd";
 import { useState } from "react";
+import { AppDispatch } from "../store/store";
+
+import { useDispatch } from "react-redux";
+import { signInStore } from "../api/auth/api";
 
 const options = [
   { label: "Admin", value: 1 },
@@ -18,6 +22,7 @@ interface Credentials {
 }
 
 const Login = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [loginCredentials, setLoginCredentials] = useState<Credentials>({
     category: 1,
     userName: "",
@@ -38,6 +43,17 @@ const Login = () => {
       ...prev,
       rememberMe: !prev.rememberMe,
     }));
+  };
+
+  const HandleLogin = () => {
+    if (loginCredentials.category === 3) {
+      dispatch(
+        signInStore({
+          email: loginCredentials.userName,
+          password: loginCredentials.password,
+        })
+      );
+    }
   };
   return (
     <div className="w-[100vw] h-[100vh] bg-[#F5F5F9] flex justify-center items-center ">
@@ -95,7 +111,7 @@ const Login = () => {
 
         <div className="w-[100%] h-max hover:translate-y-[-1px] hover:transition-all ">
           <button
-            onClick={() => console.log(loginCredentials, "check")}
+            onClick={HandleLogin}
             className="w-[100%] bg-[#5F61E6] hover:bg-[#4A4CC9] rounded-lg text-white p-2"
           >
             Login

@@ -38,56 +38,65 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
 
- // Recursive function to find keys for the current route
- const findKeysForPath = (path: string, items: any[]): { selected: string; open: string[] } => {
-  for (const item of items) {
-    if (item.path === path) return { selected: item.key, open: [] };
-
-    if (item.children) {
-      const childKeys = findKeysForPath(path, item.children);
-      if (childKeys.selected) {
-        return { selected: childKeys.selected, open: [item.key, ...childKeys.open] };
-      }
-    }
-  }
-  return { selected: "", open: [] };
-};
-
-useEffect(() => {
-  // Get the selected and open keys based on the current URL
-  const { selected, open } = findKeysForPath(location.pathname, menuItems);
-  setSelectedKeys([selected]);
-  setOpenKeys(open);
-}, [location.pathname]);
-
-const handleMenuClick = ({ key }: { key: string }) => {
-  // Find the path for the clicked key
-  const findPath = (items: any[], key: string): string | undefined => {
+  // Recursive function to find keys for the current route
+  const findKeysForPath = (
+    path: string,
+    items: any[]
+  ): { selected: string; open: string[] } => {
     for (const item of items) {
-      if (item.key === key) return item.path;
+      if (item.path === path) return { selected: item.key, open: [] };
+
       if (item.children) {
-        const childPath = findPath(item.children, key);
-        if (childPath) return childPath;
+        const childKeys = findKeysForPath(path, item.children);
+        if (childKeys.selected) {
+          return {
+            selected: childKeys.selected,
+            open: [item.key, ...childKeys.open],
+          };
+        }
       }
     }
-    return undefined;
+    return { selected: "", open: [] };
   };
 
-  const path = findPath(menuItems, key);
-  if (path) {
-    navigate(path); // Navigate to the corresponding path
-  } else {
-    console.warn(`No path found for menu key: ${key}`);
-  }
-};
+  useEffect(() => {
+    // Get the selected and open keys based on the current URL
+    const { selected, open } = findKeysForPath(location.pathname, menuItems);
+    setSelectedKeys([selected]);
+    setOpenKeys(open);
+  }, [location.pathname]);
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    // Find the path for the clicked key
+    const findPath = (items: any[], key: string): string | undefined => {
+      for (const item of items) {
+        if (item.key === key) return item.path;
+        if (item.children) {
+          const childPath = findPath(item.children, key);
+          if (childPath) return childPath;
+        }
+      }
+      return undefined;
+    };
+
+    const path = findPath(menuItems, key);
+    if (path) {
+      navigate(path); // Navigate to the corresponding path
+    } else {
+      console.warn(`No path found for menu key: ${key}`);
+    }
+  };
 
   return (
     <Sider
       trigger={null}
       collapsible
       collapsed={collapsed}
-      style={{ backgroundColor: "white" }}
-      width={"15%"}
+      style={{
+        backgroundColor: "white",
+        height: "100vh",
+      }}
+      width={"180px"}
     >
       <div className="demo-logo-vertical p-1" />
       <img src={Logo} className="mb-4" />
