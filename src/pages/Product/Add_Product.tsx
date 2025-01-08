@@ -6,8 +6,13 @@ import {
   updateProduct,
   addImages,
   removeImage,
+  resetImage,
 } from "../../slices/addProductSlice";
 import { addProductApi } from "../../api/products/api";
+
+import { Upload, message } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import type { UploadFile } from "antd/es/upload/interface";
 
 const ProductPage = () => {
   const dispatch = useDispatch();
@@ -23,32 +28,49 @@ const ProductPage = () => {
 
   const images = useSelector((state: RootState) => state.AddProduct.images);
 
+  // const handleFileChange = (e: any) => {
+  //   const files = Array.from(e.target.files); // Get selected files
+  //   if (files.length + images.length > 5) {
+  //     alert("You can only upload up to 5 images.");
+  //     return;
+  //   }
+
+  //   // Convert files to Base64
+  //   Promise.all(
+  //     files.map((file) => {
+  //       return new Promise((resolve, reject) => {
+  //         const reader = new FileReader();
+  //         reader.onload = () => resolve(reader.result);
+  //         reader.onerror = reject;
+  //         //@ts-ignore
+  //         reader.readAsDataURL(file); // Convert to Base64
+  //       });
+  //     })
+  //   ).then((base64Images) => {
+  //     // setImages((prevImages: unknown) => [...prevImages, ...base64Images]);
+  //     dispatch(addImages(base64Images));
+  //   });
+  // };
+
   const handleFileChange = (e: any) => {
-    const files = Array.from(e.target.files); // Get selected files
-    if (files.length + images.length > 5) {
-      alert("You can only upload up to 5 images.");
+    const files = Array.from(e.target.files) as File[]; // Get selected files
+
+    // Check if the total number of files exceeds 5
+    if (files.length + images.length > 3) {
+      alert("You can only upload up to 3 images.");
       return;
     }
 
-    // Convert files to Base64
-    Promise.all(
-      files.map((file) => {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = reject;
-          //@ts-ignore
-          reader.readAsDataURL(file); // Convert to Base64
-        });
-      })
-    ).then((base64Images) => {
-      // setImages((prevImages: unknown) => [...prevImages, ...base64Images]);
-      dispatch(addImages(base64Images));
-    });
+    // Dispatch action to store files in Redux
+    dispatch(addImages(files));
   };
 
   const handleRemoveImage = (index: number) => {
     // setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    if (images.length === 1) {
+      dispatch(resetImage());
+      setPreviewUrls([]);
+    }
     dispatch(removeImage(index));
   };
 
@@ -56,6 +78,23 @@ const ProductPage = () => {
     //@ts-ignore
     dispatch(addProductApi({}));
   };
+
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+
+  useEffect(() => {
+    console.log(images, previewUrls, "problemo");
+    // Generate preview URLs for each file
+    if (images.length > 0) {
+      //@ts-ignore
+      const urls = images.map((file) => URL?.createObjectURL(file));
+      setPreviewUrls(urls);
+
+      // Cleanup: Revoke URLs to prevent memory leaks
+      return () => {
+        urls.forEach((url) => URL.revokeObjectURL(url));
+      };
+    }
+  }, [images]);
 
   return (
     <div className=" mx-auto overflow-hidden">
@@ -148,10 +187,6 @@ const ProductPage = () => {
               </div>
             </div>
             <div className="mb-6 border-gray-300 rounded-md">
-              <p className="text-gray-800 font-medium text-xl max-sm:text-md">
-                Drag and drop your image here
-              </p>
-              <p className="text-gray-500 mt-2 text-xsm">or</p>
               <p className="text-gray-500 text-xsm">Browse image</p>
 
               <div className="mt-4">
@@ -167,10 +202,10 @@ const ProductPage = () => {
 
             {/* Display Uploaded Images */}
             <div className="flex flex-wrap gap-4">
-              {images.map((image, index) => (
+              {previewUrls.map((url, index) => (
                 <div key={index} className="relative">
                   <img
-                    src={image}
+                    src={url}
                     alt={`Uploaded ${index + 1}`}
                     className="w-32 h-32 object-cover rounded-md"
                   />

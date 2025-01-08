@@ -26,7 +26,7 @@ const addProductSlice = createSlice({
   initialState,
   reducers: {
     addImages: (state, action) => {
-      if (state.images.length + action.payload.length <= 5) {
+      if (state.images.length + action.payload.length <= 3) {
         state.images.push(...action.payload); // Add new images
       } else {
         alert("You can only upload up to 5 images.");
@@ -40,6 +40,9 @@ const addProductSlice = createSlice({
     updateProduct(state, action: PayloadAction<Partial<Product>>) {
       return { ...state, ...action.payload };
     },
+    resetImage: (state) => {
+      state.images = [];
+    },
   },
   extraReducers(builder) {
     builder.addCase(addProductApi.fulfilled, () => {
@@ -49,6 +52,6 @@ const addProductSlice = createSlice({
   },
 });
 
-export const { updateProduct, addImages, removeImage } =
+export const { updateProduct, addImages, removeImage, resetImage } =
   addProductSlice.actions;
 export default addProductSlice;

@@ -83,3 +83,7 @@
   background-color: #ff7875 !important; /* Brighter shade of red */
   border-color: #ff7875; /* Optional: Match border color */
 }
+
+.btn-profile-update-modal {
+  background-color: #5f61e6 !important;
+}
