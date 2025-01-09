@@ -18,7 +18,7 @@ interface Authentication {
 
 const initialState: Authentication = {
   _id: "",
-  isAuthenticated: false,
+  isAuthenticated: true,
   store_name: "",
   vendor_name: "",
   description: "",

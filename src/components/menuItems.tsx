@@ -6,10 +6,17 @@ import {
   ShoppingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { MenuProps } from "antd";
 
 // Define the type for Menu Items
-type MenuItem = Required<MenuProps>["items"][number];
+// type MenuItem = Required<MenuProps>["items"][number];
+
+type MenuItem = {
+  key: string;
+  icon?: JSX.Element;
+  label: string;
+  children?: MenuItem[];
+  path?: string; // Add the path property
+};
 
 // Utility function to generate menu items
 export const getMenuItems = (
@@ -32,6 +39,7 @@ export const getMenuItems = (
               key: "ecommerce-dashboard",
               icon: <DashboardOutlined />,
               label: "Dashboard",
+              path: "/E_Dashboard",
             },
             {
               key: "ecommerce-order",

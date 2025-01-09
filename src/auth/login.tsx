@@ -1,8 +1,7 @@
-import React from "react";
-import Logo from "../assets/Logo/logo.png";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { Radio, Input, Checkbox, CheckboxProps } from "antd";
+import { Checkbox, CheckboxProps, Input, Radio } from "antd";
 import { useState } from "react";
+import Logo from "../assets/Logo/logo.png";
 import { AppDispatch } from "../store/store";
 
 import { useDispatch } from "react-redux";
