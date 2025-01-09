@@ -43,6 +43,28 @@ const loginSlice = createSlice({
       // Reset all fields to their initial values
       Object.assign(state, initialState);
     },
+
+    updateStore: (state, action) => {
+      const {
+        store_name,
+        vendor_name,
+        description,
+        store_contact_email,
+        email,
+        country,
+        address,
+        store_image,
+      } = action.payload;
+
+      state.address = address;
+      state.address = country;
+      state.description = description;
+      state.email = email;
+      state.store_contact_email = store_contact_email;
+      state.store_image = store_image;
+      state.store_name = store_name;
+      state.vendor_name = vendor_name;
+    },
   },
   extraReducers(builder) {
     builder.addCase(signInStore.fulfilled, (state, action) => {
@@ -66,5 +88,5 @@ const loginSlice = createSlice({
   },
 });
 
-export const { changeAuthentication, logout } = loginSlice.actions;
+export const { changeAuthentication, logout ,updateStore } = loginSlice.actions;
 export default loginSlice;

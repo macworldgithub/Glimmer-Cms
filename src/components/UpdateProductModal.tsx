@@ -23,7 +23,9 @@ interface Product {
   name: string;
   quantity: number;
   description: string;
-  images: string[];
+  image1: string;
+  image2: string;
+  image3: string;
   base_price: number;
   discounted_price: number;
   status: "Active" | "Inactive";
@@ -48,56 +50,85 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   page,
 }) => {
   const [form] = Form.useForm();
-  const [images, setImages] = useState<string[]>(product.images);
+  const [images, setImages] = useState<string[]>([]);
+
+  const [binaryImages, setBinaryImages] = useState({
+    image1: "",
+    image2: "",
+    Image3: "",
+  });
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     // Reset form and images when modal opens
     if (visible) {
       form.resetFields();
-      setImages([...product.images]); // Clone the original images
+
+      const newImages: string[] = []; // Temporary array for new images
+
+      if (product.image1) newImages.push(product.image1);
+      if (product.image2) newImages.push(product.image2);
+      if (product.image3) newImages.push(product.image3);
+
+      setImages(newImages); // Set all images at once
     }
-  }, [visible, product, form]);
+  }, [visible, product]);
 
   const handleSave = async () => {
     try {
-      const values = await form.validateFields();
-      console.log("Form Values:", values);
-
-      // Dispatch the updateProductApi action
-      dispatch(
+      // Validate and get form values
+      const formValues = await form.validateFields();
+  
+      // Construct the payload
+      const payload = {
+        ...formValues, // Includes name, quantity, description, base_price, discounted_price, and status
+        image1: binaryImages.image1 || product.image1, // Use binaryImages for file data
+        image2: binaryImages.image2 ||product.image2,
         //@ts-ignore
-        updateProductApi({
-          name: values.name,
-          quantity: values.quantity,
-          description: values.description,
-          images: images,
-          base_price: values.base_price,
-          discounted_price: values.discounted_price,
-          status: values.status,
-          store: product.store,
-          _id: product._id,
-        })
-      );
+        image3: binaryImages.image3 || product.image3,
+        _id: product._id, // Include the product ID for updates
+      };
+  
+      // Dispatch the thunk with the payload
+      //@ts-ignore
+      dispatch(updateProductApi(payload));
     } catch (error) {
-      console.error("Validation Failed:", error);
+      console.error("Validation failed:", error);
     }
   };
 
-  const handleImageUpload = (file: any) => {
-    if (images.length >= 5) {
-      message.error("You can only upload up to 5 images.");
-      return false;
-    }
+  const handleImageUpload = (file: File) => {
+    const url = URL.createObjectURL(file);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      setImages([...images, base64]);
-    };
-    reader.readAsDataURL(file);
+    // Update images
+    setImages((prevImages) => {
+      const updatedImages = prevImages ? [...prevImages] : [];
+      if (updatedImages.length < 3) {
+        updatedImages.push(url);
+      }
+      return updatedImages;
+    });
 
-    return false; // Prevent default upload behavior
+    // Update binaryImages
+    setBinaryImages((prevBinaryImages) => {
+      const updatedBinaryImages = { ...prevBinaryImages };
+      if (!prevBinaryImages.image1) {
+        //@ts-ignore
+        updatedBinaryImages.image1 = file;
+      } else if (!prevBinaryImages.image2) {
+        //@ts-ignore
+        updatedBinaryImages.image2 = file;
+        //@ts-ignore
+      } else if (!prevBinaryImages.image3) {
+        //@ts-ignore
+        updatedBinaryImages.image3 = file;
+      }
+      return updatedBinaryImages;
+    });
+
+    // Return false to prevent automatic upload by Ant Design
+    return false;
   };
 
   const handleImageDelete = (index: number) => {
@@ -123,7 +154,9 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
           name: product.name,
           quantity: product.quantity,
           description: product.description,
-          images: product.images.join(", "), // Display images as comma-separated string
+          image1: product.image1,
+          image2: product.image2,
+          image3: product.image3, // Display images as comma-separated string
           base_price: product.base_price,
           discounted_price: product.discounted_price,
           status: product.status,
@@ -180,7 +213,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
               beforeUpload={handleImageUpload}
               accept="image/*"
             >
-              {images.length < 5 && (
+              {images?.length < 3 && (
                 <div>
                   <PlusOutlined />
                   <div style={{ marginTop: 8 }}>Upload</div>
@@ -189,7 +222,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
             </Upload>
 
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              {images.map((img, index) => (
+              {images?.map((img, index) => (
                 <div key={index} style={{ position: "relative" }}>
                   <Image
                     src={img}

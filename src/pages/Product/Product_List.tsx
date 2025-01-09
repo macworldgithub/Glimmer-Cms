@@ -12,7 +12,9 @@ interface TableData {
   name: string;
   quantity: number;
   description: string;
-  images: string[];
+  image1: string;
+  image2: string;
+  image3: string;
   base_price: number;
   discounted_price: number;
   status: "Active" | "Inactive";
@@ -50,6 +52,8 @@ const ProductTableWithHeader = () => {
   const productList = useSelector(
     (state: RootState) => state.AllProducts.products
   );
+
+  console.log("check", productList);
 
   // Table columns
   const columns = [
@@ -137,6 +141,7 @@ const ProductTableWithHeader = () => {
       {selectedProduct && (
         <DeleteProductModal
           visible={isDeleteModalVisible}
+          //@ts-ignore
           product={selectedProduct}
           onClose={() => setIsDeleteModalVisible(false)}
           page={1}
@@ -145,8 +150,10 @@ const ProductTableWithHeader = () => {
 
       <div className="overflow-x-auto shadow-lg">
         <Table
+        //@ts-ignore
           columns={columns}
           dataSource={productList}
+          //@ts-ignore
           pagination={true}
           className="border-t"
           scroll={{ x: 1000 }}
