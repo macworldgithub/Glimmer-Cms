@@ -20,11 +20,13 @@ import { useSelector } from "react-redux";
 import { RootState } from "./store/store.tsx";
 
 function App() {
+//  const isAuthenticated = false;
+
   const isAuthenticated = useSelector(
     (state: RootState) => state.Login.isAuthenticated
   );
 
-  // const isAuthenticated = false;
+ 
 
   return (
     <Router>
@@ -46,6 +48,8 @@ function App() {
         >
           {/* Default (index) route inside MainLayout */}
           <Route index element={<Navigate to="dashboard" replace />} />
+          
+
 
           {/* Nested routes */}
           <Route path="dashboard" element={<Dashboard />} />

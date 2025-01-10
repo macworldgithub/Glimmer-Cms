@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
-import { FaArrowDown, FaArrowUp } from "react-icons/fa";
+import { BsCurrencyDollar } from "react-icons/bs";
+import { FaArrowDown, FaArrowUp, FaEllipsisV, FaWallet, } from "react-icons/fa";
+import { IoIosArrowUp } from "react-icons/io";
+import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import income from "../assets/Profile/income.png";
 import laptop from "../assets/Profile/laptop_pic.png";
+import profit from "../assets/Profile/profit.png";
+import revenue from "../assets/Profile/revenue.png";
+import transaction from "../assets/Profile/transaction.png";
+import wallet from "../assets/Profile/wallet.png";
+import OrderTable from "../components/OrderTable";
 type DashboardData = {
   user: {
     name: string;
@@ -9,7 +18,8 @@ type DashboardData = {
   };
   visitors: { title: string; percentage: string; change: string };
   activity: { title: string; percentage: string; change: string };
-  cardsSection: { title: string; value: string; change: string }[];
+  cardsSection: { image: string; title: string; value: string; change: string }[];
+  reportSection: { image: string; title: string; value: string; change: string }[];
   performance: { earnings: string; sales: string };
   conversionRate: {
     rate: string;
@@ -19,7 +29,8 @@ type DashboardData = {
     purchased: string;
   };
   revenue: string;
-  expenses: string;
+  recentSales: string;
+  expenses: { title: string; value: string };
   products: { name: string; category: string; payment: string; status: string }[];
   balance: { wallet: string; payout: string };
 };
@@ -40,46 +51,76 @@ const Dashboard = () => {
           title: "New Visitors",
           percentage: "23%",
           change: "-13.24%",
-
         },
         activity: {
           title: "Activity",
           percentage: "82%",
-          change: "24.8%%",
+          change: "24.8%",
         },
-        // cardsSection: [
-        //   {
-        //     title: "Sales",
-        //     value: "$4,679",
-        //     change: "+28.42%",
-        //   },
-        //   {
-        //     title: "Profit",
-        //     value: "624k",
-        //     change:""
-        //   },
-        //   {
-        //     title: "Expenses",
-        //     value: "$21k",
-        //     change: "",
-        //   },
-        //   {
-        //     title: "Transactions",
-        //     value: "$14,857",
-        //     change: "+28.14%",
-        //   },
-        // ],
-        
-        performance: { earnings: "$9,846.17", sales: "$25.7M" },
+        cardsSection: [
+          {
+            image: wallet,
+            title: "Sales",
+            value: "$4,679",
+            change: "+28.42%",
+          },
+          {
+            image: "",
+            title: "Profit",
+            value: "624k",
+            change: "",
+          },
+          {
+            image: "",
+            title: "Expenses",
+            value: "$21k",
+            change: "",
+          },
+          {
+            image: transaction,
+            title: "Transactions",
+            value: "$14,857",
+            change: "+28.14%",
+          },
+        ],
+        reportSection: [
+          {
+            image: income,
+            title: "Income",
+            value: "$42,845",
+            change: "+2.34k",
+          },
+          {
+            image: wallet,
+            title: "Expense",
+            value: "$38,658",
+            change: "-1.15k",
+          },
+          {
+            image: profit,
+            title: "Profit",
+            value: "$18,220",
+            change: "+1.35k",
+          },
+        ],
+        performance: {
+          earnings: "$9,846.17",
+          sales: "$25.7M"
+        },
         conversionRate: {
           rate: "8.72%",
-          impressions: "12.4k",
+          impressions: "12.8%",
           addedToCart: "-8.5%",
-          checkout: "+9.12%",
-          purchased: "+2.83%",
+          checkout: "9.12%",
+          purchased: "2.83%",
         },
+
         revenue: "$42,389",
-        expenses: "4,234",
+        recentSales: "482k",
+        expenses: {
+          title: "4,234",
+          value: "2023"
+        },
         products: [
           { name: "Product 1", category: "Category A", payment: "$120", status: "Completed" },
           { name: "Product 2", category: "Category B", payment: "$149", status: "Pending" },
@@ -92,6 +133,33 @@ const Dashboard = () => {
 
     fetchData();
   }, []);
+  const [activeCard, setActiveCard] = useState(null);
+
+  const handleIconClick = (id) => {
+    if (activeCard === id) {
+      setActiveCard(null); // Close the card if it's already active
+    } else {
+      setActiveCard(id);
+    }
+  };
+
+  const handleViewMore = (id) => {
+    console.log(`View More clicked for card ${id}`);
+    // Add functionality for "View More"
+  };
+
+  const handleDelete = (id) => {
+    console.log(`Delete clicked for card ${id}`);
+    // Add functionality for "Delete"
+  };
+
+  const [showDropdownIncome, setShowDropdownIncome] = useState(false);
+  const [showDropdownReport, setShowDropdownReport] = useState(false);
+  const [showDropdownPerformance, setShowDropdownPerformance] = useState(false);
+  const [showConversionRate, setShowConversionRate] = useState(false);
+  const [showTotalBalance, setShowTotalBalance] = useState(false);
+  const [showRevenue, setShowRevenue] = useState(false);
+
 
   if (!dashboardData) return <div>Loading...</div>;
 
@@ -100,32 +168,32 @@ const Dashboard = () => {
       {/* Section 1 */}
       <div className="flex flex-wrap xl:space-x-4 xl:flex-nowrap">
         {/* Left Section */}
-        <div className="xl:w-2/5 w-full bg-white shadow-md p-4 rounded-md flex">
+        <div className="xl:w-2/5 w-full bg-white shadow-md p-4 rounded-md flex max-sm:flex-col">
           <div className="w-[75%]">
-            <h1 className="text-lg">Congratulations {dashboardData.user.name}! 🎉</h1>
-            <p className="text-gray-600">Best seller of the month</p>
-            <h3 className="text-lg font-medium mt-2 text-[#787BFF]">{dashboardData.user.totalSales}</h3>
-            <p className="text-gray-600">{dashboardData.user.salesTarget} of target 🚀</p>
-            <button className="bg-[#5F61E6] shadow-xl text-white px-4 py-2 rounded">View Sales</button>
+            <h1 className="text-lg max-sm:text-[15px]">Congratulations {dashboardData.user.name}! 🎉</h1>
+            <p className="text-gray-600 max-sm:text-[10px] ">Best seller of the month</p>
+            <h3 className="text-lg font-medium mt-2 text-[#787BFF] max-sm:text-[10px]">{dashboardData.user.totalSales}</h3>
+            <p className="text-gray-600 max-sm:text-[10px]">{dashboardData.user.salesTarget} of target 🚀</p>
+            <button className="bg-[#5F61E6] shadow-xl text-white px-4 py-2 rounded max-sm:text-[10px]">View Sales</button>
           </div>
-          <div className="w-[25%]">
-            <img src={laptop} className="h-44" />
+          <div className="w-[25%] max-sm:w-full max-sm:mt-2">
+            <img src={laptop} className="h-44 max-sm:h-20 " />
           </div>
         </div>
 
         {/* Right Section */}
         <div className="xl:w-3/5 w-full bg-white shadow-md p-6 rounded-md md:flex block  mt-4 xl:mt-0">
           {/* Visitors Section */}
-          <div className="md:w-1/2 w-full flex flex-row justify-between">
+          <div className="md:w-1/2 w-full flex flex-row justify-between max-sm:gap-2">
             <div>
-              <p className="text-gray-600 text-lg">{dashboardData.visitors.title}</p>
-              <h3 className="text-2xl font-medium">{dashboardData.visitors.percentage}</h3>
+              <p className="text-gray-600 text-lg max-sm:text-[12px]">{dashboardData.visitors.title}</p>
+              <h3 className="text-2xl font-medium max-sm:text-[12px]">{dashboardData.visitors.percentage}</h3>
               <div className="flex">
-                <span className="text-[#FF3E1D] text-sm mr-1 mt-1"><FaArrowDown /></span>
-                <p className="text-[#FF3E1D] text-sm">{dashboardData.visitors.change}</p>
+                <span className="text-[#FF3E1D] text-sm mr-1 mt-1 max-sm:text-[10px]"><FaArrowDown /></span>
+                <p className="text-[#FF3E1D] text-sm max-sm:text-[12px]">{dashboardData.visitors.change}</p>
               </div>
             </div>
-            <p className="text-gray-500 text-sm mt-1">Last Week</p>
+            <p className="text-gray-500 text-sm mt-1 max-sm:text-[12px]">Last Week</p>
           </div>
 
           <div className="w-[1px] bg-gray-300 mx-6 hidden md:flex"></div>
@@ -134,131 +202,401 @@ const Dashboard = () => {
           {/* Activity Section */}
           <div className="md:w-1/2 w-full flex flex-row justify-between">
             <div>
-              <p className="text-gray-600 text-lg">{dashboardData.activity.title}</p>
-              <h3 className="text-2xl font-medium">{dashboardData.activity.percentage}</h3>
+              <p className="text-gray-600 text-lg max-sm:text-[12px]">{dashboardData.activity.title}</p>
+              <h3 className="text-2xl font-medium max-sm:text-[12px]">{dashboardData.activity.percentage}</h3>
               <div className="flex">
-                <span className="text-[#71DD37] text-sm mr-1 mt-1"><FaArrowUp /></span>
-                <p className="text-[#71DD37] text-sm">{dashboardData.activity.change}</p>
+                <span className="text-[#71DD37] text-sm mr-1 mt-1 max-sm:text-[12px]"><FaArrowUp /></span>
+                <p className="text-[#71DD37] text-sm max-sm:text-[12px]">{dashboardData.activity.change}</p>
               </div>
             </div>
-            <p className="text-gray-500 text-sm mt-1">Last Week</p>
+            <p className="text-gray-500 text-sm mt-1 max-sm:text-[12px]">Last Week</p>
           </div>
         </div>
       </div>
 
 
- {/* Section 2 */} 
-<div className="flex flex-wrap xl:space-x-4 xl:flex-nowrap">
-  {/* Left Section */}
-  <div className="xl:w-2/5 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-    {[
-      { title: "Sales", value: "$4,679", change: "+28.42%", icon: "wallet " },
-      { title: "Profit", value: "624k", change: "", icon: "" },
-      { title: "Expenses", value: "$21k", change: "", icon: "" },
-      { title: "Transactions", value: "$14,857", change: "+28.14%", icon: "icon-transactions.png" },
-    ].map((card, id) => (
-      <div key={id} className="bg-white shadow-md p-4 rounded-md flex items-center space-x-4">
-        <img src={card.icon} alt={card.title} className="w-10 h-10" />
-        <div>
-          <p className="text-gray-600">{card.title}</p>
-          <h3 className="text-xl font-bold">{card.value}</h3>
-          {card.change && (
-            <p className={`text-sm ${card.change.startsWith("+") ? "text-green-500" : "text-red-500"}`}>
-              {card.change}
-            </p>
-          )}
+      {/* Section 2 */}
+      <div className="flex flex-wrap xl:space-x-4 xl:flex-nowrap ">
+        {/* Left Section: 4 Cards */}
+        <div className="xl:w-2/5 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+          {dashboardData?.cardsSection.map((card, id) => (
+            <div key={id} className="bg-white shadow-md p-4 rounded-md relative">
+              {card.image && (
+                <img src={card.image} alt={card.title} className="w-10 h-10" />
+              )}
+              <div>
+                <p className="text-gray-600 mt-2">{card.title}</p>
+                <h3 className="text-2xl font-medium">{card.value}</h3>
+                {card.change && (
+                  <div className="flex">
+                    <span className="text-[#71DD37] text-sm mr-1 mt-1">
+                      <FaArrowUp />
+                    </span>
+                    <p className="text-[#71DD37] text-sm">{card.change}</p>
+                  </div>
+                )}
+              </div>
+              <button
+                className="absolute top-2 right-2 text-gray-400"
+                onClick={() => handleIconClick(id)}
+              >
+                <FaEllipsisV />
+              </button>
+              {activeCard === id && (
+                <div className="absolute top-10 right-2 bg-white shadow-md rounded-md w-32 p-2">
+                  <button
+                    className="text-gray-600 w-full text-left hover:bg-gray-100 p-2"
+                    onClick={() => handleViewMore(id)}
+                  >
+                    View More
+                  </button>
+                  <button
+                    className="text-gray-600 w-full text-left hover:bg-gray-100 p-2"
+                    onClick={() => handleDelete(id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
+
+        {/* Right Section: Report Card */}
+        <div className="xl:w-3/5 w-full bg-white shadow-md p-6 rounded-md mt-4 xl:mt-0 flex justify-between max-md:flex-col">
+          <div className="md:w-[70%] w-full">
+            <div className="flex justify-between items-center">
+              <h3 className="font-medium text-lg max-sm:text-[16px]">Total Income</h3>
+              <div className="relative">
+                <FaEllipsisV
+                  className="text-gray-500 cursor-pointer"
+                  onClick={() => setShowDropdownIncome(!showDropdownIncome)}
+                />
+                {showDropdownIncome && (
+                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+
+                      Last 28 Days
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Last Month
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Last Year
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="text-gray-500 mb-4 max-sm:text-[12px]">Yearly report overview</p>
+          </div>
+          <div className="w-[1px] bg-gray-100 mx-6 hidden md:flex"></div>
+          <div className="w-full h-[1px] bg-gray-100 mx-auto md:hidden flex"></div>
+          <div className="md:w-[30%] w-full">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl text-gray-500 max-sm:text-[12px]">Report</h3>
+              <div className="relative">
+              <FaEllipsisV
+                  className="text-gray-500 cursor-pointer"
+                  onClick={() => setShowDropdownReport(!showDropdownReport)}
+                />
+                {showDropdownReport && (
+                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+
+                      Last 28 Days
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Last Month
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Last Year
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <p className="text-gray-500 max-sm:text-[12px]">Monthly Avg. $45.578k</p>
+            <div className="space-y-4 mt-10">
+              {dashboardData?.reportSection.map((report, idx) => (
+                <div key={idx} className="flex justify-between items-center pb-2">
+                  <div className="flex items-center space-x-3">
+                    <div>
+                      <img src={report.image} className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-md text-gray-500 max-sm:text-[10px]">{report.title}</div>
+                      <div className="font-medium text-xl text-gray-500 max-sm:text-[10px]">
+                        {report.value}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <span
+                      className={`text-sm max-sm:text-[10px] ${report.change.startsWith("+") ? "text-[#71DD37]" : "text-[#FF3E1D]"
+                        }`}
+                    >
+                      {report.change}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
       </div>
-    ))}
-  </div>
-  {/* Right Section */}
-  <div className="xl:w-3/5 w-full flex flex-wrap bg-white shadow-md p-6 rounded-md space-y-6 xl:space-y-0">
-    {[
-      { title: "Income", value: "$42,845", change: "+2.34k" },
-      { title: "Expense", value: "$38,658", change: "-1.15k" },
-      { title: "Profit", value: "$18,220", change: "+1.35k" },
-    ].map((report, idx) => (
-      <div key={idx} className="w-full md:w-1/2">
-        {idx === 0 && (
-          <>
-            <h3 className="font-bold text-lg">Total Income</h3>
-            <p className="text-gray-600">Yearly report overview</p>
-          </>
-        )}
-        {idx === 0 && <h3 className="font-bold text-lg mt-6">Report</h3>}
-        {idx > 0 && <div className="flex justify-between mt-4">
-          <span>{report.title}</span>
-          <span className={`${report.change.startsWith("+") ? "text-green-500" : "text-red-500"}`}>{report.value}</span>
-        </div>}
-      </div>
-    ))}
-  </div>
-</div>
-
-
-
 
       {/* Section 3 */}
-      <div className="flex space-x-6">
-        {/* Left Section */}
-        <div className="w-1/3 bg-white shadow-md p-4 rounded-md">
-          <h3 className="font-bold text-lg">Performance</h3>
-          <p className="text-gray-600">Earnings: {dashboardData.performance.earnings}</p>
-          <p className="text-gray-600">Sales: {dashboardData.performance.sales}</p>
-        </div>
-        {/* Center Section */}
-        <div className="w-1/3 bg-white shadow-md p-4 rounded-md">
-          <h3 className="font-bold text-lg">Conversion Rate</h3>
-          <p className="text-gray-600">{dashboardData.conversionRate.rate}</p>
-        </div>
-        {/* Right Section */}
-        <div className="w-1/3 grid grid-rows-3 gap-6">
-          <div className="bg-white shadow-md p-4 rounded-md">
-            <h3 className="font-bold text-lg">Revenue</h3>
-            <p className="text-gray-600">{dashboardData.revenue}</p>
+
+      <div className="flex md:space-x-6  max-md:flex-col">
+        <div className="xl:w-2/5 md:w-1/2 max-md:w-full  bg-white shadow-md p-4 rounded-md">
+          <div className="flex justify-between items-center">
+              <h3 className="font-bold text-lg max-sm:text-[12px]">Performance</h3>
+              <div className="relative">
+              <FaEllipsisV
+                  className="text-gray-500 cursor-pointer"
+                  onClick={() => setShowDropdownPerformance(!showDropdownPerformance)}
+                />
+                {showDropdownPerformance && (
+                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+
+                      Last 28 Days
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Last Month
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Last Year
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          <div className="flex justify-between mt-4 ">
+            <p className="text-gray-600 max-sm:text-[10px]">Earnings: {dashboardData.performance.earnings}</p>
+            <p className="text-gray-600 max-sm:text-[10px]">Sales: {dashboardData.performance.sales}</p>
           </div>
-          <div className="bg-white shadow-md p-4 rounded-md">
-            <h3 className="font-bold text-lg">Sales</h3>
-            <p className="text-gray-600">{dashboardData.user.salesTarget}</p>
+        </div>
+        <div className="xl:w-3/5 md:w-1/2 flex max-xl:flex-col xl:gap-x-4 max-md:mt-2">
+          <div className="xl:w-1/2 w-full  bg-white shadow-md p-4 rounded-md">
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-lg max-sm:text-[12px]">Conversion Rate</h3>
+              <div className="relative">
+              <FaEllipsisV
+                  className="text-gray-500 cursor-pointer"
+                  onClick={() => setShowConversionRate(!showConversionRate)}
+                />
+                {showConversionRate && (
+                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+
+                      Select All
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Refresh
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Share
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <p className="text-gray-700 font-medium text-2xl max-sm:text-[11px]">{dashboardData.conversionRate.rate}</p>
+              <span className="text-[#71DD37] text-sm flex gap-1 mt-1 max-sm:text-[11px]"><IoIosArrowUp size={20} />4.8%</span>
+            </div>
+            <div className="mt-4 space-y-3">
+              {[
+                { title: "Impressions", label: "12.4k Visits", value: dashboardData.conversionRate.impressions },
+                { title: "Added to Cart", label: "32 Product in cart", value: dashboardData.conversionRate.addedToCart },
+                { title: "Checkout", label: "21 Products checkout", value: dashboardData.conversionRate.checkout },
+                { title: "Purchased", label: "12 Orders", value: dashboardData.conversionRate.purchased },
+              ].map((metric, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <div>
+                    <p className="text-gray-800 max-sm:text-[10px]">{metric.title}</p>
+                    <p className="text-gray-500 max-sm:text-[10px]">{metric.label}</p>
+                  </div>
+                  <span
+                    className={`font-medium flex items-center gap-1 ${metric.value.startsWith("-") ? "text-[#FF3E1D]" : "text-[#71DD37]"
+                      }`}
+                  >
+                    {metric.value.startsWith("-") ? <FaArrowDown size={16} /> : <FaArrowUp size={16} />}
+                    {metric.value}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="bg-white shadow-md p-4 rounded-md">
-            <h3 className="font-bold text-lg">Expenses</h3>
-            <p className="text-gray-600">{dashboardData.expenses}</p>
+          <div className="xl:w-1/2 xl:block w-full md:hidden  max-md:mt-2 ">
+            <div className="flex  gap-2 max-sm:flex-col">
+              <div className="w-1/2 max-sm:w-full bg-white shadow-md p-4 rounded-md">
+                <div>
+                  <img src={revenue} alt="" />
+                </div>
+                
+
+                <div className="flex justify-between items-center">
+                <h3 className="text-lg text-gray-500 pt-2 ">Revenue</h3>
+              <div className="relative">
+                <FaEllipsisV
+                  className="text-gray-500 cursor-pointer"
+                  onClick={() => setShowRevenue(!showRevenue)}
+                />
+                {showRevenue && (
+                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+
+                      View More
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Delete
+                    </p>
+                   
+                  </div>
+                )}
+              </div>
+            </div>
+                
+
+                <p className="text-gray-600 text-xl font-bold ">{dashboardData.revenue}</p>
+                <span className="text-[#71DD37] flex gap-1 text-sm"><FaArrowUp size={16} />+52.18%</span>
+              </div>
+              <div className="w-1/2 max-sm:w-full bg-white shadow-md p-4 rounded-md">
+                <h3 className="text-lg text-gray-500 ">Recent Sales</h3>
+                <p className="text-gray-600 text-xl font-bold ">{dashboardData.recentSales}</p>
+              </div>
+            </div>
+            <div className="bg-white shadow-md p-4 rounded-md mt-4">
+              <h3 className="text-lg text-gray-500 ">Expenses</h3>
+              <p className="text-gray-600 text-xl font-bold ">{dashboardData.expenses.title}</p>
+              <span className="text-[#FF3E1D] flex text-sm mb-4"><FaArrowDown size={16} />8.2%</span>
+              <span className="text-gray-500 font-medium bg-gray-200 p-2 ">{dashboardData.expenses.value} YEAR</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Section 4 */}
-      <div className="flex space-x-6">
-        {/* Left Section */}
-        <div className="w-2/3 bg-white shadow-md p-4 rounded-md">
-          <h3 className="font-bold text-lg">Product Table</h3>
-          <table className="w-full text-left">
-            <thead>
-              <tr>
-                <th className="border-b p-2">Product</th>
-                <th className="border-b p-2">Category</th>
-                <th className="border-b p-2">Payment</th>
-                <th className="border-b p-2">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dashboardData.products.map((product, idx) => (
-                <tr key={idx}>
-                  <td className="border-b p-2">{product.name}</td>
-                  <td className="border-b p-2">{product.category}</td>
-                  <td className="border-b p-2">{product.payment}</td>
-                  <td className="border-b p-2">{product.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className="xl:w-1/2 md:block hidden w-full xl:hidden  max-md:mt-2 ">
+        <div className="flex  gap-2 max-sm:flex-col">
+          <div className="w-1/2 max-sm:w-full  bg-white shadow-md p-4 rounded-md">
+            <div>
+              <img src={revenue} alt="" />
+            </div>
+            
+
+            <div className="flex justify-between items-center">
+            <h3 className="text-lg text-gray-500 pt-2 ">Revenue</h3>
+              <div className="relative">
+                <FaEllipsisV
+                  className="text-gray-500 cursor-pointer"
+                  onClick={() => setShowRevenue(!showRevenue)}
+                />
+                {showRevenue && (
+                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+
+                      View More
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Delete
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <p className="text-gray-600 text-xl font-bold ">{dashboardData.revenue}</p>
+            <span className="text-[#71DD37] flex gap-1 text-sm"><FaArrowUp size={16} />+52.18%</span>
+          </div>
+          <div className="w-1/2 max-sm:w-full bg-white shadow-md p-4 rounded-md">
+            <h3 className="text-lg text-gray-500 ">Recent Sales</h3>
+            <p className="text-gray-600 text-xl font-bold ">{dashboardData.recentSales}</p>
+          </div>
         </div>
-        {/* Right Section */}
-        <div className="w-1/3 bg-white shadow-md p-4 rounded-md">
-          <h3 className="font-bold text-lg">Total Balance</h3>
-          <p className="text-gray-600">Wallet: {dashboardData.balance.wallet}</p>
-          <p className="text-gray-600">Payout: {dashboardData.balance.payout}</p>
+        <div className="bg-white shadow-md p-4 rounded-md mt-4">
+          <h3 className="text-lg text-gray-500 ">Expenses</h3>
+          <p className="text-gray-600 text-xl font-bold ">{dashboardData.expenses.title}</p>
+          <span className="text-[#FF3E1D] flex text-sm mb-4"><FaArrowDown size={16} />8.2%</span>
+          <span className="text-gray-500 font-medium bg-gray-200 p-2 ">{dashboardData.expenses.value} YEAR</span>
+        </div>
+      </div>
+
+
+
+      <div className="flex max-xl:flex-col">
+        <div className="w-[70%] max-xl:w-full">
+          <OrderTable />
+        </div>
+        <div className="w-[30%] max-xl:w-full bg-white shadow-md p-6 rounded-lg flex flex-col gap-6 relative">
+          {/* Header Section */}
+            <div className="flex justify-between items-center">
+              <h3 className="font-bold text-xl max-sm:text-[12px]">Total Balance</h3>
+              <div className="relative">
+                <FaEllipsisV
+                  className="text-gray-500 cursor-pointer"
+                  onClick={() => setShowTotalBalance(!showTotalBalance)}
+                />
+                {showTotalBalance && (
+                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+
+                      Last 28 Days
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Last Month
+                    </p>
+                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
+                      Last Year
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          
+        
+
+          {/* Balance Details */}
+
+          <div className="flex items-center xl:justify-between max-xl:gap-14 max-sm:flex-col">
+            <div className="flex items-center gap-4">
+              <div className="bg-[#FFF2D6] text-[#FFAB00] p-3 rounded-lg">
+                <FaWallet />
+              </div>
+              <div>
+                <h4 className="text-md font-medium text-gray-500 max-sm:text-[10px]">{dashboardData.balance.wallet}</h4>
+                <div className="text-sm text-gray-500">Wallet</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-x-4 ">
+              <div className="bg-[#EBEEF0] text-[#8592A3] p-3 rounded-lg">
+                <BsCurrencyDollar />
+              </div>
+              <div>
+                <h4 className="text-md font-medium text-gray-500 max-sm:text-[10px]">{dashboardData.balance.payout}</h4>
+                <div className="text-sm text-gray-500">Paypal</div>
+              </div>
+            </div>
+          </div>
+          <div className="w-[90%] h-[1px] bottom-24 absolute bg-gray-300 mx-auto max-xl:hidden"></div>
+          <div className="flex justify-between p-2 xl:absolute xl:bottom-6  ">
+            <div>
+              <div className="text-xsm text-gray-500 max-sm:text-[10px]">
+                You have done 57.6% more sales.
+                Check your new badge in your profile.
+              </div>
+            </div>
+            <div className="">
+              <button className="bg-[#FFF2D6] text-[#FFAB00] p-2  text-sm rounded-lg max-sm:text-[10px]">
+                <MdOutlineKeyboardArrowRight size={24} />
+              </button>
+            </div>
+          </div>
+
+
         </div>
       </div>
     </div>
