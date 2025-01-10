@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { getAllProducts } from "../api/products/api";
+import { getAllProducts, updateProductApi } from "../api/products/api";
+import { useDispatch } from "react-redux";
 
 interface Product {
   name: string;
@@ -9,14 +10,18 @@ interface Product {
   base_price: number;
   discounted_price: number;
   status: "Active" | "Inactive";
+  store: string;
+  _id: string;
 }
 
 interface AllProducts {
   products: Product[];
+  page: number;
 }
 
 const initialState: AllProducts = {
   products: [],
+  page: 1,
 };
 
 const allProductsSlice = createSlice({
@@ -30,7 +35,15 @@ const allProductsSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(getAllProducts.fulfilled, (state, action) => {
       //   state.products = action.payload;
-      console.log(action.payload, "hehe");
+      state.products = action.payload;
+    });
+
+    builder.addCase(updateProductApi.fulfilled, (state, action) => {
+      const updatedProduct = action.payload; // Assuming API returns the updated product
+      state.products = state.products.map((product) =>
+        product._id === updatedProduct._id ? updatedProduct : product
+      );
+      alert("Record Updated");
     });
   },
 });

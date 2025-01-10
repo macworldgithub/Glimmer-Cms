@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SetStateAction, Dispatch } from "react";
 import { Popover, Avatar, Divider } from "antd";
 import {
   UserOutlined,
@@ -10,13 +10,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { logout } from "../slices/loginSlice";
 
-const Profile = () => {
+interface PropsProfile {
+  profile: boolean;
+  setProfile: Dispatch<SetStateAction<boolean>>;
+}
+
+const Profile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   const data = useSelector((state: RootState) => state.Login);
   const dispatch = useDispatch();
   const HandleClick = (name: string) => {
     if (name === "logout") {
       dispatch(logout());
     }
+  };
+
+  const HandleProfileClick = () => {
+    setProfile(true);
   };
 
   const content = (
@@ -32,7 +41,10 @@ const Profile = () => {
       <Divider className="my-1" />
 
       {/* Profile Section */}
-      <div className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors">
+      <div
+        onClick={HandleProfileClick}
+        className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors"
+      >
         <UserOutlined className="text-base mr-2" />
         <h2 className="text-sm font-normal">Profile</h2>
       </div>

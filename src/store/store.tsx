@@ -22,6 +22,7 @@ type RootReducerType = ReturnType<typeof rootReducer>;
 const persistConfig: PersistConfig<any> = {
   key: "glimmer", // Key for storage
   storage, // Default storage for web
+  blacklist: ["AddProduct"],
 };
 
 const persistedReducer = persistReducer<RootReducerType>(

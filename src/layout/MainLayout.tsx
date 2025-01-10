@@ -5,11 +5,14 @@ import { Outlet } from "react-router-dom";
 import Bell from "../components/Bell";
 import Profile from "../components/Profile";
 import SideBar from "../components/SideBar";
+import UpdateStoreModal from "../components/UpdateStore";
 
 const { Header, Content } = Layout;
 
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
+
+  const [profile, setProfile] = useState<boolean>(false);
   // const {
   //   token: { colorBgContainer, borderRadiusLG },
   // } = theme.useToken();
@@ -44,7 +47,7 @@ const MainLayout = () => {
           />
           <div className="flex items-center gap-2 pr-2">
             <Bell />
-            <Profile />
+            <Profile profile={profile} setProfile={setProfile} />
           </div>
         </Header>
         <Content
@@ -58,6 +61,7 @@ const MainLayout = () => {
             height: "60vh", // Full height minus the header height (adjust as needed)
           }}
         >
+          <UpdateStoreModal profile={profile} setProfile={setProfile} />
           <Outlet />
         </Content>
       </Layout>

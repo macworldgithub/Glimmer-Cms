@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addProduct } from "../api/products/api";
+import { addProductApi } from "../api/products/api";
 
 export interface Product {
   name: string;
@@ -26,7 +26,7 @@ const addProductSlice = createSlice({
   initialState,
   reducers: {
     addImages: (state, action) => {
-      if (state.images.length + action.payload.length <= 5) {
+      if (state.images.length + action.payload.length <= 3) {
         state.images.push(...action.payload); // Add new images
       } else {
         alert("You can only upload up to 5 images.");
@@ -40,14 +40,18 @@ const addProductSlice = createSlice({
     updateProduct(state, action: PayloadAction<Partial<Product>>) {
       return { ...state, ...action.payload };
     },
+    resetImage: (state) => {
+      state.images = [];
+    },
   },
   extraReducers(builder) {
-    builder.addCase(addProduct.fulfilled, () => {
+    builder.addCase(addProductApi.fulfilled, () => {
       alert("Success : Product Added");
+      return initialState; // Correct way to reset the state
     });
   },
 });
 
-export const { updateProduct, addImages, removeImage } =
+export const { updateProduct, addImages, removeImage, resetImage } =
   addProductSlice.actions;
 export default addProductSlice;
