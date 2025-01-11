@@ -8,36 +8,36 @@ const allData = [
     key: "1",
     order_id: "12345",
     customer_name: "John Doe",
-    payment: "$100.00",
-    status: "Completed",
+    payment_method: "Credit Card",
+    status: "delivered",
   },
   {
     key: "2",
     order_id: "67890",
     customer_name: "Jane Smith",
-    payment: "$50.00",
+    payment_method: "PayPal",
     status: "inprocess",
   },
   {
     key: "3",
     order_id: "11223",
     customer_name: "Alice Brown",
-    payment: "$150.00",
-    status: "cancelled",
+    payment_method: "Credit Card",
+    status: "pending",
   },
   {
     key: "4",
     order_id: "44556",
     customer_name: "Bob Williams",
-    payment: "$120.00",
-    status: "Completed",
+    payment_method: "Debit Card",
+    status: "shipped",
   },
   {
     key: "5",
     order_id: "77889",
     customer_name: "Clara Johnson",
-    payment: "$80.00",
-    status: "Confirmed",
+    payment_method: "Cash",
+    status: "delivered",
   },
 ];
 
@@ -72,9 +72,9 @@ const OrderTable = () => {
         key: "customer_name",
       },
     {
-      title: "PAYMENT",
-      dataIndex: "payment",
-      key: "payment",
+      title: "PAYMENT METHOD",
+      dataIndex: "payment_method",
+      key: "payment method",
     },
     {
       title: "ORDER STATUS",
@@ -82,10 +82,10 @@ const OrderTable = () => {
       key: "status",
       render: (status: string) => {
         let color = "blue";
-        if (status === "Completed") color = "green";
+        if (status === "pending") color = "red";
         if (status === "inprocess") color = "orange"
-        if (status === "Confirmed") color = "blue";
-        if (status === "Cancelled") color = "red";
+        if (status === "shipped") color = "green";
+        if (status === "delivered") color = "blue";
         return <Tag color={color}>{status}</Tag>;
       },
     },

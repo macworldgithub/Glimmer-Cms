@@ -1,20 +1,174 @@
 import { useEffect, useState } from "react";
 import { IoCubeOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/store";
+import { addProductApi } from "../../api/products/api";
 import {
-  updateProduct,
   addImages,
   removeImage,
   resetImage,
+  updateProduct,
 } from "../../slices/addProductSlice";
-import { addProductApi } from "../../api/products/api";
+import { RootState } from "../../store/store";
 
-import { Upload, message } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
-import type { UploadFile } from "antd/es/upload/interface";
+
+const categories = {
+  "SkinCare": [
+    "Cleansers",
+    "Moisturisers",
+    "Sunscreens (SPF)",
+    "Eye Care",
+    "Lip Care",
+    "Bath & Body",
+    "Men’s Care",
+  ],
+  "Hair Care": [
+    "Shampoo & Conditioner",
+    "Hair treatments",
+    "Styling",
+    "Tools",
+    "Professional Hair",
+  ],
+  "Makeup": [
+    "Face",
+    "Lips",
+    "Eyes",
+    "Nails",
+    "Accessories",
+  ],
+  "Fragrance": [
+    "Men",
+    "Women", "Unisex",
+    "Deodorant",
+    "Body spray & Mists",
+  ],
+};
+
+const subcategories = {
+  "Cleansers": [
+    "Face Wash",
+    "Cleansing Balms and Oils",
+    "Face Masks",
+    "Makeup Remover",
+    "Toners and Mists",
+    "Exfoliators and Scrub",
+  ],
+  "Moisturisers": [
+    "Creams & Lotions",
+    "Gels",
+    "Day & Night Creams",
+  ],
+  "Bath & Body": [
+    "Body Lotions & Creams",
+    "Body Wash",
+    "Body Scrubs",
+    "Soap and Handwash",
+    "Body Wax",
+  ],
+  "Men’s Care": [
+    "After Shave", "Shaving Gel/Foam"
+  ],
+  "Shampoo & Conditioner": [
+    "Shampoo",
+    "Conditioner",
+  ],
+  "Hair treatments": [
+    "Hair Oil",
+    "Hair Supplement",
+    "Hair Serums",
+    "Hair Fiber",
+    "Beard Oil",
+    "Hair Cream",
+    "Hair-Serum",
+    "Hair Mask",
+  ],
+  "Styling": [
+    "Styling Cream",
+    "Hair Spray",
+    "Hair Color",
+    "Hair Gel",
+    "Dry Shampoo",
+    "Hair Mist",
+    "Hair Fiber",
+  ],
+  "Tools": [
+    "Hair Brushes & Comb",
+    "Hair Straightener",
+    "Hair Dryer",
+    "Hair Curling Irons",
+    "Hair Trimmer",
+    "Hair Bands",
+    "Hair Waver",
+    "Hair Epilator",
+  ],
+  "Professional Hair": [
+    "Revlon Professional",
+    "L'Oréal Professionnel",
+    "Cosmo",
+    "Behave",
+    "Secret Fragrance",
+  ],
+  "Face": [
+    "Concealers",
+    "Blushes",
+    "Primer",
+    "Foundations",
+    "Setting Spray",
+    "Bronzer & Contouring",
+    "Highlighters",
+    "Setting Powder",
+    "BB-Creams & CC-Creams",
+    "Setting Powder",
+    "Sets",
+    "Illuminators",
+    "Face Palette",
+  ],
+  "Lips": [
+    "Lipsticks",
+    "Lip Plumper",
+    "Lip Balm",
+    "Lip Pencils",
+    "Lip Stain",
+    "Lip Gloss",
+    "Lip Sets",
+    "Lip Treatment",
+  ],
+  "Eyes": [
+    "Eyelashes",
+    "Eyeliner",
+    "Mascara",
+    "Eyeshadow",
+    "Eyebrows",
+    "Eye Pencil",
+    "Eye Set",
+  ],
+  "Nails": [
+    "Nail Polish Remover",
+    "Fake Nails",
+    "Nail Polish",
+    "Nail Glue",
+    "Nail Tools",
+  ],
+  "Accessories": [
+    "Makeup Brushes",
+    "Makeup & Travler Case",
+    "Beauty Tools",
+    "Candle Accessories",
+    "Face Brush",
+    "Brush Sets",
+    "Sponges",    
+  ],
+
+
+};
+
 
 const ProductPage = () => {
+
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
+  const [showSubcategories, setShowSubcategories] = useState(false);
+
+
   const dispatch = useDispatch();
   const addProduct = useSelector((state: RootState) => state.AddProduct);
 
@@ -355,15 +509,13 @@ const ProductPage = () => {
                 In stock
               </span>
               <div
-                className={`relative inline-block w-12 h-6 rounded-full cursor-pointer ${
-                  isInStock ? "bg-[#5F61E6]" : "bg-gray-300"
-                }`}
+                className={`relative inline-block w-12 h-6 rounded-full cursor-pointer ${isInStock ? "bg-[#5F61E6]" : "bg-gray-300"
+                  }`}
                 onClick={() => setIsInStock(!isInStock)}
               >
                 <span
-                  className={`absolute top-1/2 transform -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                    isInStock ? "translate-x-6" : "translate-x-1"
-                  }`}
+                  className={`absolute top-1/2 transform -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow transition-transform ${isInStock ? "translate-x-6" : "translate-x-1"
+                    }`}
                 ></span>
               </div>
             </div>
@@ -386,20 +538,83 @@ const ProductPage = () => {
                         </div> */}
 
             {/* Category */}
+
+
+            <div>
+              {/* Main Category */}
+              <label className="block text-sm font-medium text-gray-500 mb-1">Category</label>
+              
+                <select
+                  className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
+                  value={selectedCategory}
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value);
+                    setSelectedSubCategory("");
+                    setShowSubcategories(true);
+                  }}
+                >
+                  <option value="">Select Category</option>
+                  {Object.keys(categories).map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+
+              {/* Subcategories */}
+              {showSubcategories && selectedCategory && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Subcategory</label>
+                  <select
+                    className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
+                    value={selectedSubCategory}
+                    onChange={(e) => {
+                      setSelectedSubCategory(e.target.value);
+                    }}
+                  >
+                    <option value="">Select Subcategory</option>
+                    {categories[selectedCategory].map((subcat) => (
+                      <option key={subcat} value={subcat}>
+                        {subcat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Sub-Subcategories */}
+              {selectedSubCategory && subcategories[selectedSubCategory]?.length > 0 && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Sub-Subcategory</label>
+                  <select
+                    className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
+                  >
+                    <option value="">Select Sub-Subcategory</option>
+                    {subcategories[selectedSubCategory].map((subsubcat) => (
+                      <option key={subsubcat} value={subsubcat}>
+                        {subsubcat}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+
+
+
             {/* <div className="mb-4">
                             <label className="block text-sm font-medium text-gray-500 mb-1">Category</label>
                             <div className="flex items-center gap-2">
                                 <select
                                     className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
                                 >
-                                    <option>Select Category</option>
-                                    <option>Household</option>
-                                    <option>Management</option>
-                                    <option>Elctronics</option>
-                                    <option>Office</option>
-                                    <option>Automotive</option>
+                                    <option>Skin Care</option>                                    
+                                    <option>Hair Care</option>                                      
+                                    <option>Makeup</option>
+                                    <option>Fragrance</option>                                    
                                 </select>
-                                <button
+                                <button 
                                     className="w-12 h-12 flex items-center justify-center bg-gray-200 rounded-md text-xl"
                                     title="Add new category"
                                 >
