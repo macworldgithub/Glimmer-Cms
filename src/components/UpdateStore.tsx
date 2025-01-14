@@ -15,7 +15,6 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
   setProfile,
 }) => {
   const [newImageUrl, setNewImageUrl] = useState<string>();
-
   const store = useSelector((state: RootState) => state.Login);
   const [formData, setFormData] = useState({
     store_name: store.store_name,
@@ -27,7 +26,6 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
     address: store.address,
     store_image: store.store_image,
   });
-
   // Handle image upload
   const handleImageChange = (info: any) => {
     if (info.file.status === "done" || info.file.originFileObj) {

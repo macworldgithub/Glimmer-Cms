@@ -1,7 +1,5 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { getAllProducts, updateProductApi } from "../api/products/api";
-import { useDispatch } from "react-redux";
-
 interface Product {
   name: string;
   quantity: number;

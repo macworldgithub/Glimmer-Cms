@@ -3,14 +3,12 @@ import axios from "axios";
 import { developmentServer } from "../../config/server";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-
 export interface UpdateStoreApi {
   store_name: string;
   vendor_name: string;
   description: string;
   store_contact_email: string;
   email: string;
-
   country: string;
   address: string;
   store_image: string;
@@ -73,7 +71,7 @@ export const getAllProducts = createAsyncThunk(
 
 export const addProductApi = createAsyncThunk(
   "addProduct",
-  async (payload: {}, { rejectWithValue, getState }) => {
+  async (payload: {}, { rejectWithValue, getState }) => { 
     try {
       // Access token from the Redux state
       const state = getState() as RootState;
@@ -150,7 +148,6 @@ export const updateProductApi = createAsyncThunk(
           },
         }
       );
-
       return response.data; // Return the response data if successful
     } catch (error: any) {
       // Handle error response properly
@@ -204,6 +201,5 @@ export const updateStoreApi = async (token: string, data: UpdateStoreApi) => {
       },
     }
   );
-
   return response.data;
 };

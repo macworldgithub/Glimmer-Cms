@@ -1,233 +1,155 @@
-import React from "react";
 import {
-  ClockCircleOutlined,
   CheckCircleOutlined,
-  RollbackOutlined,
+  ClockCircleOutlined,
   CloseCircleOutlined,
+  RollbackOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
-import { Table, Tag, Button } from "antd";
+import { Button,Table, Tag } from "antd";
+import "antd/dist/reset.css";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllOrders } from "../api/order/api";
+import { RootState } from "../store/store";
 
-const allData = [
+interface TableData {
+  order: string;
+  date: number;
+  customer: string;
+  payment: number;
+  status: "Completed" | "Pending";
+  method: string;
+  store: string;
+  _id: string;
+  actions: string;
+}
+
+const OrderList = () => {
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const pageSize = 8;
+
+  // const paginatedData = allData.slice(
+  //   (currentPage - 1) * pageSize,
+  //   currentPage * pageSize
+  // );
+  const dispatch = useDispatch();
+  const [selectedOrder, setSelectedOrder] = useState<TableData | null>(
+    null
+  );
+
+  useEffect(() => {
+    //@ts-ignore
+    dispatch(getAllOrders({ page_no: 1 }));
+  }, []);
+
+  const viewOrder = (record: any) => {
+    console.log("Updating:", record);
+    setSelectedOrder(record);
+    // Your update logic here
+  };
+
+  const deleteOrder  = (record: any) => {
+    setSelectedOrder(record);
+    // Your delete logic here
+  };
+
+  const orderList = useSelector(
+    (state: RootState) => state.Orders.orders
+  );
+  console.log(useSelector(state=>state))
+  // Table columns
+  const columns = [
+        {
+          title: "Order_id",
+          dataIndex: "_id",
+          key: "order",
+        },
+        {
+          title: "Created_at",
+          dataIndex: "created_at",
+          key: "date",
+        },
+        {
+          title: "Customer",
+          dataIndex: "customer",
+          key: "customer",
+        },
+        {
+          title: "Payment",
+          dataIndex: "payment",
+          key: "payment",
+        },
+        {
+          title: "Status",
+          dataIndex: "status",
+          key: "status",
+          render: (status: string) => {
+            let color = "blue";
+            if (status === "Completed") color = "green";
+            if (status === "Pending") color = "orange";
+            if (status === "Failed") color = "red";
+            return <Tag color={color}>{status}</Tag>;
+          },
+        },
+        {
+          title: "Method",
+          dataIndex: "method",
+          key: "method",
+        },
+
+    {
+      title: "ACTIONS",
+      dataIndex: "actions", // not from the interface—this is custom for rendering
+      key: "actions",
+      render: (text: string, record: any) => (
+         <div>
+      <Button type="link" onClick={() => viewOrder(record.order)}>
+      View
+    </Button>
+    <Button type="link" danger onClick={() => deleteOrder(record.order)}>
+      Delete
+    </Button>
+  </div>
+      ),
+    },
+  ];
+const paymentData = [
   {
-    key: "1",
-    order: "12345",
-    date: "2024-12-29",
-    customer: "John Doe",
-    payment: "$100.00",
-    status: "Completed",
-    method: "Credit Card",
+    count: 56,
+    label: "Pending Payment",
+    icon: (
+      <ClockCircleOutlined
+        style={{ fontSize: "30px", color: "yellowgreen" }}
+      />
+    ),
   },
   {
-    key: "2",
-    order: "67890",
-    date: "2024-12-28",
-    customer: "Jane Smith",
-    payment: "$50.00",
-    status: "Pending",
-    method: "PayPal",
+    count: 156852,
+    label: "Completed Payment",
+    icon: (
+      <CheckCircleOutlined
+        style={{ fontSize: "30px", color: "greenyellow" }}
+      />
+    ),
   },
   {
-    key: "3",
-    order: "11223",
-    date: "2024-12-27",
-    customer: "Alice Brown",
-    payment: "$150.00",
-    status: "Failed",
-    method: "Debit Card",
+    count: 156,
+    label: "Refunded",
+    icon: (
+      <RollbackOutlined
+        style={{ fontSize: "30px", color: "rebeccapurple" }}
+      />
+    ),
   },
   {
-    key: "4",
-    order: "44556",
-    date: "2024-12-26",
-    customer: "Bob Williams",
-    payment: "$120.00",
-    status: "Completed",
-    method: "Cash",
-  },
-  {
-    key: "5",
-    order: "77889",
-    date: "2024-12-25",
-    customer: "Clara Johnson",
-    payment: "$80.00",
-    status: "Pending",
-    method: "Bank Transfer",
-  },
-  {
-    key: "6",
-    order: "99001",
-    date: "2024-12-24",
-    customer: "Emily White",
-    payment: "$60.00",
-    status: "Completed",
-    method: "Crypto",
-  },
-  {
-    key: "7",
-    order: "22334",
-    date: "2024-12-23",
-    customer: "Frank Martin",
-    payment: "$40.00",
-    status: "Failed",
-    method: "Credit Card",
-  },
-  {
-    key: "8",
-    order: "55678",
-    date: "2024-12-22",
-    customer: "Grace Kim",
-    payment: "$110.00",
-    status: "Completed",
-    method: "PayPal",
-  },
-  {
-    key: "9",
-    order: "33445",
-    date: "2024-12-21",
-    customer: "Henry Lee",
-    payment: "$30.00",
-    status: "Pending",
-    method: "Debit Card",
-  },
-  {
-    key: "10",
-    order: "66789",
-    date: "2024-12-20",
-    customer: "Irene Brown",
-    payment: "$90.00",
-    status: "Completed",
-    method: "Credit Card",
-  },
-  {
-    key: "11",
-    order: "11234",
-    date: "2024-12-19",
-    customer: "John Davis",
-    payment: "$70.00",
-    status: "Pending",
-    method: "Bank Transfer",
-  },
-  {
-    key: "12",
-    order: "44567",
-    date: "2024-12-18",
-    customer: "Liam Wilson",
-    payment: "$200.00",
-    status: "Completed",
-    method: "Crypto",
+    count: 156,
+    label: "Failed",
+    icon: <CloseCircleOutlined style={{ fontSize: "30px", color: "red" }} />,
   },
 ];
 
-const OrderList = () => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
-
-  const paginatedData = allData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const viewOrder = (orderId: string) => {
-    console.log("Viewing order:", orderId);
-    // Add logic to view the order
-  };
-
-  const deleteOrder = (orderId: string) => {
-    console.log("Deleting order:", orderId);
-    // Add logic to delete the order
-  };
-
-  const columns = [
-    {
-      title: "Order",
-      dataIndex: "order",
-      key: "order",
-    },
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: "Customer",
-      dataIndex: "customer",
-      key: "customer",
-    },
-    {
-      title: "Payment",
-      dataIndex: "payment",
-      key: "payment",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status: string) => {
-        let color = "blue";
-        if (status === "Completed") color = "green";
-        if (status === "Pending") color = "orange";
-        if (status === "Failed") color = "red";
-        return <Tag color={color}>{status}</Tag>;
-      },
-    },
-    {
-      title: "Method",
-      dataIndex: "method",
-      key: "method",
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_:any, record:any) => (
-        <div>
-          <Button type="link" onClick={() => viewOrder(record.order)}>
-            View
-          </Button>
-          <Button type="link" danger onClick={() => deleteOrder(record.order)}>
-            Delete
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  const paymentData = [
-    {
-      count: 56,
-      label: "Pending Payment",
-      icon: (
-        <ClockCircleOutlined
-          style={{ fontSize: "30px", color: "yellowgreen" }}
-        />
-      ),
-    },
-    {
-      count: 156852,
-      label: "Completed Payment",
-      icon: (
-        <CheckCircleOutlined
-          style={{ fontSize: "30px", color: "greenyellow" }}
-        />
-      ),
-    },
-    {
-      count: 156,
-      label: "Refunded",
-      icon: (
-        <RollbackOutlined
-          style={{ fontSize: "30px", color: "rebeccapurple" }}
-        />
-      ),
-    },
-    {
-      count: 156,
-      label: "Failed",
-      icon: <CloseCircleOutlined style={{ fontSize: "30px", color: "red" }} />,
-    },
-  ];
+  
   return (
-    <div className=" w-[100%] h-[100%] flex flex-col  items-center  p-2 gap-2 ">
+<div className=" w-[100%] h-[100%] flex flex-col  items-center  p-2 gap-2 ">
       <div className="w-[100%] h-max  border flex py-5 rounded-lg shadow-lg justify-around flex-wrap bg-white">
         {paymentData.map((item, index) => (
           <div key={index} className="flex flex-col w-[200px] h-max">
@@ -241,19 +163,21 @@ const OrderList = () => {
       </div>
       <Table
         columns={columns}
-        dataSource={paginatedData}
+        dataSource={orderList}
         style={{ width: "100%" }}
         className=" shadow-lg max-sm:overflow-x-auto"
-        pagination={{
-          current: currentPage,
-          pageSize: pageSize,
-          total: allData.length,
-          onChange: (page) => setCurrentPage(page),
-        }}
+        scroll={{ x: 1000 }}
+        pagination={true}
+        // pagination={{
+        //   current: currentPage,
+        //   pageSize: pageSize,
+        //   total: allData.length,
+        //   onChange: (page) => setCurrentPage(page),
+        // }}
       />
-      ;
+      
     </div>
-  );
-};
+  )}
+
 
 export default OrderList;
