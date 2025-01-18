@@ -46,10 +46,12 @@ const ProductTableWithHeader = () => {
     setIsDeleteModalVisible(true);
     // Your delete logic here
   };
+  
 
   const productList = useSelector(
     (state: RootState) => state.AllProducts.products
   );
+  console.log(useSelector(state=>state))
 
   // Table columns
   const columns = [

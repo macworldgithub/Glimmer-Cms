@@ -34,7 +34,7 @@ const orderSlice = createSlice({
       
     builder.addCase(getAllOrders.fulfilled, (state, action) => {
         console.log("aa", state)
-      //   state.products = action.payload;
+      //   state.orders = action.payload;
       state.orders = action.payload;
     });
     builder.addCase(getAllOrders.rejected, (state, action) => {

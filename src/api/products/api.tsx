@@ -3,12 +3,14 @@ import axios from "axios";
 import { developmentServer } from "../../config/server";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
+
 export interface UpdateStoreApi {
   store_name: string;
   vendor_name: string;
   description: string;
   store_contact_email: string;
   email: string;
+
   country: string;
   address: string;
   store_image: string;
@@ -71,7 +73,7 @@ export const getAllProducts = createAsyncThunk(
 
 export const addProductApi = createAsyncThunk(
   "addProduct",
-  async (payload: {}, { rejectWithValue, getState }) => { 
+  async (payload: {}, { rejectWithValue, getState }) => {
     try {
       // Access token from the Redux state
       const state = getState() as RootState;
@@ -120,7 +122,9 @@ export const updateProductApi = createAsyncThunk(
       name: string;
       quantity: number;
       description: string;
-      images: string[];
+      image1: File | string;
+      image2: File | string;
+      image3: File | string;
       base_price: number;
       discounted_price: number;
       status: "Active" | "Inactive";
@@ -134,20 +138,47 @@ export const updateProductApi = createAsyncThunk(
       const state = getState() as RootState;
       const token = state.Login.token;
 
-      const body = { ...payload } as any;
-      // Remove the store property
+      // Create FormData
+      const formData = new FormData();
+      formData.append("name", payload.name);
+      formData.append("quantity", payload.quantity.toString());
+      formData.append("description", payload.description);
+      formData.append("base_price", payload.base_price.toString());
+      formData.append("discounted_price", payload.discounted_price.toString());
+      formData.append("status", payload.status);
+      formData.append("store", payload.store);
 
-      // Make API request with the payload
+      // Append images conditionally
+      if (payload.image1 instanceof File) {
+        formData.append("image1", payload.image1);
+      } else {
+        formData.append("image1", payload.image1);
+      }
+
+      if (payload.image2 instanceof File) {
+        formData.append("image2", payload.image2);
+      } else {
+        formData.append("image2", payload.image2);
+      }
+
+      if (payload.image3 instanceof File) {
+        formData.append("image3", payload.image3);
+      } else {
+        formData.append("image3", payload.image3);
+      }
+
+      // Make API request with FormData
       const response = await axios.put(
-        `${developmentServer}/product/update_store_product_by_id?id=${body._id}`,
-        body, // Use the payload directly
+        `${developmentServer}/product/update_store_product_by_id?id=${payload._id}`,
+        formData, // Send FormData
         {
           headers: {
             Authorization: `Bearer ${token}`, // Add Bearer token
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data", // Set appropriate content type
           },
         }
       );
+
       return response.data; // Return the response data if successful
     } catch (error: any) {
       // Handle error response properly
@@ -158,6 +189,7 @@ export const updateProductApi = createAsyncThunk(
     }
   }
 );
+
 
 export const deleteProductApi = async (_id: string, token: string) => {
   try {
@@ -201,5 +233,6 @@ export const updateStoreApi = async (token: string, data: UpdateStoreApi) => {
       },
     }
   );
+
   return response.data;
 };
