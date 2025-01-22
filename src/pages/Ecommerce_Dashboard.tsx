@@ -83,21 +83,9 @@ const Dashboard = () => {
           },
           {
             image: "",
-            title: "Profit",
-            value: "624k",
+            title: "Total Proucts",
+            value: "8",
             change: "",
-          },
-          {
-            image: "",
-            title: "Expenses",
-            value: "$21k",
-            change: "",
-          },
-          {
-            image: transaction,
-            title: "Transactions",
-            value: "$14,857",
-            change: "+28.14%",
           },
         ],
         reportSection: [
@@ -249,101 +237,6 @@ const Dashboard = () => {
         </div>
 
         {/* Right Section: Report Card */}
-        <div className="xl:w-3/5 w-full bg-white shadow-md p-6 rounded-md mt-4 xl:mt-0 flex justify-between max-md:flex-col">
-          <div className="md:w-[70%] w-full">
-            <div className="flex justify-between items-center">
-              <h3 className="font-medium text-lg max-sm:text-[16px]">
-                Total Income
-              </h3>
-              <div className="relative">
-                <FaEllipsisV
-                  className="text-gray-500 cursor-pointer"
-                  onClick={() => setShowDropdownIncome(!showDropdownIncome)}
-                />
-                {showDropdownIncome && (
-                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
-                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                      Last 28 Days
-                    </p>
-                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                      Last Month
-                    </p>
-                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                      Last Year
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-            <p className="text-gray-500 mb-4 max-sm:text-[12px]">
-              Yearly report overview
-            </p>
-          </div>
-          <div className="w-[1px] bg-gray-100 mx-6 hidden md:flex"></div>
-          <div className="w-full h-[1px] bg-gray-100 mx-auto md:hidden flex"></div>
-          <div className="md:w-[30%] w-full">
-            <div className="flex justify-between items-center">
-              <h3 className="text-xl text-gray-500 max-sm:text-[12px]">
-                Report
-              </h3>
-              <div className="relative">
-                <FaEllipsisV
-                  className="text-gray-500 cursor-pointer"
-                  onClick={() => setShowDropdownReport(!showDropdownReport)}
-                />
-                {showDropdownReport && (
-                  <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
-                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                      Last 28 Days
-                    </p>
-                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                      Last Month
-                    </p>
-                    <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                      Last Year
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-            <p className="text-gray-500 max-sm:text-[12px]">
-              Monthly Avg. $45.578k
-            </p>
-            <div className="space-y-4 mt-10">
-              {dashboardData?.reportSection.map((report, idx) => (
-                <div
-                  key={idx}
-                  className="flex justify-between items-center pb-2"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div>
-                      <img src={report.image} className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="text-md text-gray-500 max-sm:text-[10px]">
-                        {report.title}
-                      </div>
-                      <div className="font-medium text-xl text-gray-500 max-sm:text-[10px]">
-                        {report.value}
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <span
-                      className={`text-sm max-sm:text-[10px] ${
-                        report.change.startsWith("+")
-                          ? "text-[#71DD37]"
-                          : "text-[#FF3E1D]"
-                      }`}
-                    >
-                      {report.change}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Section 3 */}
@@ -408,74 +301,6 @@ const Dashboard = () => {
       <div className="flex max-xl:flex-col">
         <div className="w-[70%] max-xl:w-full">
           <OrderTable />
-        </div>
-        <div className="w-[30%] max-xl:w-full bg-white shadow-md p-6 rounded-lg flex flex-col gap-6 relative">
-          {/* Header Section */}
-          <div className="flex justify-between items-center">
-            <h3 className="font-bold text-xl max-sm:text-[12px]">
-              Total Balance
-            </h3>
-            <div className="relative">
-              <FaEllipsisV
-                className="text-gray-500 cursor-pointer"
-                onClick={() => setShowTotalBalance(!showTotalBalance)}
-              />
-              {showTotalBalance && (
-                <div className="absolute right-0 top-6 bg-white shadow-md rounded-md p-2 z-10 w-40">
-                  <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                    Last 28 Days
-                  </p>
-                  <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                    Last Month
-                  </p>
-                  <p className="text-sm text-gray-700 cursor-pointer w-full text-left hover:bg-gray-100 p-2">
-                    Last Year
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Balance Details */}
-
-          <div className="flex items-center xl:justify-between max-xl:gap-14 max-sm:flex-col">
-            <div className="flex items-center gap-4">
-              <div className="bg-[#FFF2D6] text-[#FFAB00] p-3 rounded-lg">
-                <FaWallet />
-              </div>
-              <div>
-                <h4 className="text-md font-medium text-gray-500 max-sm:text-[10px]">
-                  {dashboardData.balance.wallet}
-                </h4>
-                <div className="text-sm text-gray-500">Wallet</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-x-4 ">
-              <div className="bg-[#EBEEF0] text-[#8592A3] p-3 rounded-lg">
-                <BsCurrencyDollar />
-              </div>
-              <div>
-                <h4 className="text-md font-medium text-gray-500 max-sm:text-[10px]">
-                  {dashboardData.balance.payout}
-                </h4>
-                <div className="text-sm text-gray-500">Paypal</div>
-              </div>
-            </div>
-          </div>
-          <div className="w-[90%] h-[1px] bottom-24 absolute bg-gray-300 mx-auto max-xl:hidden"></div>
-          <div className="flex justify-between p-2 xl:absolute xl:bottom-6  ">
-            <div>
-              <div className="text-xsm text-gray-500 max-sm:text-[10px]">
-                You have done 57.6% more sales. Check your new badge in your
-                profile.
-              </div>
-            </div>
-            <div className="">
-              <button className="bg-[#FFF2D6] text-[#FFAB00] p-2  text-sm rounded-lg max-sm:text-[10px]">
-                <MdOutlineKeyboardArrowRight size={24} />
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>
