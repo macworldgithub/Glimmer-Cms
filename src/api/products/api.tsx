@@ -111,6 +111,7 @@ export const addProductApi = createAsyncThunk(
           },
         }
       );
+      console.log(response,"result")
 
       return response.data; // Return the response data if successful
     } catch (error: any) {
