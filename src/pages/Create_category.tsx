@@ -2,8 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
-
-const CategorySubcategory = () => {
+const Create_category = () => {
   const [categoryName, setCategoryName] = useState("");
   const [categoryDescription, setCategoryDescription] = useState("");
   const [subcategoryName, setSubcategoryName] = useState("");
@@ -14,7 +13,7 @@ const CategorySubcategory = () => {
     id: string;
     category: string;
     description: string;
-    subcategories: { name: string; items: string[] }[]; 
+    subcategories: { name: string; items: string[] }[];
   }[]>([]);
 
   // Get token from Redux store
@@ -39,7 +38,6 @@ const CategorySubcategory = () => {
 
       if (response.status === 200 || response.status === 201) {
         alert("Category created successfully!");
-        // Add the newly created category with an empty subcategory list
         setCategories((prev) => [
           ...prev,
           {
@@ -54,8 +52,6 @@ const CategorySubcategory = () => {
       } else {
         alert("Failed to create category.");
       }
-
-      console.log("Response Headers:", response.headers);
     } catch (error) {
       console.error("Error creating category:", error);
       alert("An error occurred while creating the category.");
@@ -87,7 +83,6 @@ const CategorySubcategory = () => {
 
       if (response.status === 200 || response.status === 201) {
         alert("Subcategory created successfully!");
-        // Add the subcategory to the corresponding category
         setCategories((prev) =>
           prev.map((category) =>
             category.id === productCategory
@@ -102,13 +97,11 @@ const CategorySubcategory = () => {
           )
         );
         setSubcategoryName("");
-        setProductCategory(""); // Reset the category ID after creating subcategory
-        setSelectedSubcategory(""); // Reset selected subcategory after creating subcategory
+        setProductCategory("");
+        setSelectedSubcategory(""); // Automatically enable the dropdown
       } else {
         alert("Failed to create subcategory.");
       }
-
-      console.log("Response Headers:", response.headers);
     } catch (error) {
       console.error("Error creating subcategory:", error);
       alert("An error occurred while creating the subcategory.");
@@ -122,7 +115,6 @@ const CategorySubcategory = () => {
       return;
     }
 
-    // Add the item to the respective subcategory
     setCategories((prev) =>
       prev.map((category) => {
         const updatedSubcategories = category.subcategories.map((sub) => {
@@ -135,8 +127,8 @@ const CategorySubcategory = () => {
         return { ...category, subcategories: updatedSubcategories };
       })
     );
-    setItemName(""); // Reset the item input field
-    setSelectedSubcategory(""); // Reset the subcategory selection
+    setItemName("");
+    setSelectedSubcategory("");
   };
 
   return (
@@ -174,8 +166,8 @@ const CategorySubcategory = () => {
           value={productCategory}
           onChange={(e) => {
             setProductCategory(e.target.value);
-            setSubcategoryName(""); // Reset the subcategory name when category is selected
-            setSelectedSubcategory(""); // Reset selected subcategory when a new category is chosen
+            setSubcategoryName("");
+            setSelectedSubcategory("");
           }}
           className="w-full p-3 border rounded mb-4"
         >
@@ -193,12 +185,12 @@ const CategorySubcategory = () => {
           value={subcategoryName}
           onChange={(e) => setSubcategoryName(e.target.value)}
           className="w-full p-3 border rounded mb-4"
-          disabled={!productCategory} // Disable until a category is selected
+          disabled={!productCategory}
         />
         <button
           onClick={createSubcategory}
           className="w-full p-3 bg-green-500 text-white rounded hover:bg-green-600"
-          disabled={!productCategory || !subcategoryName} // Disable until a category is selected and subcategory name is entered
+          disabled={!productCategory || !subcategoryName}
         >
           Create Subcategory
         </button>
@@ -210,14 +202,14 @@ const CategorySubcategory = () => {
           value={selectedSubcategory}
           onChange={(e) => setSelectedSubcategory(e.target.value)}
           className="w-full p-3 border rounded mb-4"
-          disabled={!productCategory} // Disable until a category is selected
+          disabled={!productCategory}
         >
           <option value="">Select Subcategory</option>
           {categories
             .find((category) => category.id === productCategory)
             ?.subcategories.map((sub) => (
               <option key={sub.name} value={sub.name}>
-                {sub.name}
+                {sub.items.length === 0 ? `All (${sub.name})` : sub.name}
               </option>
             ))}
         </select>
@@ -228,12 +220,12 @@ const CategorySubcategory = () => {
           value={itemName}
           onChange={(e) => setItemName(e.target.value)}
           className="w-full p-3 border rounded mb-4"
-          disabled={!selectedSubcategory} // Disable until a subcategory is selected
+          disabled={!selectedSubcategory}
         />
         <button
           onClick={createItemForSubcategory}
           className="w-full p-3 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-          disabled={!selectedSubcategory || !itemName} // Disable until a subcategory is selected and item name is entered
+          disabled={!selectedSubcategory || !itemName}
         >
           Create Item
         </button>
@@ -287,4 +279,4 @@ const CategorySubcategory = () => {
   );
 };
 
-export default CategorySubcategory;
+export default Create_category;

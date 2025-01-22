@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { IoCubeOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,164 +10,121 @@ import {
   updateProduct,
 } from "../../slices/addProductSlice";
 import { RootState } from "../../store/store";
-
-
-const categories = {
-  "SkinCare": [
-    "Cleansers",
-    "Moisturisers",
-    "Sunscreens (SPF)",
-    "Eye Care",
-    "Lip Care",
-    "Bath & Body",
-    "Men’s Care",
-  ],
-  "Hair Care": [
-    "Shampoo & Conditioner",
-    "Hair treatments",
-    "Styling",
-    "Tools",
-    "Professional Hair",
-  ],
-  "Makeup": [
-    "Face",
-    "Lips",
-    "Eyes",
-    "Nails",
-    "Accessories",
-  ],
-  "Fragrance": [
-    "Men",
-    "Women", "Unisex",
-    "Deodorant",
-    "Body spray & Mists",
-  ],
-};
-
-const subcategories = {
-  "Cleansers": [
-    "Face Wash",
-    "Cleansing Balms and Oils",
-    "Face Masks",
-    "Makeup Remover",
-    "Toners and Mists",
-    "Exfoliators and Scrub",
-  ],
-  "Moisturisers": [
-    "Creams & Lotions",
-    "Gels",
-    "Day & Night Creams",
-  ],
-  "Bath & Body": [
-    "Body Lotions & Creams",
-    "Body Wash",
-    "Body Scrubs",
-    "Soap and Handwash",
-    "Body Wax",
-  ],
-  "Men’s Care": [
-    "After Shave", "Shaving Gel/Foam"
-  ],
-  "Shampoo & Conditioner": [
-    "Shampoo",
-    "Conditioner",
-  ],
-  "Hair treatments": [
-    "Hair Oil",
-    "Hair Supplement",
-    "Hair Serums",
-    "Hair Fiber",
-    "Beard Oil",
-    "Hair Cream",
-    "Hair-Serum",
-    "Hair Mask",
-  ],
-  "Styling": [
-    "Styling Cream",
-    "Hair Spray",
-    "Hair Color",
-    "Hair Gel",
-    "Dry Shampoo",
-    "Hair Mist",
-    "Hair Fiber",
-  ],
-  "Tools": [
-    "Hair Brushes & Comb",
-    "Hair Straightener",
-    "Hair Dryer",
-    "Hair Curling Irons",
-    "Hair Trimmer",
-    "Hair Bands",
-    "Hair Waver",
-    "Hair Epilator",
-  ],
-  "Professional Hair": [
-    "Revlon Professional",
-    "L'Oréal Professionnel",
-    "Cosmo",
-    "Behave",
-    "Secret Fragrance",
-  ],
-  "Face": [
-    "Concealers",
-    "Blushes",
-    "Primer",
-    "Foundations",
-    "Setting Spray",
-    "Bronzer & Contouring",
-    "Highlighters",
-    "Setting Powder",
-    "BB-Creams & CC-Creams",
-    "Setting Powder",
-    "Sets",
-    "Illuminators",
-    "Face Palette",
-  ],
-  "Lips": [
-    "Lipsticks",
-    "Lip Plumper",
-    "Lip Balm",
-    "Lip Pencils",
-    "Lip Stain",
-    "Lip Gloss",
-    "Lip Sets",
-    "Lip Treatment",
-  ],
-  "Eyes": [
-    "Eyelashes",
-    "Eyeliner",
-    "Mascara",
-    "Eyeshadow",
-    "Eyebrows",
-    "Eye Pencil",
-    "Eye Set",
-  ],
-  "Nails": [
-    "Nail Polish Remover",
-    "Fake Nails",
-    "Nail Polish",
-    "Nail Glue",
-    "Nail Tools",
-  ],
-  "Accessories": [
-    "Makeup Brushes",
-    "Makeup & Travler Case",
-    "Beauty Tools",
-    "Candle Accessories",
-    "Face Brush",
-    "Brush Sets",
-    "Sponges",    
-  ],
-
-
-};
-
-
 const ProductPage = () => {
+ const token = useSelector((state: RootState) => state.Login.token); 
+   const [categories, setCategories] = useState([]); 
+   const [subcategories, setSubcategories] = useState([]); 
+  //  const [subSubcategories, setSubSubcategories] = useState([]); 
+   const [items, setItems] = useState([]); 
 
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubCategory, setSelectedSubCategory] = useState("");
-  const [showSubcategories, setShowSubcategories] = useState(false);
+   const [selectedCategory, setSelectedCategory] = useState(""); 
+   const [selectedSubCategory, setSelectedSubCategory] = useState(""); 
+   const [selectedSubSubCategory, setSelectedSubSubCategory] = useState(""); 
+   const [showSubcategories, setShowSubcategories] = useState(false);
+   const [showSubSubcategories, setShowSubSubcategories] = useState(false); 
+   const [loadingCategories, setLoadingCategories] = useState(true); 
+   const [loadingSubcategories, setLoadingSubcategories] = useState(false); 
+   const [loadingSubSubcategories, setLoadingSubSubcategories] = useState(false); 
+   const [loadingItems, setLoadingItems] = useState(false); 
+
+
+   const category = useSelector((state: RootState) => state.AddProduct.category);
+   
+   const subcategory = useSelector((state: RootState) => state.AddProduct.subcategory);
+   const item = useSelector((state: RootState) => state.AddProduct.item);
+   
+
+    // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/product-category/get_all_categories",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Use token from Redux
+            },
+          }
+        );
+
+        setCategories(response.data || []); // Safeguard for empty response
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    if (token) {
+      fetchCategories();
+    }
+  }, [token]);
+
+  useEffect (()=>{
+  console.log("selected category" , category)
+  },[category])
+
+
+
+  // Fetch subcategories when a category is selected
+  //@ts-ignore
+  const fetchSubcategories = async (categoryId) => {
+    setLoadingSubcategories(true);
+    try {
+      const response = await axios.get(
+        "http://localhost:3000/product-sub-category/get_all_sub_categories",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const filteredSubcategories = response.data.find(
+        //@ts-ignore
+        (category) => category.product_category._id === categoryId
+      )?.sub_categories;
+
+      setSubcategories(filteredSubcategories || []); // Safeguard for empty response
+    } catch (error) {
+      console.error("Error fetching subcategories:", error);
+    } finally {
+      setLoadingSubcategories(false);
+    }
+  };
+
+  useEffect (()=>{
+    console.log("sub category" , subcategory)
+    },[subcategory])
+
+    useEffect (()=>{
+      console.log("item" , item)
+      },[item])
+
+
+  // Fetch sub-subcategories when a subcategory is selected
+  //@ts-ignore
+  
+
+  //Fetch items when a sub-subcategory is selected
+  // const fetchItems = async (subSubCategoryId) => {
+  //   setLoadingItems(true);
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:3000/items/get_items_by_sub_sub_category/${subSubCategoryId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+
+  //     setItems(response.data || []); // Safeguard for empty response
+  //   } catch (error) {
+  //     console.error("Error fetching items:", error);
+  //   } finally {
+  //     setLoadingItems(false);
+  //   }
+  // };
 
 
   const dispatch = useDispatch();
@@ -174,7 +132,7 @@ const ProductPage = () => {
 
   const [isInStock, setIsInStock] = useState(true);
 
-  const HandleChange = (name: string, value: string | number) => {
+  const HandleChange = (name: string, value: string | number ) => {
     dispatch(updateProduct({ [name]: value }));
   };
 
@@ -257,21 +215,14 @@ const ProductPage = () => {
           <h1 className="text-2xl text-gray-600">Add a new Product</h1>
           <p className="text-gray-400">Orders placed across your store</p>
         </div>
-        {/* <div className="flex gap-2 mt-4 md:mt-0 max-sm:gap-1 max-sm:flex-col">
-          <div className="flex flex-row">
-            <button className=" text-gray-700 px-4 py-2 rounded-md">
-              Discard
-            </button>
-            <button className=" text-gray-700 px-4 py-2 rounded-md">
-              Save Draft
-            </button>
-          </div>
+        <div className="flex gap-2 mt-4 md:mt-0 max-sm:gap-1 max-sm:flex-col">
+          
           <div>
             <button className="bg-[#5f61e6] text-white px-4 py-2 rounded-md ">
               Publish Product
             </button>
           </div>
-        </div> */}
+        </div>
       </div>
       {/* Main Content */}
       <div className="flex gap-x-4 flex-col lg:flex-row ">
@@ -541,64 +492,125 @@ const ProductPage = () => {
 
 
             <div>
-              {/* Main Category */}
-              <label className="block text-sm font-medium text-gray-500 mb-1">Category</label>
-              
-                <select
-                  className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
-                  value={selectedCategory}
-                  onChange={(e) => {
-                    setSelectedCategory(e.target.value);
-                    setSelectedSubCategory("");
-                    setShowSubcategories(true);
-                  }}
-                >
-                  <option value="">Select Category</option>
-                  {Object.keys(categories).map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
+      
+        <label className="block text-sm font-medium text-gray-500 mb-1">
+        Category
+      </label>
+      <select
+        className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
+        value={category}
+        onChange={(e) => {
+        const selectedValue = e.target.value;
+          //@ts-ignore
+          HandleChange ("category", e.target.value)
+          setShowSubcategories(true);
+          setShowSubSubcategories(false);
 
-              {/* Subcategories */}
-              {showSubcategories && selectedCategory && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Subcategory</label>
-                  <select
-                    className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
-                    value={selectedSubCategory}
-                    onChange={(e) => {
-                      setSelectedSubCategory(e.target.value);
-                    }}
-                  >
-                    <option value="">Select Subcategory</option>
-                    {categories[selectedCategory].map((subcat) => (
-                      <option key={subcat} value={subcat}>
-                        {subcat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
+          if (selectedValue) {
+            fetchSubcategories(selectedValue); 
+          }
+        }}
+      >
+        <option value="">Select Category</option>
+        {loadingCategories ? (
+          <option value="" disabled>
+            Loading categories...
+          </option>
+        ) : (
+          categories.map((category) => (
+            //@ts-ignore
+            <option key={category._id} value={category._id}>
+            {category.name}
+            </option>
+          ))
+        )}
+      </select>
 
-              {/* Sub-Subcategories */}
-              {selectedSubCategory && subcategories[selectedSubCategory]?.length > 0 && (
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Sub-Subcategory</label>
-                  <select
-                    className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
-                  >
-                    <option value="">Select Sub-Subcategory</option>
-                    {subcategories[selectedSubCategory].map((subsubcat) => (
-                      <option key={subsubcat} value={subsubcat}>
-                        {subsubcat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
+      {/* Subcategories */}
+      {showSubcategories && category && (
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-500 mb-1">
+            Subcategory
+          </label>
+          <select
+            className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
+            value={subcategory}
+            onChange={(e) => {
+              const selectedValue = e.target.value;
+          //@ts-ignore
+          HandleChange ("subcategory", subcategory._id)
+          console.log(selectedValue)
+              setShowSubSubcategories(true);
+              if (selectedValue) {
+                fetchSubcategories(selectedValue); 
+              }
+            }}
+          >
+            <option value="">{subcategory}</option>
+            {loadingSubcategories ? (
+              <option value="" disabled>
+                Loading subcategories...
+              </option>
+            ) : subcategories.length > 0 ? (
+              subcategories.map((subcategory) => (
+                <option key={subcategory._id} value={subcategory._id}>
+                  {subcategory.name}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>
+                No subcategories available
+              </option>
+            )}
+          </select>
+        </div>
+      )}
+
+      {/* Sub-Subcategories */}
+      {showSubSubcategories && subcategory && (
+        <div className="mt-4">
+          <label className="block text-sm font-medium text-gray-500 mb-1">
+            Items
+          </label>
+          <input
+                type="text"
+                placeholder="Items"
+                className="w-full border-solid border border-gray-400 rounded-md shadow-sm p-3"
+                value={item}
+                onChange={(e) => HandleChange("item", e.target.value)}
+              />
+          {/* <select
+            className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
+            value={item}
+            onChange={(e) => {
+            const selectedValue = e.target.value;
+              //@ts-ignore
+              HandleChange ("item", e.target.value)
+              if (selectedValue) {
+                fetchItems(selectedValue); // Fetch items for the selected sub-subcategory
+              }
+            }}
+          >
+            <option value="">Item</option>
+            {loadingSubSubcategories ? (
+              <option value="" disabled>
+                Loading sub-subcategories...
+              </option>
+            ) : subSubcategories.length > 0 ? (
+              subSubcategories.map((subSubcategory) => (
+                <option key={subSubcategory._id} value={subSubcategory._id}>
+                  {subSubcategory.name}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>
+                No sub-subcategories available
+              </option>
+            )}
+          </select> */}
+        </div>
+      )}
+    </div>
 
 
 
@@ -660,3 +672,5 @@ const ProductPage = () => {
 };
 
 export default ProductPage;
+
+

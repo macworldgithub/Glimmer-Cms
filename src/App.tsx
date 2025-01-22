@@ -56,6 +56,7 @@ function App() {
           <Route path="Add_Product" element={<Add_Product />} />
           <Route path="Category_List" element={<Category_List />} />
           <Route path="Create_Category" element={<Create_Category/>} />
+          
 
           <Route path="E_Dashboard" element={<Ecommerce_Dashboard/>}/>
         </Route>

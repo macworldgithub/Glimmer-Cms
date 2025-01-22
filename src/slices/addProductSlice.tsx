@@ -9,6 +9,10 @@ export interface Product {
   base_price: number;
   discounted_price: number;
   status: "Active" | "Inactive"; // Enum-like string literals
+  category: string;
+  subcategory: string;
+  item: string;
+
 }
 
 const initialState: Product = {
@@ -19,6 +23,9 @@ const initialState: Product = {
   base_price: 0,
   discounted_price: 0,
   status: "Active",
+  category:"",
+  subcategory: "",
+  item: "",
 };
 
 const addProductSlice = createSlice({
