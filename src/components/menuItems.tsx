@@ -23,11 +23,11 @@ export const getMenuItems = (
   showEcommerce: boolean,
   showSaloon: boolean
 ): MenuItem[] => [
-  {
-    key: "dashboard",
-    icon: <DashboardOutlined />,
-    label: "Dashboard",
-  },
+//  {
+//    key: "dashboard",
+//    icon: <DashboardOutlined />,
+//    label: "Dashboard",
+//  },
 
   ...(showEcommerce
     ? [
@@ -110,40 +110,40 @@ export const getMenuItems = (
       ]
     : []),
   
-  ...(showSaloon
-    ? [
-        {
-          key: "saloon",
-          icon: <ScissorOutlined />,
-          label: "Saloon",
-          children: [
-            {
-              key: "saloon-dashboard",
-              icon: <DashboardOutlined />,
-              label: "Dashboard",
-            },
-            {
-              key: "saloon-order",
-              icon: <OrderedListOutlined />,
-              label: "Order",
-            },
-            {
-              key: "saloon-services",
-              icon: <FileOutlined />,
-              label: "Services",
-            },
-            {
-              key: "saloon-customer",
-              icon: <UserOutlined />,
-              label: "Customer",
-            },
-            {
-              key: "saloon-reviews",
-              icon: <FileOutlined />,
-              label: "Managing Reviews",
-            },
-          ],
-        },
-      ]
-    : []),
+//  ...(showSaloon
+//    ? [
+//        {
+//          key: "saloon",
+//          icon: <ScissorOutlined />,
+//          label: "Saloon",
+//          children: [
+//            {
+//              key: "saloon-dashboard",
+//              icon: <DashboardOutlined />,
+//              label: "Dashboard",
+//            },
+//            {
+//              key: "saloon-order",
+//              icon: <OrderedListOutlined />,
+//              label: "Order",
+//            },
+//            {
+//              key: "saloon-services",
+//              icon: <FileOutlined />,
+//              label: "Services",
+//            },
+//            {
+//              key: "saloon-customer",
+//              icon: <UserOutlined />,
+//              label: "Customer",
+//            },
+//            {
+//              key: "saloon-reviews",
+//              icon: <FileOutlined />,
+//              label: "Managing Reviews",
+//            },
+//          ],
+//        },
+//      ]
+//    : []),
 ];
