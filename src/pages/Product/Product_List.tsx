@@ -153,7 +153,8 @@ const ProductTableWithHeader = () => {
         <Table
         //@ts-ignore
           columns={columns}
-          // dataSource={productList}
+          //@ts-ignore
+          dataSource={productList?.products}
           //@ts-ignore
           pagination={true}
           className="border-t"
