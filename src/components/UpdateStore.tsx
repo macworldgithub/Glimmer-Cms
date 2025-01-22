@@ -32,7 +32,6 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
     address: store.address,
     store_image: store.store_image,
   });
-
   // Handle image upload
   const handleImageChange = (info: any) => {
     if (info.file.status === "done" || info.file.originFileObj) {

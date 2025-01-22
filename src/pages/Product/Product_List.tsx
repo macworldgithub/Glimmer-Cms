@@ -52,6 +52,7 @@ const ProductTableWithHeader = () => {
   const productList = useSelector(
     (state: RootState) => state.AllProducts.products
   );
+  console.log(useSelector((state) => state));
 
   console.log("check", productList);
 
@@ -150,9 +151,9 @@ const ProductTableWithHeader = () => {
 
       <div className="overflow-x-auto shadow-lg">
         <Table
-        //@ts-ignore
+          //@ts-ignore
           columns={columns}
-          dataSource={productList}
+          // dataSource={productList}
           //@ts-ignore
           pagination={true}
           className="border-t"

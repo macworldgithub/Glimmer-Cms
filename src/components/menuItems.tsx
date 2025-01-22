@@ -28,6 +28,7 @@ export const getMenuItems = (
     icon: <DashboardOutlined />,
     label: "Dashboard",
   },
+
   ...(showEcommerce
     ? [
         {
@@ -41,6 +42,13 @@ export const getMenuItems = (
               label: "Dashboard",
               path: "/E_Dashboard",
             },
+            {
+              key: "Create-Category",
+              icon: <DashboardOutlined />,
+              label: "create_Category",
+              path: "/Create_Category",
+            },
+            
             {
               key: "ecommerce-order",
               icon: <OrderedListOutlined />,

@@ -15,10 +15,8 @@ import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { updateProductApi } from "../api/products/api";
 import { getAllProducts } from "../api/products/api";
-
 const { TextArea } = Input;
 const { Option } = Select;
-
 interface Product {
   name: string;
   quantity: number;
@@ -33,7 +31,6 @@ interface Product {
   _id: string;
   actions: string;
 }
-
 interface UpdateModalProps {
   visible: boolean;
   product: Product;
