@@ -96,6 +96,9 @@ const ProductPage = () => {
     console.log("sub category" , subcategory)
     },[subcategory])
 
+    useEffect (()=>{
+      console.log("item" , item)
+      },[item])
 
 
   // Fetch sub-subcategories when a subcategory is selected
@@ -535,7 +538,7 @@ const ProductPage = () => {
             onChange={(e) => {
               const selectedValue = e.target.value;
           //@ts-ignore
-          HandleChange ("subcategory", selectedValue)
+          HandleChange ("subcategory", subcategory._id)
           console.log(selectedValue)
               setShowSubSubcategories(true);
               if (selectedValue) {
@@ -550,7 +553,7 @@ const ProductPage = () => {
               </option>
             ) : subcategories.length > 0 ? (
               subcategories.map((subcategory) => (
-                <option key={subcategory._id} value={subcategory.name}>
+                <option key={subcategory._id} value={subcategory._id}>
                   {subcategory.name}
                 </option>
               ))

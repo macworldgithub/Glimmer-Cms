@@ -89,6 +89,10 @@ export const addProductApi = createAsyncThunk(
       formData.append("base_price", product.base_price.toString());
       formData.append("discounted_price", product.discounted_price.toString());
       formData.append("status", product.status);
+      formData.append("category", product.category);
+      formData.append("sub_category", product.subcategory);
+      formData.append("item", product.item);
+      
 
       // Append images to FormData
       // @ts-ignore
