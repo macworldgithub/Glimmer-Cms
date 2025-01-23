@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { IoCubeOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
+import { addProductApi } from "../../api/products/api";
 import {
   addImages,
   removeImage,
@@ -9,13 +10,13 @@ import {
   updateProduct,
 } from "../../slices/addProductSlice";
 import { RootState } from "../../store/store";
-
 const ProductPage = () => {
  const token = useSelector((state: RootState) => state.Login.token); 
    const [categories, setCategories] = useState([]); 
    const [subcategories, setSubcategories] = useState([]); 
-   const [subSubcategories, setSubSubcategories] = useState([]); 
+  //  const [subSubcategories, setSubSubcategories] = useState([]); 
    const [items, setItems] = useState([]); 
+
    const [selectedCategory, setSelectedCategory] = useState(""); 
    const [selectedSubCategory, setSelectedSubCategory] = useState(""); 
    const [selectedSubSubCategory, setSelectedSubSubCategory] = useState(""); 
@@ -26,6 +27,12 @@ const ProductPage = () => {
    const [loadingSubSubcategories, setLoadingSubSubcategories] = useState(false); 
    const [loadingItems, setLoadingItems] = useState(false); 
 
+
+   const category = useSelector((state: RootState) => state.AddProduct.category);
+   
+   const subcategory = useSelector((state: RootState) => state.AddProduct.subcategory);
+   const item = useSelector((state: RootState) => state.AddProduct.item);
+   
 
     // Fetch categories
   useEffect(() => {
@@ -53,7 +60,14 @@ const ProductPage = () => {
     }
   }, [token]);
 
+  useEffect (()=>{
+  console.log("selected category" , category)
+  },[category])
+
+
+
   // Fetch subcategories when a category is selected
+  //@ts-ignore
   const fetchSubcategories = async (categoryId) => {
     setLoadingSubcategories(true);
     try {
@@ -65,8 +79,8 @@ const ProductPage = () => {
           },
         }
       );
-
       const filteredSubcategories = response.data.find(
+        //@ts-ignore
         (category) => category.product_category._id === categoryId
       )?.sub_categories;
 
@@ -78,51 +92,36 @@ const ProductPage = () => {
     }
   };
 
+  useEffect (()=>{
+    console.log("sub category" , subcategory)
+    },[subcategory])
+
+
+
   // Fetch sub-subcategories when a subcategory is selected
-  const fetchSubSubcategories = async (subCategoryId) => {
-    setLoadingSubSubcategories(true);
-    try {
-      const response = await axios.get(
-        "http://localhost:3000/product-sub-sub-category/get_all_sub_sub_categories",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  //@ts-ignore
+  
 
-      const filteredSubSubcategories = response.data.find(
-        (subcategory) => subcategory.parent_subcategory._id === subCategoryId
-      )?.sub_subcategories;
+  //Fetch items when a sub-subcategory is selected
+  // const fetchItems = async (subSubCategoryId) => {
+  //   setLoadingItems(true);
+  //   try {
+  //     const response = await axios.get(
+  //       `http://localhost:3000/items/get_items_by_sub_sub_category/${subSubCategoryId}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
 
-      setSubSubcategories(filteredSubSubcategories || []); // Safeguard for empty response
-    } catch (error) {
-      console.error("Error fetching sub-subcategories:", error);
-    } finally {
-      setLoadingSubSubcategories(false);
-    }
-  };
-
-  // Fetch items when a sub-subcategory is selected
-  const fetchItems = async (subSubCategoryId) => {
-    setLoadingItems(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/items/get_items_by_sub_sub_category/${subSubCategoryId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setItems(response.data || []); // Safeguard for empty response
-    } catch (error) {
-      console.error("Error fetching items:", error);
-    } finally {
-      setLoadingItems(false);
-    }
-  };
+  //     setItems(response.data || []); // Safeguard for empty response
+  //   } catch (error) {
+  //     console.error("Error fetching items:", error);
+  //   } finally {
+  //     setLoadingItems(false);
+  //   }
+  // };
 
 
   const dispatch = useDispatch();
@@ -130,7 +129,7 @@ const ProductPage = () => {
 
   const [isInStock, setIsInStock] = useState(true);
 
-  const HandleChange = (name: string, value: string | number) => {
+  const HandleChange = (name: string, value: string | number ) => {
     dispatch(updateProduct({ [name]: value }));
   };
 
@@ -213,21 +212,14 @@ const ProductPage = () => {
           <h1 className="text-2xl text-gray-600">Add a new Product</h1>
           <p className="text-gray-400">Orders placed across your store</p>
         </div>
-        {/* <div className="flex gap-2 mt-4 md:mt-0 max-sm:gap-1 max-sm:flex-col">
-          <div className="flex flex-row">
-            <button className=" text-gray-700 px-4 py-2 rounded-md">
-              Discard
-            </button>
-            <button className=" text-gray-700 px-4 py-2 rounded-md">
-              Save Draft
-            </button>
-          </div>
+        <div className="flex gap-2 mt-4 md:mt-0 max-sm:gap-1 max-sm:flex-col">
+          
           <div>
             <button className="bg-[#5f61e6] text-white px-4 py-2 rounded-md ">
               Publish Product
             </button>
           </div>
-        </div> */}
+        </div>
       </div>
       {/* Main Content */}
       <div className="flex gap-x-4 flex-col lg:flex-row ">
@@ -497,23 +489,22 @@ const ProductPage = () => {
 
 
             <div>
-      {/* Main Category */}
-      <label className="block text-sm font-medium text-gray-500 mb-1">
+      
+        <label className="block text-sm font-medium text-gray-500 mb-1">
         Category
       </label>
       <select
         className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
-        value={selectedCategory}
+        value={category}
         onChange={(e) => {
-          const selectedValue = e.target.value;
-          setSelectedCategory(selectedValue);
-          setSelectedSubCategory("");
-          setSelectedSubSubCategory("");
+        const selectedValue = e.target.value;
+          //@ts-ignore
+          HandleChange ("category", e.target.value)
           setShowSubcategories(true);
           setShowSubSubcategories(false);
 
           if (selectedValue) {
-            fetchSubcategories(selectedValue); // Fetch subcategories for the selected category
+            fetchSubcategories(selectedValue); 
           }
         }}
       >
@@ -524,41 +515,42 @@ const ProductPage = () => {
           </option>
         ) : (
           categories.map((category) => (
+            //@ts-ignore
             <option key={category._id} value={category._id}>
-              {category.name}
+            {category.name}
             </option>
           ))
         )}
       </select>
 
       {/* Subcategories */}
-      {showSubcategories && selectedCategory && (
+      {showSubcategories && category && (
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-500 mb-1">
             Subcategory
           </label>
           <select
             className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
-            value={selectedSubCategory}
+            value={subcategory}
             onChange={(e) => {
               const selectedValue = e.target.value;
-              setSelectedSubCategory(selectedValue);
-              setSelectedSubSubCategory("");
+          //@ts-ignore
+          HandleChange ("subcategory", selectedValue)
+          console.log(selectedValue)
               setShowSubSubcategories(true);
-
               if (selectedValue) {
-                fetchSubSubcategories(selectedValue); // Fetch sub-subcategories for the selected subcategory
+                fetchSubcategories(selectedValue); 
               }
             }}
           >
-            <option value="">Select Subcategory</option>
+            <option value="">{subcategory}</option>
             {loadingSubcategories ? (
               <option value="" disabled>
                 Loading subcategories...
               </option>
             ) : subcategories.length > 0 ? (
               subcategories.map((subcategory) => (
-                <option key={subcategory._id} value={subcategory._id}>
+                <option key={subcategory._id} value={subcategory.name}>
                   {subcategory.name}
                 </option>
               ))
@@ -572,24 +564,31 @@ const ProductPage = () => {
       )}
 
       {/* Sub-Subcategories */}
-      {showSubSubcategories && selectedSubCategory && (
+      {showSubSubcategories && subcategory && (
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-500 mb-1">
-            Sub-Subcategory
+            Items
           </label>
-          <select
+          <input
+                type="text"
+                placeholder="Items"
+                className="w-full border-solid border border-gray-400 rounded-md shadow-sm p-3"
+                value={item}
+                onChange={(e) => HandleChange("item", e.target.value)}
+              />
+          {/* <select
             className="w-full border border-gray-300 rounded-md shadow-sm p-3 focus:border-indigo-500 focus:ring-indigo-500"
-            value={selectedSubSubCategory}
+            value={item}
             onChange={(e) => {
-              const selectedValue = e.target.value;
-              setSelectedSubSubCategory(selectedValue);
-
+            const selectedValue = e.target.value;
+              //@ts-ignore
+              HandleChange ("item", e.target.value)
               if (selectedValue) {
                 fetchItems(selectedValue); // Fetch items for the selected sub-subcategory
               }
             }}
           >
-            <option value="">Select Sub-Subcategory</option>
+            <option value="">Item</option>
             {loadingSubSubcategories ? (
               <option value="" disabled>
                 Loading sub-subcategories...
@@ -605,38 +604,7 @@ const ProductPage = () => {
                 No sub-subcategories available
               </option>
             )}
-          </select>
-        </div>
-      )}
-
-      {/* Items Table */}
-      {selectedSubSubCategory && (
-        <div className="mt-6">
-          <h2 className="text-lg font-medium text-gray-700">Items</h2>
-          {loadingItems ? (
-            <p>Loading items...</p>
-          ) : items.length > 0 ? (
-            <table className="min-w-full border border-gray-300 mt-2">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="border px-4 py-2 text-left">Item Name</th>
-                  <th className="border px-4 py-2 text-left">Price</th>
-                  <th className="border px-4 py-2 text-left">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item) => (
-                  <tr key={item._id}>
-                    <td className="border px-4 py-2">{item.name}</td>
-                    <td className="border px-4 py-2">{item.price}</td>
-                    <td className="border px-4 py-2">{item.description}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>No items available for this sub-subcategory.</p>
-          )}
+          </select> */}
         </div>
       )}
     </div>
