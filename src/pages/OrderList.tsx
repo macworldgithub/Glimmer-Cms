@@ -147,7 +147,6 @@
 //   },
 // ];
 
-  
 //   return (
 // <div className=" w-[100%] h-[100%] flex flex-col  items-center  p-2 gap-2 ">
 //       <div className="w-[100%] h-max  border flex py-5 rounded-lg shadow-lg justify-around flex-wrap bg-white">
@@ -175,16 +174,11 @@
 //         //   onChange: (page) => setCurrentPage(page),
 //         // }}
 //       />
-      
+
 //     </div>
 //   )}
 
-
 // export default OrderList;
-
-
-
-
 
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -207,7 +201,7 @@ const OrderList = () => {
     dispatch(getAllOrders({ page_no: 1 }));
   }, [dispatch]);
 
-  const orderList = useSelector((state: RootState) => state.allOrders.orders);
+  const orderList = useSelector((state: RootState) => state.Orders.orders);
 
   const viewOrder = (record: any) => {
     console.log("View Order:", record);
@@ -245,7 +239,12 @@ const OrderList = () => {
       dataIndex: "status",
       key: "status",
       render: (status: string) => {
-        let color = status === "Completed" ? "green" : status === "Pending" ? "orange" : "red";
+        let color =
+          status === "Completed"
+            ? "green"
+            : status === "Pending"
+            ? "orange"
+            : "red";
         return <Tag color={color}>{status}</Tag>;
       },
     },
@@ -274,17 +273,29 @@ const OrderList = () => {
     {
       count: 56,
       label: "Pending Payment",
-      icon: <ClockCircleOutlined style={{ fontSize: "30px", color: "yellowgreen" }} />,
+      icon: (
+        <ClockCircleOutlined
+          style={{ fontSize: "30px", color: "yellowgreen" }}
+        />
+      ),
     },
     {
       count: 156852,
       label: "Completed Payment",
-      icon: <CheckCircleOutlined style={{ fontSize: "30px", color: "greenyellow" }} />,
+      icon: (
+        <CheckCircleOutlined
+          style={{ fontSize: "30px", color: "greenyellow" }}
+        />
+      ),
     },
     {
       count: 156,
       label: "Refunded",
-      icon: <RollbackOutlined style={{ fontSize: "30px", color: "rebeccapurple" }} />,
+      icon: (
+        <RollbackOutlined
+          style={{ fontSize: "30px", color: "rebeccapurple" }}
+        />
+      ),
     },
     {
       count: 156,

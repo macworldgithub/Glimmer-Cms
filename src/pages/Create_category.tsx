@@ -198,6 +198,7 @@ const CategoryTable = () => {
     }
     if (modalType === "Update") {
       try {
+        //@ts-ignore
         setNewSubCategory(selectedCategory.name);
         const res = updateSubcategory(
           newSubcategory,
@@ -328,6 +329,7 @@ const CategoryTable = () => {
                 <Input
                   value={newSubcategory}
                   defaultValue={newSubcategory}
+                  //@ts-ignore
                   onChange={(e) => setNewSubCategory(e.target.value)}
                 />{" "}
               </span>
@@ -339,6 +341,7 @@ const CategoryTable = () => {
                 Sub Category Name{" "}
                 <Input
                   value={newSubcategory}
+                  //@ts-ignore
                   onChange={(e) => setNewSubCategory(e.target.value)}
                 />{" "}
               </span>
