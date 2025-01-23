@@ -1,282 +1,371 @@
+import React, { useEffect, useState } from "react";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  message,
+  Popconfirm,
+  Select,
+} from "antd";
+import {
+  getAllCategories,
+  getAllSubcategories,
+  getAllProductItem,
+  createSubcategory,
+  updateSubcategory,
+  deleteSubcategory,
+} from "../api/category/api"; // Import your API functions
 import axios from "axios";
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
-const Create_category = () => {
-  const [categoryName, setCategoryName] = useState("");
-  const [categoryDescription, setCategoryDescription] = useState("");
-  const [subcategoryName, setSubcategoryName] = useState("");
-  const [productCategory, setProductCategory] = useState(""); // Holds category ID to associate subcategory
-  const [itemName, setItemName] = useState(""); // Item name for the subcategory
-  const [selectedSubcategory, setSelectedSubcategory] = useState(""); // For dropdown selection
-  const [categories, setCategories] = useState<{
-    id: string;
-    category: string;
-    description: string;
-    subcategories: { name: string; items: string[] }[];
-  }[]>([]);
 
-  // Get token from Redux store
-  const token = useSelector((state: RootState) => state.Login.token);
+const { Option } = Select;
 
-  // Create a new category
-  const createCategory = async () => {
+const CategoryTable = () => {
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [productItems, setProductItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [modalType, setModalType] = useState("");
+
+  const [filterSubcategory, setFilterSubcategory] = useState([]);
+  const [filterProducts, setFilterProducts] = useState([]);
+
+  const [selectedCategory, setSelectedCategory] = useState({
+    _id: "",
+    name: "",
+  });
+  const [selectedSubcategory, setSelectedSubcategory] = useState({
+    _id: "",
+    name: "",
+  });
+  const [selectedProduct, setSelectedProduct] = useState({ _id: "", name: "" });
+
+  const [newSubcategory, setNewSubCategory] = useState();
+
+  // Fetch Categories
+  const fetchCategories = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/product-category/create_product_category",
-        {
-          name: categoryName,
-          description: categoryDescription,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        alert("Category created successfully!");
-        setCategories((prev) => [
-          ...prev,
-          {
-            id: response.data._id,
-            category: categoryName,
-            description: categoryDescription,
-            subcategories: [],
-          },
-        ]);
-        setCategoryName("");
-        setCategoryDescription("");
-      } else {
-        alert("Failed to create category.");
-      }
+      setLoading(true);
+      const data = await getAllCategories();
+      console.log("category", data);
+      setCategories(data);
+      setLoading(false);
     } catch (error) {
-      console.error("Error creating category:", error);
-      alert("An error occurred while creating the category.");
+      message.error("Failed to fetch categories");
+      setLoading(false);
     }
   };
 
-  // Create a new subcategory
-  const createSubcategory = async () => {
-    if (!productCategory) {
-      alert("Please select a valid category.");
-      return;
-    }
-
+  // Fetch Subcategories
+  const fetchSubcategories = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/product-sub-category/create_product_sub_category",
-        {
-          name: subcategoryName,
-          description: categoryDescription,
-          product_category: productCategory,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200 || response.status === 201) {
-        alert("Subcategory created successfully!");
-        setCategories((prev) =>
-          prev.map((category) =>
-            category.id === productCategory
-              ? {
-                  ...category,
-                  subcategories: [
-                    ...category.subcategories,
-                    { name: subcategoryName, items: [] },
-                  ],
-                }
-              : category
-          )
-        );
-        setSubcategoryName("");
-        setProductCategory("");
-        setSelectedSubcategory(""); // Automatically enable the dropdown
-      } else {
-        alert("Failed to create subcategory.");
-      }
+      setLoading(true);
+      const data = await getAllSubcategories();
+      console.log("sub category", data);
+      setSubcategories(data);
+      setLoading(false);
     } catch (error) {
-      console.error("Error creating subcategory:", error);
-      alert("An error occurred while creating the subcategory.");
+      message.error("Failed to fetch subcategories");
+      setLoading(false);
     }
   };
 
-  // Create a new item for the subcategory
-  const createItemForSubcategory = () => {
-    if (!selectedSubcategory || !itemName) {
-      alert("Please enter an item name and select a subcategory.");
-      return;
+  // Fetch Product Items
+  const fetchProductItems = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllProductItem();
+      console.log("product item", data);
+      setProductItems(data);
+      setLoading(false);
+    } catch (error) {
+      message.error("Failed to fetch product items");
+      setLoading(false);
     }
+  };
 
-    setCategories((prev) =>
-      prev.map((category) => {
-        const updatedSubcategories = category.subcategories.map((sub) => {
-          if (sub.name === selectedSubcategory) {
-            return { ...sub, items: [...sub.items, itemName] };
-          }
-          return sub;
-        });
+  useEffect(() => {
+    fetchCategories();
+    fetchSubcategories();
+    fetchProductItems();
+  }, []);
 
-        return { ...category, subcategories: updatedSubcategories };
-      })
+  const handleSelectCategory = (event: any) => {
+    const id = event.target.value;
+    const name =
+      event.target.options[event.target.selectedIndex].getAttribute(
+        "data-name"
+      );
+
+    setSelectedCategory((prevCategory) => ({
+      ...prevCategory,
+      name: name,
+      _id: id,
+    }));
+  };
+
+  const handleSelectSubcategory = (event: any) => {
+    const id = event.target.value;
+    const name =
+      event.target.options[event.target.selectedIndex].getAttribute(
+        "data-name"
+      );
+
+    setSelectedSubcategory((prevCategory) => ({
+      ...prevCategory,
+      name: name,
+      _id: id,
+    }));
+  };
+
+  const handleSelectProduct = (event: any) => {
+    const id = event.target.value;
+    const name =
+      event.target.options[event.target.selectedIndex].getAttribute(
+        "data-name"
+      );
+    setSelectedProduct((prevCategory) => ({
+      ...prevCategory,
+      name: name,
+      _id: id,
+    }));
+  };
+
+  useEffect(() => {
+    const filteredSubCategories = subcategories.filter(
+      (item) => item._id === selectedCategory._id
     );
-    setItemName("");
-    setSelectedSubcategory("");
+    setFilterSubcategory(filteredSubCategories);
+
+    console.log("checkk", selectedCategory);
+  }, [selectedCategory._id]);
+
+  useEffect(() => {
+    // const filteredProducts = productItems.filter((sub) => {
+    //   sub?.sub_categories?.filter((item) => item._id === selectedSubcategory);
+    // });
+
+    function getSubcategoryItems(data, subCategoryId) {
+      for (const category of data) {
+        for (const subcategory of category.sub_categories) {
+          if (subcategory._id === subCategoryId) {
+            return subcategory.items;
+          }
+        }
+      }
+      return [];
+    }
+
+    const filteredProducts = getSubcategoryItems(
+      productItems,
+      selectedSubcategory._id
+    );
+
+    setFilterProducts(filteredProducts);
+
+    console.log("8888", filteredProducts, selectedSubcategory);
+  }, [selectedSubcategory._id]);
+
+  const openSubCategoryModal = (type) => {
+    setModalType(type);
+    setIsSubCategoryModalOpen(true);
+  };
+
+  const openProductModal = (type) => {
+    setModalType(type);
+    setIsProductModalOpen(true);
+  };
+
+  const closeSubCategoryModal = async () => {
+    if (modalType === "Add") {
+      try {
+        const res = await createSubcategory(
+          newSubcategory,
+          "aaaa",
+          selectedCategory._id
+        );
+
+        if (res) {
+          alert("New Sub Category Added");
+        }
+      } catch (error) {
+        console.error("error", error);
+      }
+    }
+    if (modalType === "Update") {
+      try {
+        setNewSubCategory(selectedCategory.name);
+        const res = updateSubcategory(
+          newSubcategory,
+          "desc",
+          selectedSubcategory._id,
+          selectedCategory._id
+        );
+
+        if (res) {
+          alert(`Updated ${newSubcategory}`);
+        }
+      } catch (error) {
+        console.error("error", error);
+        throw error;
+      }
+    }
+    if (modalType === "Delete") {
+      try {
+        const res = await deleteSubcategory(selectedSubcategory._id);
+        if (res) {
+          alert(`deleted ${selectedSubcategory.name}`);
+        }
+      } catch (error) {
+        console.error("error", error);
+        throw error;
+      }
+    }
+    setIsSubCategoryModalOpen(false);
+    setModalType("");
+  };
+
+  const closeProductModal = () => {
+    setIsProductModalOpen(false);
+    setModalType("");
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h2 className="text-3xl font-bold text-center mb-6">
-        Create Category and Subcategory
-      </h2>
-      {/* Category Form */}
-      <div className="mb-8">
-        <input
-          type="text"
-          placeholder="Enter category name"
-          value={categoryName}
-          onChange={(e) => setCategoryName(e.target.value)}
-          className="w-full p-3 border rounded mb-4"
-        />
-        <input
-          type="text"
-          placeholder="Enter category description"
-          value={categoryDescription}
-          onChange={(e) => setCategoryDescription(e.target.value)}
-          className="w-full p-3 border rounded mb-4"
-        />
-        <button
-          onClick={createCategory}
-          className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Create Category
-        </button>
-      </div>
-
-      {/* Subcategory Form */}
-      <div className="mb-8">
-        <select
-          value={productCategory}
-          onChange={(e) => {
-            setProductCategory(e.target.value);
-            setSubcategoryName("");
-            setSelectedSubcategory("");
-          }}
-          className="w-full p-3 border rounded mb-4"
-        >
-          <option value="">Select Category</option>
+    <div className="flex flex-col gap-5">
+      <div>
+        <label>Select Category:</label>
+        <select onChange={handleSelectCategory}>
+          <option value="" disabled selected>
+            Select a Category
+          </option>
           {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.category}
+            <option
+              key={category._id}
+              value={category._id}
+              data-name={category.name}
+            >
+              {category.name}
             </option>
           ))}
         </select>
-
-        <input
-          type="text"
-          placeholder="Enter subcategory name"
-          value={subcategoryName}
-          onChange={(e) => setSubcategoryName(e.target.value)}
-          className="w-full p-3 border rounded mb-4"
-          disabled={!productCategory}
-        />
-        <button
-          onClick={createSubcategory}
-          className="w-full p-3 bg-green-500 text-white rounded hover:bg-green-600"
-          disabled={!productCategory || !subcategoryName}
-        >
-          Create Subcategory
-        </button>
-      </div>
-
-      {/* Item Form */}
-      <div className="mb-8">
-        <select
-          value={selectedSubcategory}
-          onChange={(e) => setSelectedSubcategory(e.target.value)}
-          className="w-full p-3 border rounded mb-4"
-          disabled={!productCategory}
-        >
-          <option value="">Select Subcategory</option>
-          {categories
-            .find((category) => category.id === productCategory)
-            ?.subcategories.map((sub) => (
-              <option key={sub.name} value={sub.name}>
-                {sub.items.length === 0 ? `All (${sub.name})` : sub.name}
+        <label>Select Subcategory:</label>
+        <select onChange={handleSelectSubcategory}>
+          <option value="" disabled selected>
+            Select a Category
+          </option>
+          {filterSubcategory?.map((category) =>
+            category?.sub_categories?.map((item) => (
+              <option key={item._id} value={item._id} data-name={item.name}>
+                {item.name}
               </option>
-            ))}
+            ))
+          )}
         </select>
-
-        <input
-          type="text"
-          placeholder="Enter item name"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-          className="w-full p-3 border rounded mb-4"
-          disabled={!selectedSubcategory}
-        />
-        <button
-          onClick={createItemForSubcategory}
-          className="w-full p-3 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-          disabled={!selectedSubcategory || !itemName}
-        >
-          Create Item
-        </button>
+        <label>Select Product Item:</label>
+        <select onChange={handleSelectProduct}>
+          <option value="" disabled selected>
+            Select a Category
+          </option>
+          {filterProducts?.map((item) => (
+            <option key={item._id} value={item._id} data-name={item.name}>
+              {item.name}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {/* Display Categories, Subcategories, and Items */}
-      <h3 className="text-2xl font-bold mb-4">Categories, Subcategories, and Items</h3>
-      <table className="w-full border">
-        <thead>
-          <tr>
-            <th className="border p-2">Category</th>
-            <th className="border p-2">Subcategories</th>
-            <th className="border p-2">Items</th>
-          </tr>
-        </thead>
-        <tbody>
-          {categories.map((category, index) => (
-            <tr key={index}>
-              <td className="border p-2">
-                <div>
-                  <strong>{category.category}</strong>
-                </div>
-                <div className="text-sm text-gray-500">{category.description || "N/A"}</div>
-              </td>
-              <td className="border p-2">
-                {category.subcategories.length > 0
-                  ? category.subcategories.map((sub, idx) => (
-                      <div key={idx}>
-                        <strong>{sub.name}</strong>
-                        <div className="text-sm text-gray-500">
-                          {sub.items.length > 0 ? sub.items.join(", ") : "No items yet"}
-                        </div>
-                      </div>
-                    ))
-                  : "No subcategories yet"}
-              </td>
-              <td className="border p-2">
-                {category.subcategories.length > 0
-                  ? category.subcategories.map((sub, idx) => (
-                      <div key={idx}>
-                        {sub.items.length > 0 ? sub.items.join(", ") : "No items yet"}
-                      </div>
-                    ))
-                  : "No items yet"}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div>
+        {selectedCategory?._id && (
+          <div>
+            {selectedSubcategory._id && (
+              <Button onClick={() => openSubCategoryModal("Update")}>
+                Update Sub Category
+              </Button>
+            )}
+            <Button onClick={() => openSubCategoryModal("Add")}>
+              Add Sub Category
+            </Button>
+            {selectedSubcategory._id && (
+              <Button onClick={() => openSubCategoryModal("Delete")}>
+                Delete Sub Category
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+
+      <div>
+        {selectedProduct?._id && (
+          <div>
+            <Button onClick={() => openProductModal("Update")}>
+              Update Product
+            </Button>
+            <Button onClick={() => openProductModal("Add")}>Add Product</Button>
+            <Button onClick={() => openProductModal("Delete")}>
+              Delete Product
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Subcategory Modal */}
+      <Modal
+        title={`${modalType} Sub Category`}
+        open={isSubCategoryModalOpen}
+        onOk={closeSubCategoryModal}
+        onCancel={() => setIsSubCategoryModalOpen(false)}
+      >
+        <p>
+          {modalType === "Update" ? (
+            <div className="flex flex-col">
+              <span>
+                {" "}
+                Sub Category Name{" "}
+                <Input
+                  value={newSubcategory}
+                  defaultValue={newSubcategory}
+                  onChange={(e) => setNewSubCategory(e.target.value)}
+                />{" "}
+              </span>
+            </div>
+          ) : modalType === "Add" ? (
+            <div className="flex flex-col">
+              <span>
+                {" "}
+                Sub Category Name{" "}
+                <Input
+                  value={newSubcategory}
+                  onChange={(e) => setNewSubCategory(e.target.value)}
+                />{" "}
+              </span>
+            </div>
+          ) : (
+            `Delete the subcategory: ${selectedSubcategory.name}`
+          )}
+        </p>
+      </Modal>
+
+      {/* Product Modal */}
+      {/* <Modal
+        title={`${modalType} Product`}
+        open={isProductModalOpen}
+        onOk={closeProductModal}
+        onCancel={closeProductModal}
+      >
+        <p>
+          {modalType === "Update"
+            ? `Update the product: ${selectedProduct.name}`
+            : modalType === "Add"
+            ? "Add a new product"
+            : `Delete the product: ${selectedProduct.name}`}
+        </p>
+      </Modal> */}
     </div>
   );
 };
 
-export default Create_category;
+export default CategoryTable;

@@ -137,3 +137,15 @@ export const getAllProductItem = async () => {
     throw error;
   }
 };
+
+export const deleteProductItem = async (productItem_id: string) => {
+  try {
+    const res = await axios.delete(
+      `${BACKEND_URL}/product_item/delete_product_item?id=${productItem_id}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error("error", error);
+    throw error;
+  }
+};
