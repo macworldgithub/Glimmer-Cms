@@ -5,7 +5,7 @@ import Logo from "../assets/Logo/logo.png";
 import { AppDispatch } from "../store/store";
 
 import { useDispatch } from "react-redux";
-import { signInStore } from "../api/auth/api";
+import { signInAdmin, signInStore } from "../api/auth/api";
 
 const options = [
   { label: "Admin", value: 1 },
@@ -48,6 +48,15 @@ const Login = () => {
     if (loginCredentials.category === 3) {
       dispatch(
         signInStore({
+          email: loginCredentials.userName,
+          password: loginCredentials.password,
+        })
+      );
+    }
+
+    if (loginCredentials.category === 1) {
+      dispatch(
+        signInAdmin({
           email: loginCredentials.userName,
           password: loginCredentials.password,
         })

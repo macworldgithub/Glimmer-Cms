@@ -21,6 +21,8 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
 
   const role = useSelector((state: RootState) => state.Login.role);
 
+  const data = useSelector((state: RootState) => state.Login);
+
   const navigate = useNavigate();
   const [showEcommerce, setShowEcommerce] = useState(false);
   const [showSaloon, setShowSaloon] = useState(false);
@@ -29,9 +31,16 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
   useEffect(() => {
     if (role === "store") {
       setShowEcommerce(true);
-      setShowSuperAdmin(true);
+      setShowSuperAdmin(false);
       setShowSaloon(false);
     }
+    if (role === "super_admin") {
+      setShowSuperAdmin(true);
+      setShowEcommerce(false);
+      setShowSaloon(false);
+    }
+
+    console.log("looop", data);
   }, [role]);
 
   const menuItems = getMenuItems(showEcommerce, showSaloon, showSuperAdmin);

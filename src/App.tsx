@@ -19,6 +19,7 @@ import Create_Category from "./pages/Create_category.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store.tsx";
 import SignupStore from "./pages/SignupStore.tsx";
+import Email from "./pages/Email.tsx";
 
 function App() {
   //  const isAuthenticated = false;
@@ -56,6 +57,8 @@ function App() {
           <Route path="Category_List" element={<Category_List />} />
           <Route path="Create_Category" element={<Create_Category />} />
           <Route path="makestore" element={<SignupStore />} />
+          <Route path="email" element={<Email />} />
+
 
           <Route path="E_Dashboard" element={<Ecommerce_Dashboard />} />
         </Route>

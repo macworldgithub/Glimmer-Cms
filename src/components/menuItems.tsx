@@ -46,6 +46,13 @@ export const getMenuItems = (
           label: "makestore",
           path: "/makestore",
         },
+
+        {
+          key: "email",
+          icon: <DashboardOutlined />,
+          label: "email",
+          path: "/email",
+        },
       ]
     : []),
 

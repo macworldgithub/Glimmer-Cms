@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { signInStore } from "../api/auth/api";
+import { signInAdmin, signInStore } from "../api/auth/api";
 
 interface Authentication {
   _id: string;
+  name: string;
   isAuthenticated: boolean;
   store_name: string;
   vendor_name: string;
@@ -31,6 +32,7 @@ const initialState: Authentication = {
   store_image: "",
   token: "",
   role: "",
+  name: "",
 };
 
 const loginSlice = createSlice({
@@ -85,8 +87,23 @@ const loginSlice = createSlice({
       state.role = role;
     });
 
+    builder.addCase(signInAdmin.fulfilled, (state, action) => {
+      const { admin, token, role } = action.payload;
+
+      state.email = admin.email;
+      state.name = admin.name;
+
+      state.token = token;
+      state.isAuthenticated = true; // Mark as authenticated
+      state.role = role;
+    });
+
     builder.addCase(signInStore.rejected, (state, action) => {
-      console.log("iiii", action.payload);
+      alert("Sign Store Failed");
+    });
+
+    builder.addCase(signInAdmin.rejected, (state, action) => {
+      alert("Sign Admin Failed");
     });
   },
 });
