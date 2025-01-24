@@ -21,13 +21,33 @@ type MenuItem = {
 // Utility function to generate menu items
 export const getMenuItems = (
   showEcommerce: boolean,
-  showSaloon: boolean
+  showSaloon: boolean,
+  showSuperAdmin: boolean
 ): MenuItem[] => [
-//  {
-//    key: "dashboard",
-//    icon: <DashboardOutlined />,
-//    label: "Dashboard",
-//  },
+  ...(showSuperAdmin
+    ? [
+        {
+          key: "dashboard",
+          icon: <DashboardOutlined />,
+          label: "Dashboard",
+          path: "/dashboard",
+        },
+
+        {
+          key: "Create-Category",
+          icon: <DashboardOutlined />,
+          label: "create_Category",
+          path: "/Create_Category",
+        },
+
+        {
+          key: "makestore",
+          icon: <DashboardOutlined />,
+          label: "makestore",
+          path: "/makestore",
+        },
+      ]
+    : []),
 
   ...(showEcommerce
     ? [
@@ -42,14 +62,7 @@ export const getMenuItems = (
               label: "Dashboard",
               path: "/E_Dashboard",
             },
-            {
-              key: "Create-Category",
-              icon: <DashboardOutlined />,
-              label: "create_Category",
-              path: "/Create_Category",
-            },
-            
-            
+
             {
               key: "ecommerce-order",
               icon: <OrderedListOutlined />,
@@ -79,13 +92,12 @@ export const getMenuItems = (
                   label: "Product List",
                   path: "/Product_List",
                 },
-               
 
                 {
                   key: "add-product",
                   icon: <FileOutlined />,
                   label: "Add Product",
-                  path: "/Add_Product"
+                  path: "/Add_Product",
                 },
                 {
                   key: "category-list",
@@ -109,41 +121,41 @@ export const getMenuItems = (
         },
       ]
     : []),
-  
-//  ...(showSaloon
-//    ? [
-//        {
-//          key: "saloon",
-//          icon: <ScissorOutlined />,
-//          label: "Saloon",
-//          children: [
-//            {
-//              key: "saloon-dashboard",
-//              icon: <DashboardOutlined />,
-//              label: "Dashboard",
-//            },
-//            {
-//              key: "saloon-order",
-//              icon: <OrderedListOutlined />,
-//              label: "Order",
-//            },
-//            {
-//              key: "saloon-services",
-//              icon: <FileOutlined />,
-//              label: "Services",
-//            },
-//            {
-//              key: "saloon-customer",
-//              icon: <UserOutlined />,
-//              label: "Customer",
-//            },
-//            {
-//              key: "saloon-reviews",
-//              icon: <FileOutlined />,
-//              label: "Managing Reviews",
-//            },
-//          ],
-//        },
-//      ]
-//    : []),
+
+  ...(showSaloon
+    ? [
+        {
+          key: "saloon",
+          icon: <ScissorOutlined />,
+          label: "Saloon",
+          children: [
+            {
+              key: "saloon-dashboard",
+              icon: <DashboardOutlined />,
+              label: "Dashboard",
+            },
+            {
+              key: "saloon-order",
+              icon: <OrderedListOutlined />,
+              label: "Order",
+            },
+            {
+              key: "saloon-services",
+              icon: <FileOutlined />,
+              label: "Services",
+            },
+            {
+              key: "saloon-customer",
+              icon: <UserOutlined />,
+              label: "Customer",
+            },
+            {
+              key: "saloon-reviews",
+              icon: <FileOutlined />,
+              label: "Managing Reviews",
+            },
+          ],
+        },
+      ]
+    : []),
 ];

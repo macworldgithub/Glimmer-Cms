@@ -14,6 +14,7 @@ interface Authentication {
   address: string;
   store_image: string;
   token: string;
+  role: string;
 }
 
 const initialState: Authentication = {
@@ -29,6 +30,7 @@ const initialState: Authentication = {
   address: "",
   store_image: "",
   token: "",
+  role: "",
 };
 
 const loginSlice = createSlice({
@@ -68,7 +70,7 @@ const loginSlice = createSlice({
   },
   extraReducers(builder) {
     builder.addCase(signInStore.fulfilled, (state, action) => {
-      const { store, token } = action.payload;
+      const { store, token, role } = action.payload;
       state._id = store._id;
       state.store_name = store.store_name;
       state.vendor_name = store.vendor_name;
@@ -80,6 +82,7 @@ const loginSlice = createSlice({
       state.store_image = store.store_image;
       state.token = token;
       state.isAuthenticated = true; // Mark as authenticated
+      state.role = role;
     });
 
     builder.addCase(signInStore.rejected, (state, action) => {
@@ -88,5 +91,5 @@ const loginSlice = createSlice({
   },
 });
 
-export const { changeAuthentication, logout ,updateStore } = loginSlice.actions;
+export const { changeAuthentication, logout, updateStore } = loginSlice.actions;
 export default loginSlice;

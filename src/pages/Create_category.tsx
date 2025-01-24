@@ -16,6 +16,9 @@ import {
   createSubcategory,
   updateSubcategory,
   deleteSubcategory,
+  createProductItem,
+  updateProductItem,
+  deleteProductItem,
 } from "../api/category/api"; // Import your API functions
 import axios from "axios";
 
@@ -45,6 +48,7 @@ const CategoryTable = () => {
   const [selectedProduct, setSelectedProduct] = useState({ _id: "", name: "" });
 
   const [newSubcategory, setNewSubCategory] = useState();
+  const [newProduct, setNewProduct] = useState();
 
   // Fetch Categories
   const fetchCategories = async () => {
@@ -230,7 +234,52 @@ const CategoryTable = () => {
     setModalType("");
   };
 
-  const closeProductModal = () => {
+  const closeProductModal = async () => {
+    if (modalType === "Add") {
+      try {
+        const res = await createProductItem(
+          newProduct,
+          "aaaa",
+          selectedSubcategory._id
+        );
+
+        if (res) {
+          alert("New Product Added");
+        }
+      } catch (error) {
+        console.error("error", error);
+      }
+    }
+    if (modalType === "Update") {
+      try {
+        //@ts-ignore
+        setNewProduct(selectedProduct.name);
+        const res = updateProductItem(
+          newProduct,
+          "desc",
+          selectedSubcategory._id,
+          selectedProduct._id
+        );
+
+        if (res) {
+          alert(`Updated ${newProduct}`);
+        }
+      } catch (error) {
+        console.error("error", error);
+        throw error;
+      }
+    }
+    if (modalType === "Delete") {
+      try {
+        const res = await deleteProductItem(selectedProduct._id);
+        if (res) {
+          alert(`deleted ${selectedProduct.name}`);
+        }
+      } catch (error) {
+        console.error("error", error);
+        throw error;
+      }
+    }
     setIsProductModalOpen(false);
     setModalType("");
   };
@@ -300,15 +349,19 @@ const CategoryTable = () => {
       </div>
 
       <div>
-        {selectedProduct?._id && (
+        {selectedSubcategory._id && (
           <div>
-            <Button onClick={() => openProductModal("Update")}>
-              Update Product
-            </Button>
+            {selectedProduct?._id && (
+              <Button onClick={() => openProductModal("Update")}>
+                Update Product
+              </Button>
+            )}
             <Button onClick={() => openProductModal("Add")}>Add Product</Button>
-            <Button onClick={() => openProductModal("Delete")}>
-              Delete Product
-            </Button>
+            {selectedProduct?._id && (
+              <Button onClick={() => openProductModal("Delete")}>
+                Delete Product
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -353,20 +406,42 @@ const CategoryTable = () => {
       </Modal>
 
       {/* Product Modal */}
-      {/* <Modal
+      <Modal
         title={`${modalType} Product`}
         open={isProductModalOpen}
         onOk={closeProductModal}
-        onCancel={closeProductModal}
+        onCancel={() => setIsProductModalOpen(false)}
       >
         <p>
-          {modalType === "Update"
-            ? `Update the product: ${selectedProduct.name}`
-            : modalType === "Add"
-            ? "Add a new product"
-            : `Delete the product: ${selectedProduct.name}`}
+          {modalType === "Update" ? (
+            <div className="flex flex-col">
+              <span>
+                {" "}
+                Update Product {selectedProduct.name}
+                <Input
+                  value={newProduct}
+                  //@ts-ignore
+                  onChange={(e) => setNewProduct(e.target.value)}
+                />{" "}
+              </span>
+            </div>
+          ) : modalType === "Add" ? (
+            <div className="flex flex-col">
+              <span>
+                {" "}
+                Add Product{" "}
+                <Input
+                  value={newProduct}
+                  //@ts-ignore
+                  onChange={(e) => setNewProduct(e.target.value)}
+                />{" "}
+              </span>
+            </div>
+          ) : (
+            `Delete the product: ${selectedProduct.name}`
+          )}
         </p>
-      </Modal> */}
+      </Modal>
     </div>
   );
 };

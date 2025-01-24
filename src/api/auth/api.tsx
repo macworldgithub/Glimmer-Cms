@@ -18,3 +18,17 @@ export const signInStore = createAsyncThunk(
     }
   }
 );
+
+export const createStore = async (form: FormData) => {
+  try {
+    const res = await axios.post(`${BACKEND_URL}/auth/signup/store`, form, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Important for sending FormData
+      },
+    });
+    return res.data; // Return the response data
+  } catch (error) {
+    console.error("Error creating store:", error);
+    throw error; // Re-throw the error to handle it in the caller
+  }
+};
