@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { developmentServer } from "../../config/server";
+import { developmentServer, BACKEND_URL } from "../../config/server";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
 export interface UpdateStoreApi {
@@ -25,7 +25,7 @@ export const getAllProducts = createAsyncThunk(
 
       // Make API request with page number as a query parameter
       const response = await axios.get(
-        `${developmentServer}/product/get_all_store_products?page_no=${payload.page_no}`,
+        `${BACKEND_URL}/product/get_all_store_products?page_no=${payload.page_no}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Add Bearer token
@@ -52,7 +52,7 @@ export const getAllProducts = createAsyncThunk(
 
 //       // Make API request with page number as a query parameter
 //       const response = await axios.post(
-//         `${developmentServer}/product/create`,
+//         `${BACKEND_URL}/product/create`,
 //         product,
 //         {
 //           headers: {
@@ -69,11 +69,9 @@ export const getAllProducts = createAsyncThunk(
 //   }
 // );
 
-
-
 export const addProductApi = createAsyncThunk(
   "addProduct",
-  async (payload: {}, { rejectWithValue, getState }) => { 
+  async (payload: {}, { rejectWithValue, getState }) => {
     try {
       // Access token from the Redux state
       const state = getState() as RootState;
@@ -92,7 +90,6 @@ export const addProductApi = createAsyncThunk(
       formData.append("category", product.category);
       formData.append("sub_category", product.subcategory);
       formData.append("item", product.item);
-      
 
       // Append images to FormData
       // @ts-ignore
@@ -102,7 +99,7 @@ export const addProductApi = createAsyncThunk(
 
       // Make API request
       const response = await axios.post(
-        `${developmentServer}/product/create`,
+        `${BACKEND_URL}/product/create`,
         formData,
         {
           headers: {
@@ -111,6 +108,7 @@ export const addProductApi = createAsyncThunk(
           },
         }
       );
+      console.log(response, "result");
 
       return response.data; // Return the response data if successful
     } catch (error: any) {
@@ -145,7 +143,7 @@ export const updateProductApi = createAsyncThunk(
 
       // Make API request with the payload
       const response = await axios.put(
-        `${developmentServer}/product/update_store_product_by_id?id=${body._id}`,
+        `${BACKEND_URL}/product/update_store_product_by_id?id=${body._id}`,
         body, // Use the payload directly
         {
           headers: {
@@ -168,7 +166,7 @@ export const updateProductApi = createAsyncThunk(
 export const deleteProductApi = async (_id: string, token: string) => {
   try {
     const response = await axios.delete(
-      `${developmentServer}/product/delete_store_product_by_id?id=${_id}`,
+      `${BACKEND_URL}/product/delete_store_product_by_id?id=${_id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`, // Add Bearer token
@@ -198,7 +196,7 @@ export const updateStoreApi = async (token: string, data: UpdateStoreApi) => {
   formData.append("store_image", data.store_image);
 
   const response = await axios.put(
-    `${developmentServer}/store/update_store`,
+    `${BACKEND_URL}/store/update_store`,
     formData,
     {
       headers: {

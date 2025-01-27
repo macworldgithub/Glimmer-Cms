@@ -15,15 +15,17 @@ import Ecommerce_Dashboard from "./pages/Ecommerce_Dashboard.tsx";
 import Add_Product from "./pages/Product/Add_Product.tsx";
 import Category_List from "./pages/Product/Category_List.tsx";
 import ProductList from "./pages/Product/Product_List.tsx";
-import Create_Category from "./pages/Create_category.tsx"
+import Create_Category from "./pages/Create_category.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store.tsx";
+import SignupStore from "./pages/SignupStore.tsx";
+import Email from "./pages/Email.tsx";
 
 function App() {
-//  const isAuthenticated = false;
+  //  const isAuthenticated = false;
   const isAuthenticated = useSelector(
     (state: RootState) => state.Login.isAuthenticated
-  ); 
+  );
 
   return (
     <Router>
@@ -45,8 +47,6 @@ function App() {
         >
           {/* Default (index) route inside MainLayout */}
           <Route index element={<Navigate to="dashboard" replace />} />
-          
-
 
           {/* Nested routes */}
           <Route path="dashboard" element={<Dashboard />} />
@@ -55,10 +55,12 @@ function App() {
           <Route path="Product_List" element={<ProductList />} />
           <Route path="Add_Product" element={<Add_Product />} />
           <Route path="Category_List" element={<Category_List />} />
-          <Route path="Create_Category" element={<Create_Category/>} />
-          
+          <Route path="Create_Category" element={<Create_Category />} />
+          <Route path="makestore" element={<SignupStore />} />
+          <Route path="email" element={<Email />} />
 
-          <Route path="E_Dashboard" element={<Ecommerce_Dashboard/>}/>
+
+          <Route path="E_Dashboard" element={<Ecommerce_Dashboard />} />
         </Route>
       </Routes>
     </Router>

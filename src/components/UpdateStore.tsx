@@ -2,8 +2,11 @@ import React, { Dispatch, SetStateAction, useState } from "react";
 import { Modal, Button, Input, Upload } from "antd";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { useDispatch } from "react-redux";
 
 import { UploadOutlined } from "@ant-design/icons";
+import { updateStoreApi } from "../api/products/api";
+import { updateStore } from "../slices/loginSlice";
 
 interface PropsUpdateStoreModal {
   profile: boolean;
@@ -15,12 +18,15 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
   setProfile,
 }) => {
   const [newImageUrl, setNewImageUrl] = useState<string>();
+  const dispatch = useDispatch();
+
   const store = useSelector((state: RootState) => state.Login);
+
   const [formData, setFormData] = useState({
     store_name: store.store_name,
     vendor_name: store.vendor_name,
     description: store.description,
-    store_conteact_email: store.store_contact_email,
+    store_contact_email: store.store_contact_email,
     email: store.email,
     country: store.country,
     address: store.address,
@@ -47,9 +53,17 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
   };
 
   // Called when the user clicks "Update"
-  const handleUpdate = () => {
-    console.log("Updated data:", formData);
-    setProfile(false);
+  const handleUpdate = async () => {
+    try {
+      const res = await updateStoreApi(store.token, formData);
+
+      if (res) {
+        dispatch(updateStore({ type: "updateStore", payload: { res } }));
+      }
+      setProfile(false);
+    } catch (error) {
+      console.error("error", error);
+    }
   };
 
   return (
@@ -95,7 +109,7 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
       <p>
         <strong>Contact Email:</strong>
         <Input
-          value={formData.store_conteact_email}
+          value={formData.store_contact_email}
           onChange={(e) => handleChange("contactEmail", e.target.value)}
         />
       </p>

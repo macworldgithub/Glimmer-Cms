@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { IoCubeOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { addProductApi } from "../../api/products/api";
-import { BACKEND_URL } from "../../config/server";
 import {
   addImages,
   removeImage,
@@ -11,6 +10,7 @@ import {
   updateProduct,
 } from "../../slices/addProductSlice";
 import { RootState } from "../../store/store";
+import { BACKEND_URL } from "../../config/server";
 const ProductPage = () => {
   const token = useSelector((state: RootState) => state.Login.token);
   const [categoryData, setCategoryData] = useState([]);

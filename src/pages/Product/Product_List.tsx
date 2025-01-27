@@ -12,7 +12,9 @@ interface TableData {
   name: string;
   quantity: number;
   description: string;
-  images: string[];
+  image1: string;
+  image2: string;
+  image3: string;
   base_price: number;
   discounted_price: number;
   status: "Active" | "Inactive";
@@ -46,12 +48,13 @@ const ProductTableWithHeader = () => {
     setIsDeleteModalVisible(true);
     // Your delete logic here
   };
-  
 
   const productList = useSelector(
     (state: RootState) => state.AllProducts.products
   );
-  console.log(useSelector(state=>state))
+  console.log(useSelector((state) => state));
+
+  console.log("check", productList);
 
   // Table columns
   const columns = [
@@ -139,6 +142,7 @@ const ProductTableWithHeader = () => {
       {selectedProduct && (
         <DeleteProductModal
           visible={isDeleteModalVisible}
+          //@ts-ignore
           product={selectedProduct}
           onClose={() => setIsDeleteModalVisible(false)}
           page={1}
@@ -149,7 +153,8 @@ const ProductTableWithHeader = () => {
         <Table
         //@ts-ignore
           columns={columns}
-          // dataSource={productList}
+          //@ts-ignore
+          dataSource={productList?.products}
           //@ts-ignore
           pagination={true}
           className="border-t"

@@ -8,6 +8,8 @@ import { useNavigate } from "react-router-dom";
 import { Layout, Menu } from "antd";
 
 import { useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 interface SideBarProps {
   collapsed: boolean;
@@ -15,11 +17,33 @@ interface SideBarProps {
 }
 
 const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
-  const navigate = useNavigate();
-  const [showEcommerce, setShowEcommerce] = useState(true);
-  const [showSaloon, setShowSaloon] = useState(true);
+  const dispatch = useDispatch();
 
-  const menuItems = getMenuItems(showEcommerce, showSaloon);
+  const role = useSelector((state: RootState) => state.Login.role);
+
+  const data = useSelector((state: RootState) => state.Login);
+
+  const navigate = useNavigate();
+  const [showEcommerce, setShowEcommerce] = useState(false);
+  const [showSaloon, setShowSaloon] = useState(false);
+  const [showSuperAdmin, setShowSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    if (role === "store") {
+      setShowEcommerce(true);
+      setShowSuperAdmin(false);
+      setShowSaloon(false);
+    }
+    if (role === "super_admin") {
+      setShowSuperAdmin(true);
+      setShowEcommerce(false);
+      setShowSaloon(false);
+    }
+
+    console.log("looop", data);
+  }, [role]);
+
+  const menuItems = getMenuItems(showEcommerce, showSaloon, showSuperAdmin);
 
   const { Sider } = Layout;
 
