@@ -27,6 +27,7 @@ export const getMenuItems = (
     key: "dashboard",
     icon: <DashboardOutlined />,
     label: "Dashboard",
+    path: "/Dashboard",
   },
 
   ...(showEcommerce
