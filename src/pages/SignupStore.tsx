@@ -102,119 +102,56 @@ const SignupStore = () => {
   };
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "max-content",
-        margin: "0 auto",
-        padding: "20px",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <h1>Signup</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-10">
-        <div>
-          <label>Store Image</label>
+    
+    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Signup</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex flex-col">
+          <label className="font-medium text-gray-700">Store Image</label>
           <input
             type="file"
-            name="storeImage"
             accept="image/*"
             onChange={handleFileChange}
+            className="border border-gray-300 rounded-md p-2 mt-1 focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
-
           {previewImage && (
-            <div style={{ marginTop: "10px" }}>
-              <img
-                src={previewImage}
-                alt="Uploaded Preview"
-                style={{
-                  width: "100px",
-                  height: "100px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              />
-            </div>
+            <img src={previewImage} alt="Preview" className="mt-2 w-24 h-24 object-cover rounded-lg shadow-md" />
           )}
         </div>
-        <div>
-          <label>Store Name *</label>
-          <input
-            type="text"
-            name="storeName"
-            value={formData.storeName}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Vendor Name *</label>
-          <input
-            type="text"
-            name="vendorName"
-            value={formData.vendorName}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Description</label>
+        {[
+          { label: "Store Name", name: "storeName", type: "text" },
+          { label: "Vendor Name", name: "vendorName", type: "text" },
+          { label: "Store Contact Email", name: "storeContactEmail", type: "email" },
+          { label: "Email", name: "email", type: "email" },
+          { label: "Password", name: "password", type: "password" },
+          { label: "Country", name: "country", type: "text" },
+          { label: "Address", name: "address", type: "text" },
+        ].map(({ label, name, type }) => (
+          <div key={name} className="flex flex-col">
+            <label className="font-medium text-gray-700">{label}</label>
+            <input
+              type={type}
+              name={name}
+              value={formData[name as keyof typeof formData]}
+              onChange={handleChange}
+              className="border border-gray-300 rounded-md p-2 mt-1 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              required={name !== "country" && name !== "address"}
+            />
+          </div>
+        ))}
+        <div className="flex flex-col">
+          <label className="font-medium text-gray-700">Description</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
+            className="border border-gray-300 rounded-md p-2 mt-1 focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
         </div>
-        <div>
-          <label>Store Contact Email *</label>
-          <input
-            type="email"
-            name="storeContactEmail"
-            value={formData.storeContactEmail}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Email *</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Password *</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Country</label>
-          <input
-            type="text"
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label>Address</label>
-          <input
-            type="text"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-          />
-        </div>
-        <button type="submit" style={{ marginTop: "20px" }}>
+        <button
+          type="submit"
+          className="w-full bg-[#5F61E6] text-white p-2 rounded-md font-semibold hover:[#5F61E6] transition"
+        >
           Signup
         </button>
       </form>

@@ -285,90 +285,288 @@ const CategoryTable = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      <div>
-        <label>Select Category:</label>
-        <select onChange={handleSelectCategory}>
-          <option value="" disabled selected>
-            Select a Category
-          </option>
-          {categories.map((category) => (
-            <option
-              key={category._id}
-              value={category._id}
-              data-name={category.name}
-            >
-              {category.name}
+    // <div className="flex flex-col gap-5">
+    //   <div>
+    //     <label>Select Category:</label>
+    //     <select onChange={handleSelectCategory}>
+    //       <option value="" disabled selected>
+    //         Select a Category
+    //       </option>
+    //       {categories.map((category) => (
+    //         <option
+    //           key={category._id}
+    //           value={category._id}
+    //           data-name={category.name}
+    //         >
+    //           {category.name}
+    //         </option>
+    //       ))}
+    //     </select>
+    //     <label>Select Subcategory:</label>
+    //     <select onChange={handleSelectSubcategory}>
+    //       <option value="" disabled selected>
+    //         Select a Category
+    //       </option>
+    //       {filterSubcategory?.map((category) =>
+    //         category?.sub_categories?.map((item) => (
+    //           <option key={item._id} value={item._id} data-name={item.name}>
+    //             {item.name}
+    //           </option>
+    //         ))
+    //       )}
+    //     </select>
+    //     <label>Select Product Item:</label>
+    //     <select onChange={handleSelectProduct}>
+    //       <option value="" disabled selected>
+    //         Select a Category
+    //       </option>
+    //       {filterProducts?.map((item) => (
+    //         <option key={item._id} value={item._id} data-name={item.name}>
+    //           {item.name}
+    //         </option>
+    //       ))}
+    //     </select>
+    //   </div>
+
+    //   <div>
+    //     {selectedCategory?._id && (
+    //       <div>
+    //         {selectedSubcategory._id && (
+    //           <Button onClick={() => openSubCategoryModal("Update")}>
+    //             Update Sub Category
+    //           </Button>
+    //         )}
+    //         <Button onClick={() => openSubCategoryModal("Add")}>
+    //           Add Sub Category
+    //         </Button>
+    //         {selectedSubcategory._id && (
+    //           <Button onClick={() => openSubCategoryModal("Delete")}>
+    //             Delete Sub Category
+    //           </Button>
+    //         )}
+    //       </div>
+    //     )}
+    //   </div>
+
+    //   <div>
+    //     {selectedSubcategory._id && (
+    //       <div>
+    //         {selectedProduct?._id && (
+    //           <Button onClick={() => openProductModal("Update")}>
+    //             Update Product
+    //           </Button>
+    //         )}
+    //         <Button onClick={() => openProductModal("Add")}>Add Product</Button>
+    //         {selectedProduct?._id && (
+    //           <Button onClick={() => openProductModal("Delete")}>
+    //             Delete Product
+    //           </Button>
+    //         )}
+    //       </div>
+    //     )}
+    //   </div>
+
+    //   {/* Subcategory Modal */}
+    //   <Modal
+    //     title={`${modalType} Sub Category`}
+    //     open={isSubCategoryModalOpen}
+    //     onOk={closeSubCategoryModal}
+    //     onCancel={() => setIsSubCategoryModalOpen(false)}
+    //   >
+    //     <p>
+    //       {modalType === "Update" ? (
+    //         <div className="flex flex-col">
+    //           <span>
+    //             {" "}
+    //             Sub Category Name{" "}
+    //             <Input
+    //               value={newSubcategory}
+    //               defaultValue={newSubcategory}
+    //               //@ts-ignore
+    //               onChange={(e) => setNewSubCategory(e.target.value)}
+    //             />{" "}
+    //           </span>
+    //         </div>
+    //       ) : modalType === "Add" ? (
+    //         <div className="flex flex-col">
+    //           <span>
+    //             {" "}
+    //             Sub Category Name{" "}
+    //             <Input
+    //               value={newSubcategory}
+    //               //@ts-ignore
+    //               onChange={(e) => setNewSubCategory(e.target.value)}
+    //             />{" "}
+    //           </span>
+    //         </div>
+    //       ) : (
+    //         `Delete the subcategory: ${selectedSubcategory.name}`
+    //       )}
+    //     </p>
+    //   </Modal>
+
+    //   {/* Product Modal */}
+    //   <Modal
+    //     title={`${modalType} Product`}
+    //     open={isProductModalOpen}
+    //     onOk={closeProductModal}
+    //     onCancel={() => setIsProductModalOpen(false)}
+    //   >
+    //     <p>
+    //       {modalType === "Update" ? (
+    //         <div className="flex flex-col">
+    //           <span>
+    //             {" "}
+    //             Update Product {selectedProduct.name}
+    //             <Input
+    //               value={newProduct}
+    //               //@ts-ignore
+    //               onChange={(e) => setNewProduct(e.target.value)}
+    //             />{" "}
+    //           </span>
+    //         </div>
+    //       ) : modalType === "Add" ? (
+    //         <div className="flex flex-col">
+    //           <span>
+    //             {" "}
+    //             Add Product{" "}
+    //             <Input
+    //               value={newProduct}
+    //               //@ts-ignore
+    //               onChange={(e) => setNewProduct(e.target.value)}
+    //             />{" "}
+    //           </span>
+    //         </div>
+    //       ) : (
+    //         `Delete the product: ${selectedProduct.name}`
+    //       )}
+    //     </p>
+    //   </Modal>
+    // </div>
+    <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold text-gray-800 mb-4 text-center">
+        Manage Categories & Products
+      </h2>
+
+      {/* Category, Subcategory & Product Selection */}
+      <div className="flex flex-col gap-4">
+        <label className="text-gray-700 font-medium">
+          Select Category:
+          <select
+            onChange={handleSelectCategory}
+            className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          >
+            <option value="" disabled selected>
+              Select a Category
             </option>
-          ))}
-        </select>
-        <label>Select Subcategory:</label>
-        <select onChange={handleSelectSubcategory}>
-          <option value="" disabled selected>
-            Select a Category
-          </option>
-          {filterSubcategory?.map((category) =>
-            category?.sub_categories?.map((item) => (
+            {categories.map((category) => (
+              <option
+                key={category._id}
+                value={category._id}
+                data-name={category.name}
+              >
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="text-gray-700 font-medium">
+          Select Subcategory:
+          <select
+            onChange={handleSelectSubcategory}
+            className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          >
+            <option value="" disabled selected>
+              Select a Subcategory
+            </option>
+            {filterSubcategory?.map((category) =>
+              category?.sub_categories?.map((item) => (
+                <option key={item._id} value={item._id} data-name={item.name}>
+                  {item.name}
+                </option>
+              ))
+            )}
+          </select>
+        </label>
+
+        <label className="text-gray-700 font-medium">
+          Select Product Item:
+          <select
+            onChange={handleSelectProduct}
+            className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+          >
+            <option value="" disabled selected>
+              Select a Product
+            </option>
+            {filterProducts?.map((item) => (
               <option key={item._id} value={item._id} data-name={item.name}>
                 {item.name}
               </option>
-            ))
-          )}
-        </select>
-        <label>Select Product Item:</label>
-        <select onChange={handleSelectProduct}>
-          <option value="" disabled selected>
-            Select a Category
-          </option>
-          {filterProducts?.map((item) => (
-            <option key={item._id} value={item._id} data-name={item.name}>
-              {item.name}
-            </option>
-          ))}
-        </select>
+            ))}
+          </select>
+        </label>
       </div>
 
-      <div>
-        {selectedCategory?._id && (
-          <div>
-            {selectedSubcategory._id && (
-              <Button onClick={() => openSubCategoryModal("Update")}>
-                Update Sub Category
-              </Button>
-            )}
-            <Button onClick={() => openSubCategoryModal("Add")}>
-              Add Sub Category
+      {/* Subcategory Actions */}
+      {selectedCategory?._id && (
+        <div className="mt-4 flex gap-3">
+          {selectedSubcategory._id && (
+            <Button
+              className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
+              onClick={() => openSubCategoryModal("Update")}
+            >
+              Update Subcategory
             </Button>
-            {selectedSubcategory._id && (
-              <Button onClick={() => openSubCategoryModal("Delete")}>
-                Delete Sub Category
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
+          )}
+          <Button
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+            onClick={() => openSubCategoryModal("Add")}
+          >
+            Add Subcategory
+          </Button>
+          {selectedSubcategory._id && (
+            <Button
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+              onClick={() => openSubCategoryModal("Delete")}
+            >
+              Delete Subcategory
+            </Button>
+          )}
+        </div>
+      )}
 
-      <div>
-        {selectedSubcategory._id && (
-          <div>
-            {selectedProduct?._id && (
-              <Button onClick={() => openProductModal("Update")}>
-                Update Product
-              </Button>
-            )}
-            <Button onClick={() => openProductModal("Add")}>Add Product</Button>
-            {selectedProduct?._id && (
-              <Button onClick={() => openProductModal("Delete")}>
-                Delete Product
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
+      {/* Product Actions */}
+      {selectedSubcategory._id && (
+        <div className="mt-4 flex gap-3">
+          {selectedProduct?._id && (
+            <Button
+              className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
+              onClick={() => openProductModal("Update")}
+            >
+              Update Product
+            </Button>
+          )}
+          <Button
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+            onClick={() => openProductModal("Add")}
+          >
+            Add Product
+          </Button>
+          {selectedProduct?._id && (
+            <Button
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+              onClick={() => openProductModal("Delete")}
+            >
+              Delete Product
+            </Button>
+          )}
+        </div>
+      )}
 
       {/* Subcategory Modal */}
       <Modal
-        title={`${modalType} Sub Category`}
+        title={`${modalType} Subcategory`}
         open={isSubCategoryModalOpen}
         onOk={closeSubCategoryModal}
         onCancel={() => setIsSubCategoryModalOpen(false)}
@@ -376,31 +574,30 @@ const CategoryTable = () => {
         <p>
           {modalType === "Update" ? (
             <div className="flex flex-col">
-              <span>
-                {" "}
-                Sub Category Name{" "}
-                <Input
-                  value={newSubcategory}
-                  defaultValue={newSubcategory}
-                  //@ts-ignore
-                  onChange={(e) => setNewSubCategory(e.target.value)}
-                />{" "}
-              </span>
+              <label className="text-gray-700 font-medium">
+                Subcategory Name:
+              </label>
+              <Input
+                value={newSubcategory}
+                className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                //@ts-ignore
+                onChange={(e) => setNewSubCategory(e.target.value)}
+              />
             </div>
           ) : modalType === "Add" ? (
             <div className="flex flex-col">
-              <span>
-                {" "}
-                Sub Category Name{" "}
-                <Input
-                  value={newSubcategory}
-                  //@ts-ignore
-                  onChange={(e) => setNewSubCategory(e.target.value)}
-                />{" "}
-              </span>
+              <label className="text-gray-700 font-medium">
+                Subcategory Name:
+              </label>
+              <Input
+                value={newSubcategory}
+                className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                //@ts-ignore
+                onChange={(e) => setNewSubCategory(e.target.value)}
+              />
             </div>
           ) : (
-            `Delete the subcategory: ${selectedSubcategory.name}`
+            `Are you sure you want to delete the subcategory: ${selectedSubcategory.name}?`
           )}
         </p>
       </Modal>
@@ -415,30 +612,28 @@ const CategoryTable = () => {
         <p>
           {modalType === "Update" ? (
             <div className="flex flex-col">
-              <span>
-                {" "}
-                Update Product {selectedProduct.name}
-                <Input
-                  value={newProduct}
-                  //@ts-ignore
-                  onChange={(e) => setNewProduct(e.target.value)}
-                />{" "}
-              </span>
+              <label className="text-gray-700 font-medium">
+                Update Product:
+              </label>
+              <Input
+                value={newProduct}
+                className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                //@ts-ignore
+                onChange={(e) => setNewProduct(e.target.value)}
+              />
             </div>
           ) : modalType === "Add" ? (
             <div className="flex flex-col">
-              <span>
-                {" "}
-                Add Product{" "}
-                <Input
-                  value={newProduct}
-                  //@ts-ignore
-                  onChange={(e) => setNewProduct(e.target.value)}
-                />{" "}
-              </span>
+              <label className="text-gray-700 font-medium">Add Product:</label>
+              <Input
+                value={newProduct}
+                className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                //@ts-ignore
+                onChange={(e) => setNewProduct(e.target.value)}
+              />
             </div>
           ) : (
-            `Delete the product: ${selectedProduct.name}`
+            `Are you sure you want to delete the product: ${selectedProduct.name}?`
           )}
         </p>
       </Modal>
