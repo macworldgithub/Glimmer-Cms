@@ -40,6 +40,9 @@ const ProductTableWithHeader = () => {
     console.log("Updating:", record);
     setSelectedProduct(record);
     setIsModalVisible(true);
+
+    //@ts-ignore
+
     // Your update logic here
   };
 
@@ -52,9 +55,6 @@ const ProductTableWithHeader = () => {
   const productList = useSelector(
     (state: RootState) => state.AllProducts.products
   );
-  console.log(useSelector((state) => state));
-
-  console.log("check", productList);
 
   // Table columns
   const columns = [
@@ -151,7 +151,7 @@ const ProductTableWithHeader = () => {
 
       <div className="overflow-x-auto shadow-lg">
         <Table
-        //@ts-ignore
+          //@ts-ignore
           columns={columns}
           //@ts-ignore
           dataSource={productList?.products}
@@ -166,8 +166,6 @@ const ProductTableWithHeader = () => {
 };
 
 export default ProductTableWithHeader;
-
-
 
 // import { Table } from "antd";
 // import "antd/dist/reset.css";
@@ -363,4 +361,3 @@ export default ProductTableWithHeader;
 // };
 
 // export default ProductTableWithHeader;
-

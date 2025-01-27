@@ -152,6 +152,7 @@ export const updateProductApi = createAsyncThunk(
           },
         }
       );
+
       return response.data; // Return the response data if successful
     } catch (error: any) {
       // Handle error response properly

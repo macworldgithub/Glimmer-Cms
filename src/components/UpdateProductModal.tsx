@@ -76,20 +76,24 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     try {
       // Validate and get form values
       const formValues = await form.validateFields();
-  
+
       // Construct the payload
       const payload = {
         ...formValues, // Includes name, quantity, description, base_price, discounted_price, and status
         image1: binaryImages.image1 || product.image1, // Use binaryImages for file data
-        image2: binaryImages.image2 ||product.image2,
+        image2: binaryImages.image2 || product.image2,
         //@ts-ignore
         image3: binaryImages.image3 || product.image3,
         _id: product._id, // Include the product ID for updates
       };
-  
+
       // Dispatch the thunk with the payload
+
       //@ts-ignore
       dispatch(updateProductApi(payload));
+
+      //@ts-ignore
+      dispatch(getAllProducts({ page_no: 1 }));
     } catch (error) {
       console.error("Validation failed:", error);
     }
