@@ -144,8 +144,16 @@ const ProductPage = () => {
   useEffect(() => {
     if (sub_category_options?.length > 0) {
       HandleChange("subcategory", sub_category_options[0]._id); // Set the first option as default
+
+      for (let item of sub_category_options) {
+        if (item?._id === sub_category_options[0]?._id) {
+          HandleChange("item", item?.items[0]?._id);
+        }
+      }
     }
   }, [sub_category_options]); // Runs whenever sub_category_options changes
+
+  useEffect(() => {}, [subcategory]);
 
   return (
     <div className=" mx-auto overflow-hidden">
