@@ -19,6 +19,7 @@ import Create_Category from "./pages/Create_category.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/store.tsx";
 import SignupStore from "./pages/SignupStore.tsx";
+import Store_List from "./pages/Store_List.tsx";
 import Email from "./pages/Email.tsx";
 
 function App() {
@@ -57,9 +58,8 @@ function App() {
           <Route path="Category_List" element={<Category_List />} />
           <Route path="Create_Category" element={<Create_Category />} />
           <Route path="makestore" element={<SignupStore />} />
+          <Route path="store_List" element={<Store_List/>} />        
           <Route path="email" element={<Email />} />
-
-
           <Route path="E_Dashboard" element={<Ecommerce_Dashboard />} />
         </Route>
       </Routes>

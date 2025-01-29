@@ -48,6 +48,13 @@ export const getMenuItems = (
         },
 
         {
+          key: "store_List",
+          icon: <DashboardOutlined />,
+          label: "store_list",
+          path: "/store_List",
+        },
+
+        {
           key: "email",
           icon: <DashboardOutlined />,
           label: "email",

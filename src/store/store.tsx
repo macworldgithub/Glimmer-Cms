@@ -6,6 +6,7 @@ import addProductSlice from "../slices/addProductSlice";
 import allProductsSlice from "../slices/allProductSlice";
 import loginSlice from "../slices/loginSlice";
 import orderSlice from "../slices/orderSlice";
+import allStoresSlice from "../slices/allStoreSlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   AllProducts: allProductsSlice.reducer,
   AddProduct: addProductSlice.reducer,
   Orders: orderSlice.reducer,
+  AllStores: allStoresSlice.reducer,
 });
 
 // Type for the root reducer
