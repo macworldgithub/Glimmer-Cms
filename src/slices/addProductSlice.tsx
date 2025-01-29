@@ -56,6 +56,12 @@ const addProductSlice = createSlice({
       alert("Success : Product Added");
       return initialState; // Correct way to reset the state
     });
+    builder.addCase(addProductApi.rejected,(e, d)=>{
+    console.log(e,"e idhr hai",d)
+        //@ts-ignore
+        alert("Error: " + (d?.payload?.message ? d?.payload?.message[0] : "!"))
+        return
+    })
   },
 });
 
