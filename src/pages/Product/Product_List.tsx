@@ -37,8 +37,11 @@ const ProductTableWithHeader = () => {
   );
 
   const handleUpdate = (record: TableData) => {
-    setSelectedProduct(record);
-    setIsModalVisible(true);
+    setSelectedProduct(null); // Reset before setting a new product
+    setTimeout(() => {
+      setSelectedProduct(record);
+      setIsModalVisible(true);
+    }, 0); // Ensure React updates the state before rendering the modal
   };
 
   const handleDelete = (record: TableData) => {

@@ -36,22 +36,28 @@ export const getMenuItems = (
         {
           key: "Create-Category",
           icon: <DashboardOutlined />,
-          label: "create_Category",
+          label: "Create Categories",
           path: "/Create_Category",
         },
 
         {
           key: "makestore",
           icon: <DashboardOutlined />,
-          label: "makestore",
+          label: "Create Store",
           path: "/makestore",
         },
 
         {
           key: "email",
           icon: <DashboardOutlined />,
-          label: "email",
+          label: "Email",
           path: "/email",
+        },
+        {
+          key: "store",
+          icon: <DashboardOutlined />,
+          label: "Store",
+          path: "/store",
         },
       ]
     : []),

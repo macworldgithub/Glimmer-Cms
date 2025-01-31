@@ -47,94 +47,52 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   page,
 }) => {
   const [form] = Form.useForm();
-  const [images, setImages] = useState<string[]>([]);
-
-  const [binaryImages, setBinaryImages] = useState({
-    image1: "",
-    image2: "",
-    Image3: "",
+  const dispatch = useDispatch();
+  // State for images
+  const [images, setImages] = useState({
+    image1: product.image1,
+    image2: product.image2,
+    image3: product.image3,
   });
 
-  const dispatch = useDispatch();
+  // Handle image deletion
+  const handleDeleteImage = (key: keyof typeof images) => {
+    setImages((prev) => ({ ...prev, [key]: "" }));
+  };
 
-  useEffect(() => {
-    // Reset form and images when modal opens
-    if (visible) {
-      form.resetFields();
-
-      const newImages: string[] = []; // Temporary array for new images
-
-      if (product.image1) newImages.push(product.image1);
-      if (product.image2) newImages.push(product.image2);
-      if (product.image3) newImages.push(product.image3);
-
-      setImages(newImages); // Set all images at once
-    }
-  }, [visible, product]);
+  // Handle image upload
+  const handleUpload = (file: File, key: keyof typeof images) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImages((prev) => ({ ...prev, [key]: file }));
+    };
+    reader.readAsDataURL(file);
+    return false; // Prevent default upload
+  };
 
   const handleSave = async () => {
     try {
-      // Validate and get form values
       const formValues = await form.validateFields();
 
       // Construct the payload
       const payload = {
-        ...formValues, // Includes name, quantity, description, base_price, discounted_price, and status
-        image1: binaryImages.image1 || product.image1, // Use binaryImages for file data
-        image2: binaryImages.image2 || product.image2,
-        //@ts-ignore
-        image3: binaryImages.image3 || product.image3,
-        _id: product._id, // Include the product ID for updates
+        ...formValues,
+        _id: product._id,
+        ...images, // Includes updated image states ("" for deleted, File for new upload)
       };
 
-      // Dispatch the thunk with the payload
-
+      // Dispatch API call
       //@ts-ignore
       dispatch(updateProductApi(payload));
 
       //@ts-ignore
       dispatch(getAllProducts({ page_no: 1 }));
+
+      onSave(payload);
+      onClose();
     } catch (error) {
       console.error("Validation failed:", error);
     }
-  };
-
-  const handleImageUpload = (file: File) => {
-    const url = URL.createObjectURL(file);
-
-    // Update images
-    setImages((prevImages) => {
-      const updatedImages = prevImages ? [...prevImages] : [];
-      if (updatedImages.length < 3) {
-        updatedImages.push(url);
-      }
-      return updatedImages;
-    });
-
-    // Update binaryImages
-    setBinaryImages((prevBinaryImages) => {
-      const updatedBinaryImages = { ...prevBinaryImages };
-      if (!prevBinaryImages.image1) {
-        //@ts-ignore
-        updatedBinaryImages.image1 = file;
-      } else if (!prevBinaryImages.image2) {
-        //@ts-ignore
-        updatedBinaryImages.image2 = file;
-        //@ts-ignore
-      } else if (!prevBinaryImages.image3) {
-        //@ts-ignore
-        updatedBinaryImages.image3 = file;
-      }
-      return updatedBinaryImages;
-    });
-
-    // Return false to prevent automatic upload by Ant Design
-    return false;
-  };
-
-  const handleImageDelete = (index: number) => {
-    const updatedImages = images.filter((_, i) => i !== index);
-    setImages(updatedImages);
   };
 
   return (
@@ -206,45 +164,40 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
           </Select>
         </Form.Item>
 
-        <Form.Item label="Images">
-          <Space direction="vertical" style={{ width: "100%" }}>
-            <Upload
-              listType="picture-card"
-              showUploadList={false}
-              beforeUpload={handleImageUpload}
-              accept="image/*"
-            >
-              {images?.length < 3 && (
-                <div>
-                  <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
-                </div>
-              )}
-            </Upload>
-
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              {images?.map((img, index) => (
-                <div key={index} style={{ position: "relative" }}>
+        <div className="flex flex-wrap gap-4">
+          {(["image1", "image2", "image3"] as const).map((key) => (
+            <div key={key} className="relative border p-2">
+              {images[key] ? (
+                <>
                   <Image
-                    src={img}
-                    alt={`Product Image ${index + 1}`}
                     width={100}
                     height={100}
-                    style={{ borderRadius: "4px", objectFit: "cover" }}
+                    src={
+                      typeof images[key] === "string"
+                        ? images[key]
+                        : URL.createObjectURL(images[key] as File)
+                    }
+                    alt={`Product ${key}`}
                   />
                   <Button
-                    shape="circle"
-                    icon={<DeleteOutlined />}
-                    size="small"
+                    type="text"
                     danger
-                    style={{ position: "absolute", top: -8, right: -8 }}
-                    onClick={() => handleImageDelete(index)}
+                    className="absolute top-0 right-0"
+                    onClick={() => handleDeleteImage(key)}
+                    icon={<DeleteOutlined />}
                   />
-                </div>
-              ))}
+                </>
+              ) : (
+                <Upload
+                  showUploadList={false}
+                  beforeUpload={(file) => handleUpload(file, key)}
+                >
+                  <Button icon={<PlusOutlined />}>Upload</Button>
+                </Upload>
+              )}
             </div>
-          </Space>
-        </Form.Item>
+          ))}
+        </div>
       </Form>
     </Modal>
   );
