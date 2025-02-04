@@ -19,6 +19,12 @@ interface TableData {
 
 const ProductTableWithHeader = () => {
   const dispatch = useDispatch();
+  const role = useSelector((state: RootState) => state.Login.role);
+
+  useEffect(() => {
+    console.log("looo", role);
+  }, []);
+
   const [selectedProduct, setSelectedProduct] = useState<TableData | null>(
     null
   );
@@ -92,12 +98,14 @@ const ProductTableWithHeader = () => {
           >
             Update
           </button>
-          <button
-            onClick={() => handleDelete(record)}
-            className="text-red-500 hover:underline"
-          >
-            Delete
-          </button>
+          {role === "super_admin" && (
+            <button
+              onClick={() => handleDelete(record)}
+              className="text-red-500 hover:underline"
+            >
+              Delete
+            </button>
+          )}
         </div>
       ),
     },
@@ -121,7 +129,7 @@ const ProductTableWithHeader = () => {
         />
       )}
 
-      {selectedProduct && (
+      {selectedProduct && role === "super_admin" && (
         <DeleteProductModal
           visible={isDeleteModalVisible}
           //@ts-ignore
