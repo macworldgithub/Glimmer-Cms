@@ -11,12 +11,23 @@ import {
   Image,
   message,
 } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useDispatch } from "react-redux";
+import {
+  PlusOutlined,
+  DeleteOutlined,
+  UploadOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
+import { useDispatch, useSelector } from "react-redux";
 import { updateProductApi } from "../api/products/api";
 import { getAllProducts } from "../api/products/api";
+
+import { BACKEND_URL } from "../config/server";
+
+import axios from "axios";
+import { RootState } from "../store/store";
 const { TextArea } = Input;
 const { Option } = Select;
+
 interface Product {
   name: string;
   quantity: number;
@@ -48,51 +59,85 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  // State for images
-  const [images, setImages] = useState({
-    image1: product.image1,
-    image2: product.image2,
-    image3: product.image3,
+
+  const token = useSelector((state: RootState) => state.Login.token);
+
+  const [pictures, setPictures] = useState<any>({
+    image1: "",
+    image2: "",
+    image3: "",
   });
 
-  // Handle image deletion
-  const handleDeleteImage = (key: keyof typeof images) => {
-    setImages((prev) => ({ ...prev, [key]: "" }));
+  useEffect(() => {
+    setPictures((image) => ({
+      ...image,
+      image1: form.getFieldValue("image1"),
+      image2: form.getFieldValue("image2"),
+      image3: form.getFieldValue("image3"),
+    }));
+  }, []);
+
+  const handleUpload = (file, key) => {
+    console.log("lelee", key);
+    setPictures((prev) => ({
+      ...prev,
+      [key]: file,
+    }));
+    return false; // Prevent default upload behavior
   };
 
-  // Handle image upload
-  const handleUpload = (file: File, key: keyof typeof images) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setImages((prev) => ({ ...prev, [key]: file }));
-    };
-    reader.readAsDataURL(file);
-    return false; // Prevent default upload
+  const handleDelete = (key) => {
+    setPictures((prev) => ({
+      ...prev,
+      [key]: "", // Set to null or remove the key
+    }));
   };
 
   const handleSave = async () => {
+    const formData = new FormData();
+
+    formData.append("name", form.getFieldValue("name"));
+    formData.append("quantity", form.getFieldValue("quantity"));
+    formData.append("description", form.getFieldValue("description"));
+    formData.append("base_price", form.getFieldValue("base_price"));
+    formData.append("discounted_price", form.getFieldValue("discounted_price"));
+    formData.append("status", form.getFieldValue("status"));
+
+    // Append images (check if file or URL)
+    Object.entries(pictures).forEach(([key, value]) => {
+      // if (value instanceof File) {
+      //   formData.append(key, value);
+      // } else if (typeof value === "string") {
+      //   formData.append(key, value); // Send image URL directly
+      // }
+      //@ts-ignore
+      formData.append(key, value);
+    });
+
     try {
-      const formValues = await form.validateFields();
+      const response = await axios.put(
+        `${BACKEND_URL}/product/update_store_product_by_id?id=${product._id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Bearer token
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      // Construct the payload
-      const payload = {
-        ...formValues,
-        _id: product._id,
-        ...images, // Includes updated image states ("" for deleted, File for new upload)
-      };
-
-      // Dispatch API call
+      alert("Product Updated successfully!");
       //@ts-ignore
-      dispatch(updateProductApi(payload));
-
-      //@ts-ignore
-      dispatch(getAllProducts({ page_no: 1 }));
-
-      onSave(payload);
-      onClose();
+      dispatch(getAllProducts({ page_no: page }));
+      console.log(response.data);
     } catch (error) {
-      console.error("Validation failed:", error);
+      message.error("Failed to submit product.");
+      console.error(error);
     }
+  };
+
+  const getImageSrc = (image) => {
+    return image instanceof File ? URL.createObjectURL(image) : image;
   };
 
   return (
@@ -165,38 +210,39 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
         </Form.Item>
 
         <div className="flex flex-wrap gap-4">
-          {(["image1", "image2", "image3"] as const).map((key) => (
-            <div key={key} className="relative border p-2">
-              {images[key] ? (
-                <>
-                  <Image
-                    width={100}
-                    height={100}
-                    src={
-                      typeof images[key] === "string"
-                        ? images[key]
-                        : URL.createObjectURL(images[key] as File)
-                    }
-                    alt={`Product ${key}`}
-                  />
-                  <Button
-                    type="text"
-                    danger
-                    className="absolute top-0 right-0"
-                    onClick={() => handleDeleteImage(key)}
-                    icon={<DeleteOutlined />}
-                  />
-                </>
-              ) : (
-                <Upload
-                  showUploadList={false}
-                  beforeUpload={(file) => handleUpload(file, key)}
-                >
-                  <Button icon={<PlusOutlined />}>Upload</Button>
-                </Upload>
-              )}
-            </div>
-          ))}
+          <div className="flex flex-wrap gap-4">
+            {Object.entries(pictures).map(([key, image]) => (
+              <div key={key} className="relative flex flex-col items-center">
+                {image ? (
+                  <>
+                    <img
+                      src={getImageSrc(image)}
+                      alt="Product"
+                      width={100}
+                      height={100}
+                      className="rounded-md object-cover border"
+                    />
+                    <Button
+                      type="text"
+                      danger
+                      icon={<CloseCircleOutlined />}
+                      onClick={() => handleDelete(key)}
+                      className="mt-1"
+                    >
+                      Delete
+                    </Button>
+                  </>
+                ) : (
+                  <Upload
+                    beforeUpload={(file) => handleUpload(file, key)}
+                    showUploadList={false}
+                  >
+                    <Button icon={<UploadOutlined />}>Upload</Button>
+                  </Upload>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </Form>
     </Modal>
