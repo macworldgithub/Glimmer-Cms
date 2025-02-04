@@ -59,3 +59,19 @@ export const getAllOrders = createAsyncThunk(
     }
   }
 );
+
+export const Ecommerce_Dashboard = createAsyncThunk(
+  "ecommerce_dashboard",
+  async (payload: { page_no: number }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+      const res = await axios.get(`${BACKEND_URL}/order/get_all_store_orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      return res.data;
+    } catch (error) {}
+  }
+);

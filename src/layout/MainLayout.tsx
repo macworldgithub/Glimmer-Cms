@@ -1,21 +1,29 @@
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Button, Layout } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import Bell from "../components/Bell";
 import Profile from "../components/Profile";
 import SideBar from "../components/SideBar";
 import UpdateStoreModal from "../components/UpdateStore";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+
+import { Navigate } from "react-router-dom";
 
 const { Header, Content } = Layout;
 
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
 
+  const role = useSelector((state: RootState) => state.Login.role);
+
   const [profile, setProfile] = useState<boolean>(false);
   // const {
   //   token: { colorBgContainer, borderRadiusLG },
   // } = theme.useToken();
+
   return (
     <Layout>
       <SideBar collapsed={collapsed} />

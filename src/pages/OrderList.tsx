@@ -319,7 +319,7 @@ const OrderList = () => {
       </div>
       <Table
         columns={columns}
-        dataSource={orderList}
+        dataSource={orderList ? orderList : []}
         rowKey="_id"
         style={{ width: "100%" }}
         pagination={{ pageSize: 10 }}

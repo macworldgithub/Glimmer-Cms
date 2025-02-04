@@ -65,72 +65,65 @@ export const getMenuItems = (
   ...(showEcommerce
     ? [
         {
-          key: "ecommerce",
-          icon: <ShoppingOutlined />,
-          label: "Ecommerce",
+          key: "ecommerce-dashboard",
+          icon: <DashboardOutlined />,
+          label: "Dashboard",
+          path: "/E_Dashboard",
+        },
+
+        {
+          key: "ecommerce-order",
+          icon: <OrderedListOutlined />,
+          label: "Order",
           children: [
             {
-              key: "ecommerce-dashboard",
-              icon: <DashboardOutlined />,
-              label: "Dashboard",
-              path: "/E_Dashboard",
-            },
-
-            {
-              key: "ecommerce-order",
-              icon: <OrderedListOutlined />,
-              label: "Order",
-              children: [
-                {
-                  key: "order-list",
-                  label: "Order List",
-                  //@ts-ignore
-                  path: "/orderList",
-                },
-                {
-                  key: "order-details",
-                  label: "Order Details",
-                  path: "/orderDetails",
-                },
-              ],
+              key: "order-list",
+              label: "Order List",
+              //@ts-ignore
+              path: "/orderList",
             },
             {
-              key: "ecommerce-products",
-              icon: <FileOutlined />,
-              label: "Products",
-              children: [
-                {
-                  key: "products",
-                  icon: <FileOutlined />,
-                  label: "Product List",
-                  path: "/Product_List",
-                },
-
-                {
-                  key: "add-product",
-                  icon: <FileOutlined />,
-                  label: "Add Product",
-                  path: "/Add_Product",
-                },
-                {
-                  key: "category-list",
-                  icon: <FileOutlined />,
-                  label: "Category List",
-                  path: "/Category_List",
-                },
-              ],
-            },
-            {
-              key: "ecommerce-customer",
-              icon: <UserOutlined />,
-              label: "Customer",
-            },
-            {
-              key: "ecommerce-reviews",
-              icon: <FileOutlined />,
-              label: "Managing Reviews",
+              key: "order-details",
+              label: "Order Details",
+              path: "/orderDetails",
             },
           ],
+        },
+        {
+          key: "ecommerce-products",
+          icon: <FileOutlined />,
+          label: "Products",
+          children: [
+            {
+              key: "products",
+              icon: <FileOutlined />,
+              label: "Product List",
+              path: "/Product_List",
+            },
+
+            {
+              key: "add-product",
+              icon: <FileOutlined />,
+              label: "Add Product",
+              path: "/Add_Product",
+            },
+            {
+              key: "category-list",
+              icon: <FileOutlined />,
+              label: "Category List",
+              path: "/Category_List",
+            },
+          ],
+        },
+        {
+          key: "ecommerce-customer",
+          icon: <UserOutlined />,
+          label: "Customer",
+        },
+        {
+          key: "ecommerce-reviews",
+          icon: <FileOutlined />,
+          label: "Managing Reviews",
         },
       ]
     : []),

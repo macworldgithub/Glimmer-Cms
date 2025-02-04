@@ -32,7 +32,11 @@ const Profile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
     <div className="h-max flex flex-col">
       {/* User Info Section */}
       <div className="flex items-center w-full p-2">
-        <Avatar size={"large"} src={Profilepic} icon="user" />
+        <Avatar
+          size={"large"}
+          src={data.role === "store" ? data.store_image : Profilepic}
+          icon="user"
+        />
         <div className="ml-2">
           <h1 className="text-sm font-medium">{data.store_name}</h1>
           <h1 className="text-xs font-light text-gray-500">Admin</h1>
@@ -70,7 +74,11 @@ const Profile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
 
   return (
     <Popover content={content} title="Profile Info" trigger="click">
-      <Avatar size={"large"} src={Profilepic} icon="user" />
+      <Avatar
+        size={"large"}
+        src={data.role === "store" ? data.store_image : Profilepic}
+        icon="user"
+      />
     </Popover>
   );
 };

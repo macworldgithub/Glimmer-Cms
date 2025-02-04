@@ -30,6 +30,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
 
   useEffect(() => {
     if (role === "store") {
+      // navigate("E_Dasboard");
       setShowEcommerce(true);
       setShowSuperAdmin(false);
       setShowSaloon(false);
@@ -41,7 +42,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
     }
 
     console.log("looop", data);
-  }, [role]);
+  }, []);
 
   const menuItems = getMenuItems(showEcommerce, showSaloon, showSuperAdmin);
 

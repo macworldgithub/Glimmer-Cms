@@ -21,12 +21,25 @@ import { RootState } from "./store/store.tsx";
 import SignupStore from "./pages/SignupStore.tsx";
 import Email from "./pages/Email.tsx";
 import Storeactivity from "./pages/Storeactivity.tsx";
+import { useEffect, useState } from "react";
 
 function App() {
   //  const isAuthenticated = false;
   const isAuthenticated = useSelector(
     (state: RootState) => state.Login.isAuthenticated
   );
+
+  const role = useSelector((state: RootState) => state.Login.role);
+
+  const [frontPage, setFrontPage] = useState("dasboard");
+
+  useEffect(() => {
+    if (role === "super_admin") {
+      setFrontPage("dashboard");
+    } else if (role === "store") {
+      setFrontPage("E_Dashboard");
+    }
+  }, [role]);
 
   return (
     <Router>
@@ -35,7 +48,11 @@ function App() {
         <Route
           path="/login"
           element={
-            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+            isAuthenticated ? (
+              <Navigate to={`/${frontPage}`} replace />
+            ) : (
+              <Login />
+            )
           }
         />
 
@@ -47,7 +64,7 @@ function App() {
           }
         >
           {/* Default (index) route inside MainLayout */}
-          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route index element={<Navigate to={frontPage} replace />} />
 
           {/* Nested routes */}
           <Route path="dashboard" element={<Dashboard />} />
@@ -60,8 +77,6 @@ function App() {
           <Route path="makestore" element={<SignupStore />} />
           <Route path="email" element={<Email />} />
           <Route path="store" element={<Storeactivity />} />
-
-
 
           <Route path="E_Dashboard" element={<Ecommerce_Dashboard />} />
         </Route>
