@@ -22,7 +22,7 @@ type RootReducerType = ReturnType<typeof rootReducer>;
 const persistConfig: PersistConfig<any> = {
   key: "glimmer", // Key for storage
   storage, // Default storage for web
-  blacklist: ["AddProduct"],
+  blacklist: ["AddProduct", "AllProducts"],
 };
 
 const persistedReducer = persistReducer<RootReducerType>(
@@ -34,6 +34,6 @@ export const store = configureStore({
   reducer: persistedReducer,
 });
 
-export const persistor = persistStore(store); 
+export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

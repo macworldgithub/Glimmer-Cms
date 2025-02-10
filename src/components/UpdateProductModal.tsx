@@ -21,12 +21,31 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateProductApi } from "../api/products/api";
 import { getAllProducts } from "../api/products/api";
 
+import {
+  getAllSubcategories,
+  getAllProductItem,
+  getAllCategories,
+} from "../api/category/api";
+
 import { BACKEND_URL } from "../config/server";
 
 import axios from "axios";
 import { RootState } from "../store/store";
 const { TextArea } = Input;
 const { Option } = Select;
+
+interface Selection {
+  category_id: string;
+  category_name: string;
+  sub_categories: {
+    sub_category_id: string;
+    name: string;
+    items: {
+      item_id: string;
+      name: string;
+    }[];
+  }[];
+}
 
 interface Product {
   name: string;
@@ -41,6 +60,9 @@ interface Product {
   store: string;
   _id: string;
   actions: string;
+  category: string;
+  sub_category: string;
+  item: string;
 }
 interface UpdateModalProps {
   visible: boolean;
@@ -59,6 +81,17 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
 }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
+  const [selections, setSelection] = useState<Selection[]>([]);
+
+  const [selectedCategory, setSelectedCategory] = useState({
+    id: "",
+    name: "",
+  });
+  const [selectedSubCategory, setSelectedSubCategory] = useState({
+    id: "",
+    name: "",
+  });
+  const [selectedItem, setSelectedItem] = useState({ id: "", name: "" });
 
   const token = useSelector((state: RootState) => state.Login.token);
 
@@ -68,6 +101,21 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     image3: "",
   });
 
+  function transformData(data: any[]): Selection[] {
+    return data.map((category) => ({
+      category_id: category.product_category._id,
+      category_name: category.product_category.name,
+      sub_categories: category.sub_categories.map((subCategory) => ({
+        sub_category_id: subCategory._id,
+        name: subCategory.name,
+        items: subCategory.items.map((item) => ({
+          item_id: item._id,
+          name: item.name,
+        })),
+      })),
+    }));
+  }
+
   useEffect(() => {
     setPictures((image) => ({
       ...image,
@@ -75,6 +123,20 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
       image2: form.getFieldValue("image2"),
       image3: form.getFieldValue("image3"),
     }));
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productItemsRes] = await Promise.all([getAllProductItem()]);
+        const Selections = transformData(productItemsRes);
+        setSelection(Selections);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleUpload = (file, key) => {
@@ -140,6 +202,72 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     return image instanceof File ? URL.createObjectURL(image) : image;
   };
 
+  function getCategoryById(data: Selection[], categoryId: string) {
+    const category = data.find((cat) => cat.category_id === categoryId);
+
+    return category
+      ? { id: category.category_id, name: category.category_name }
+      : null;
+  }
+
+  function getSubCategoryById(data: Selection[], subCategoryId: string) {
+    for (const category of data) {
+      const subCategory = category.sub_categories.find(
+        (sub) => sub.sub_category_id === subCategoryId
+      );
+      if (subCategory) {
+        return { id: subCategory.sub_category_id, name: subCategory.name };
+      }
+    }
+    return null;
+  }
+
+  function getItemById(data: Selection[], itemId: string) {
+    for (const category of data) {
+      for (const subCategory of category.sub_categories) {
+        const item = subCategory.items.find((it) => it.item_id === itemId);
+        if (item) {
+          return { id: item.item_id, name: item.name };
+        }
+      }
+    }
+    return null;
+  }
+
+  const HandleChangeCategory = (value: string) => {
+    const { id, name } = getCategoryById(selections, value);
+
+    setSelectedCategory((item: any) => ({ ...item, id: id, name: name }));
+  };
+  const HandleChangeSubCategory = (value: string) => {
+    const { id, name } = getSubCategoryById(selections, value);
+
+    setSelectedSubCategory((item: any) => ({ ...item, id: id, name: name }));
+  };
+  const HandleChangeItem = (value: string) => {
+    const { id, name } = getItemById(selections, value);
+
+    setSelectedItem((item: any) => ({ ...item, id: id, name: name }));
+  };
+
+  useEffect(() => {
+    setSelectedCategory((item) => ({
+      ...item,
+      id: product.category,
+      name: getCategoryById(selections, product.category)?.name,
+    }));
+    setSelectedSubCategory((item) => ({
+      ...item,
+      id: product.sub_category,
+      name: getSubCategoryById(selections, product.sub_category)?.name,
+    }));
+    setSelectedItem((item) => ({
+      ...item,
+      id: product.item,
+      name: getItemById(selections, product.item)?.name,
+    }));
+  }, []);
+
   return (
     <Modal
       title="Update Product"
@@ -164,8 +292,70 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
           base_price: product.base_price,
           discounted_price: product.discounted_price,
           status: product.status,
+          categoryId: selectedCategory.id,
+          categoryName: selectedCategory.name,
+          sub_categoryId: selectedSubCategory.id,
+          sub_categoryName: selectedSubCategory.name,
+          itemId: selectedItem.id,
+          itemName: selectedItem.name,
         }}
       >
+        <Form.Item label="Category" name="categoryName">
+          <Select
+            placeholder="Select a category"
+            //@ts-ignore
+            onChange={HandleChangeCategory}
+          >
+            {selections?.map((item: any) => (
+              <Select.Option key={item.category_id} value={item.category_id}>
+                {" "}
+                {item.category_name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item label="Subcategory" name="sub_categoryName">
+          <Select
+            placeholder="Select a subcategory"
+            //@ts-ignore
+            onChange={HandleChangeSubCategory}
+            disabled={!selectedCategory.id}
+          >
+            {selections
+              //@ts-ignore
+              .find((item) => item.category_id === selectedCategory.id)
+              ?.sub_categories.map((sub) => (
+                <Select.Option
+                  key={sub.sub_category_id}
+                  value={sub.sub_category_id}
+                >
+                  {sub.name}
+                </Select.Option>
+              ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item label="Item" name="itemName">
+          <Select
+            placeholder="Select a Item"
+            //@ts-ignore
+            onChange={HandleChangeItem}
+            disabled={!selectedSubCategory.id}
+          >
+            {selections
+              .find((item) => item.category_id === selectedCategory?.id)
+              ?.sub_categories.find(
+                (sub) => sub.sub_category_id === selectedSubCategory?.id
+              )
+              ?.items.map((product) => (
+                <Select.Option key={product.item_id} value={product.item_id}>
+                  {product.name}
+                </Select.Option>
+              ))}
+          </Select>
+        </Form.Item>
+
         <Form.Item
           label="Name"
           name="name"

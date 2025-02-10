@@ -14,6 +14,9 @@ interface Product {
   status: "Active" | "Inactive";
   store: string;
   _id: string;
+  category: string;
+  sub_category: string;
+  item: string;
 }
 
 interface AllProducts {
@@ -38,6 +41,8 @@ const allProductsSlice = createSlice({
     builder.addCase(getAllProducts.fulfilled, (state, action) => {
       //   state.products = action.payload;
       state.products = action.payload;
+
+      console.log("yelly", action.payload);
     });
 
     builder.addCase(updateProductApi.fulfilled, (state, action) => {
