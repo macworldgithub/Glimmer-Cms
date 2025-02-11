@@ -83,6 +83,20 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   const dispatch = useDispatch();
   const [selections, setSelection] = useState<Selection[]>([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productItemsRes] = await Promise.all([getAllProductItem()]);
+        const Selections = transformData(productItemsRes);
+        setSelection(Selections);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const [selectedCategory, setSelectedCategory] = useState({
     id: "",
     name: "",
@@ -125,20 +139,6 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     }));
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productItemsRes] = await Promise.all([getAllProductItem()]);
-        const Selections = transformData(productItemsRes);
-        setSelection(Selections);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   const handleUpload = (file, key) => {
     console.log("lelee", key);
     setPictures((prev) => ({
@@ -164,6 +164,10 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     formData.append("base_price", form.getFieldValue("base_price"));
     formData.append("discounted_price", form.getFieldValue("discounted_price"));
     formData.append("status", form.getFieldValue("status"));
+
+    formData.append("category", form.getFieldValue("categoryId"));
+    formData.append("sub_category", form.getFieldValue("sub_categoryId"));
+    formData.append("item", form.getFieldValue("itemId"));
 
     // Append images (check if file or URL)
     Object.entries(pictures).forEach(([key, value]) => {
@@ -212,14 +216,18 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
 
   function getSubCategoryById(data: Selection[], subCategoryId: string) {
     for (const category of data) {
-      const subCategory = category.sub_categories.find(
-        (sub) => sub.sub_category_id === subCategoryId
-      );
-      if (subCategory) {
-        return { id: subCategory.sub_category_id, name: subCategory.name };
+      for (const subCategory of category.sub_categories) {
+        if (subCategory.sub_category_id === subCategoryId) {
+          console.log("chala sub category", {
+            id: subCategory.sub_category_id,
+            name: subCategory.name,
+          });
+          return { id: subCategory.sub_category_id, name: subCategory.name };
+        }
       }
     }
-    return null;
+    console.log("chala nhi sub category", data, subCategoryId);
+    return null; // Return null if subCategoryId is not found
   }
 
   function getItemById(data: Selection[], itemId: string) {
@@ -237,12 +245,21 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   const HandleChangeCategory = (value: string) => {
     const { id, name } = getCategoryById(selections, value);
 
-    setSelectedCategory((item: any) => ({ ...item, id: id, name: name }));
+    if (id !== selectedCategory.id) {
+      setSelectedCategory((item: any) => ({ ...item, id: id, name: name }));
+
+      setSelectedSubCategory({ id: "", name: "" });
+      setSelectedItem({ id: "", name: "" });
+    }
   };
   const HandleChangeSubCategory = (value: string) => {
     const { id, name } = getSubCategoryById(selections, value);
 
-    setSelectedSubCategory((item: any) => ({ ...item, id: id, name: name }));
+    if (id !== selectedSubCategory.id) {
+      setSelectedSubCategory((item: any) => ({ ...item, id: id, name: name }));
+
+      setSelectedItem({ id: "", name: "" });
+    }
   };
   const HandleChangeItem = (value: string) => {
     const { id, name } = getItemById(selections, value);
@@ -251,11 +268,13 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   };
 
   useEffect(() => {
+    //@ts-ignore
     setSelectedCategory((item) => ({
       ...item,
       id: product.category,
       name: getCategoryById(selections, product.category)?.name,
     }));
+    //@ts-ignore
     setSelectedSubCategory((item) => ({
       ...item,
       id: product.sub_category,
@@ -266,7 +285,17 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
       id: product.item,
       name: getItemById(selections, product.item)?.name,
     }));
-  }, []);
+  }, [selections]);
+
+  useEffect(() => {
+    form.setFieldValue("categoryName", selectedCategory.name);
+    form.setFieldValue("categoryId", selectedCategory.id);
+    form.setFieldValue("sub_categoryName", selectedSubCategory.name);
+    form.setFieldValue("sub_categoryId", selectedSubCategory.id);
+    form.setFieldValue("itemName", selectedItem.name);
+    form.setFieldValue("itemId", selectedItem.id);
+    // console.log(() => getCategoryById(selections, product.category), "le bhai");
+  }, [selectedCategory, selectedSubCategory, selectedItem]);
 
   return (
     <Modal
