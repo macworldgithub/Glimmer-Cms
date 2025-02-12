@@ -20,6 +20,7 @@ const SizeAndType = ({
   HandleChange,
 }: SizeAndType) => {
   const product = useSelector((state: RootState) => state.AddProduct);
+  
   const addSizeField = () => {
     setSizes([...sizes, { id: sizes.length + 1, value: "", unit: "mg" }]);
   };
