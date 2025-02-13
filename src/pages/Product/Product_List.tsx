@@ -229,7 +229,8 @@ const ProductTableWithHeader = () => {
       </div>
 
       {/* SearchBar */}
-      <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} />
+      <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} hideName={false}
+        hideCreatedAt={false} />
 
       {/* Modals */}
       {selectedProduct && (
