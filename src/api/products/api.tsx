@@ -17,7 +17,7 @@ export interface UpdateStoreApi {
 // Async thunk for signup
 export const getAllProducts = createAsyncThunk(
   "getAllProducts",
-  async (payload: { page_no: number, name: string, category: string, created_at: string }, { rejectWithValue, getState }) => {
+  async (payload: { page_no: number, name: string, category: string, created_at?: string }, { rejectWithValue, getState }) => {
     try {
       // Access token from the Redux state
       const state = getState() as RootState;
