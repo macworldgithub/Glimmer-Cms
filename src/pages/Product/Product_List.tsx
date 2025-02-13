@@ -6,7 +6,7 @@ import { getAllProducts } from "../../api/products/api";
 import DeleteProductModal from "../../components/DeleteProductModal";
 import UpdateModal from "../../components/UpdateProductModal";
 import SearchBar from "../../components/SearchBar"; // Import SearchBar
-import { RootState } from "../../store/store";
+import { AppDispatch, RootState } from "../../store/store";
 import { getAllProductItem } from "../../api/category/api";
 import dayjs from "dayjs";
 
@@ -37,7 +37,7 @@ interface CategorySelection {
 }
 
 const ProductTableWithHeader = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const role = useSelector((state: RootState) => state.Login.role);
 
   const [selectedProduct, setSelectedProduct] = useState<TableData | null>(
@@ -80,6 +80,7 @@ const ProductTableWithHeader = () => {
           name: item.name,
         })),
       })),
+      created_at: category.product_category.created_at,
     }));
   }
 
@@ -89,9 +90,17 @@ const ProductTableWithHeader = () => {
   }));
 
   useEffect(() => {
+    console.log("Filters applied:", filters);
     //@ts-ignore
-    dispatch(getAllProducts({ page_no: currentPage }));
-  }, [dispatch, currentPage]);
+    dispatch(
+      getAllProducts({
+        page_no: currentPage,
+        name: filters.name ?? "",
+        category: filters.category ?? "",
+        created_at: filters.created_at ?? "",
+      })
+    );
+  }, [dispatch, currentPage, filters]);
 
   const rawProductList = useSelector(
     (state: RootState) => state.AllProducts.products
@@ -104,18 +113,6 @@ const ProductTableWithHeader = () => {
       : null;
   };
 
-  const getItemById = (data: CategorySelection[], itemId: string) => {
-    for (const category of data) {
-      for (const subCategory of category.sub_categories) {
-        const item = subCategory.items.find((it) => it.item_id === itemId);
-        if (item) {
-          return { id: item.item_id, name: item.name };
-        }
-      }
-    }
-    return null;
-  };
-
   const transformProductData = (
     products: any[],
     selections: CategorySelection[]
@@ -124,7 +121,6 @@ const ProductTableWithHeader = () => {
       ...product,
       category:
         getCategoryById(selections, product.category)?.name || product.category,
-      item: getItemById(selections, product.item)?.name || product.item,
     }));
   };
 
@@ -171,6 +167,17 @@ const ProductTableWithHeader = () => {
   const handleDelete = (record: TableData) => {
     setSelectedProduct(record);
     setIsDeleteModalVisible(true);
+  };
+
+  const handleSearch = (newFilters: {
+    name?: string;
+    category?: string;
+    created_at?: string;
+  }) => {
+    console.log("11111111");
+    console.log("New filters:", newFilters); 
+    setFilters(newFilters);
+    setCurrentPage(1); // Reset to the first page when applying new filters
   };
 
   const columns = [
@@ -222,7 +229,7 @@ const ProductTableWithHeader = () => {
       </div>
 
       {/* SearchBar */}
-      <SearchBar onSearch={setFilters} categories={categoryNamesWithIds} />
+      <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} />
 
       {/* Modals */}
       {selectedProduct && (
@@ -250,11 +257,11 @@ const ProductTableWithHeader = () => {
         <Table
           columns={columns}
           //@ts-ignore
-          dataSource={paginatedProducts}
+          dataSource={filters.name || filters.category || filters.created_at ? paginatedProducts : productList?.products}
           pagination={{
             current: currentPage,
             pageSize: pageSize,
-            total: filteredProducts.length,
+            total: productList?.total,
             onChange: (page) => setCurrentPage(page),
           }}
           className="border-t"
