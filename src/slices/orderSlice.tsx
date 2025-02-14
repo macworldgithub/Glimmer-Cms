@@ -70,7 +70,21 @@ const initialState: AllOrder = {
   page: 1,
 };
 
-const orderSlice = createSlice({
+// const orderSlice = createSlice({
+//   name: "allOrders",
+//   initialState,
+//   reducers: {},
+//   extraReducers: (builder) => {
+//     builder.addCase(getAllOrders.fulfilled, (state, action) => {
+//       state.orders = action.payload; // Assuming the payload is the array of orders.
+//     });
+//     builder.addCase(getAllOrders.rejected, (state, action) => {
+//       console.error("Failed to fetch orders:", action.payload);
+//     });
+//   },
+// });
+
+const allOrderSlice = createSlice({
   name: "allOrders",
   initialState,
   reducers: {},
@@ -84,4 +98,4 @@ const orderSlice = createSlice({
   },
 });
 
-export default orderSlice;
+export default allOrderSlice;
