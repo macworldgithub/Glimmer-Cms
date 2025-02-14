@@ -107,12 +107,12 @@ export const getMenuItems = (
               label: "Add Product",
               path: "/Add_Product",
             },
-            {
-              key: "category-list",
-              icon: <FileOutlined />,
-              label: "Category List",
-              path: "/Category_List",
-            },
+            // {
+            //   key: "category-list",
+            //   icon: <FileOutlined />,
+            //   label: "Category List",
+            //   path: "/Category_List",
+            // },
           ],
         },
         {
