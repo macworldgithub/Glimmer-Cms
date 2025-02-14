@@ -17,7 +17,7 @@ export interface UpdateStoreApi {
 // Async thunk for signup
 export const getAllProducts = createAsyncThunk(
   "getAllProducts",
-  async (payload: { page_no: number }, { rejectWithValue, getState }) => {
+  async (payload: { page_no: number, name: string, category: string, created_at?: string }, { rejectWithValue, getState }) => {
     try {
       // Access token from the Redux state
       const state = getState() as RootState;
@@ -25,7 +25,7 @@ export const getAllProducts = createAsyncThunk(
 
       // Make API request with page number as a query parameter
       const response = await axios.get(
-        `${BACKEND_URL}/product/get_all_store_products?page_no=${payload.page_no}`,
+        `${BACKEND_URL}/product/get_all_store_products?page_no=${payload.page_no}&name=${payload.name}&category=${payload.category}&created_at=${payload.created_at}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Add Bearer token
