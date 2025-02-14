@@ -75,3 +75,27 @@ export const Ecommerce_Dashboard = createAsyncThunk(
     } catch (error) {}
   }
 );
+
+
+export const getAllStoreOrders = createAsyncThunk(
+  "getAllOrders",
+  async (_, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.get(
+        `${BACKEND_URL}/order/getOrdersByStore`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data; 
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
