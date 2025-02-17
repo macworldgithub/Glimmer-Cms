@@ -10,6 +10,11 @@ import revenue from "../assets/Profile/revenue.png";
 import transaction from "../assets/Profile/transaction.png";
 import wallet from "../assets/Profile/wallet.png";
 import OrderTable from "../components/OrderTable";
+
+import { getDashBoardOrders } from "../api/order/api";
+
+import { useDispatch, UseDispatch } from "react-redux";
+
 type DashboardData = {
   user: {
     name: string;
@@ -51,6 +56,13 @@ type DashboardData = {
 };
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    //@ts-ignore
+    dispatch(getDashBoardOrders(1));
+  }, []);
+
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
     null
   );

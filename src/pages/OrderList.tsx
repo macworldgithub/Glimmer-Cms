@@ -7,7 +7,7 @@ import {
   CloseCircleOutlined,
   RollbackOutlined,
 } from "@ant-design/icons";
-import { getAllStoreOrders } from "../api/order/api";
+// import { getAllStoreOrders } from "../api/order/api";
 import { AppDispatch, RootState } from "../store/store";
 
 const { Title, Text } = Typography;
@@ -25,15 +25,15 @@ const OrderList = () => {
 
   useEffect(() => {
     console.log("Filters applied:", filters);
-    dispatch(getAllStoreOrders());
+    // dispatch(getAllStoreOrders());
   }, [dispatch, currentPage, filters]);
 
   const orderList = useSelector((state: RootState) => state.AllOrders.orders);
 
   const viewOrder = (record: any) => {
     console.log("View Order:", record);
-    setSelectedOrder(record); 
-    setIsModalVisible(true); 
+    setSelectedOrder(record);
+    setIsModalVisible(true);
   };
 
   const deleteOrder = (record: any) => {
@@ -153,7 +153,7 @@ const OrderList = () => {
         pagination={{
           pageSize: 10,
           current: currentPage,
-          onChange: (page) => setCurrentPage(page), 
+          onChange: (page) => setCurrentPage(page),
         }}
       />
 
@@ -174,7 +174,11 @@ const OrderList = () => {
               </Col>
               <Col span={12}>
                 <Title level={5}>Order Status</Title>
-                <Tag color={selectedOrder?.status === "Confirmed" ? "green" : "red"}>
+                <Tag
+                  color={
+                    selectedOrder?.status === "Confirmed" ? "green" : "red"
+                  }
+                >
                   {selectedOrder?.status}
                 </Tag>
               </Col>

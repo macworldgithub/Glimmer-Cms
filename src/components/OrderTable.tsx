@@ -3,6 +3,9 @@ import React from "react";
 import { useState } from "react";
 import { Table, Tag, Button } from "antd";
 
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store/store";
+
 const allData = [
   {
     key: "1",
@@ -45,11 +48,9 @@ const OrderTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
 
-  const paginatedData = allData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
+  const paginatedData = useSelector(
+    (state: RootState) => state.AllOrders.dashboardOrders
   );
-
   const viewOrder = (orderId: string) => {
     console.log("Viewing order:", orderId);
     // Add logic to view the order
@@ -63,14 +64,14 @@ const OrderTable = () => {
   const columns = [
     {
       title: "ORDER ID",
-      dataIndex: "order_id",
-      key: "order_id",
+      dataIndex: "_id",
+      key: "_id",
     },
     {
-        title: "CUSTOMER NAME",
-        dataIndex: "customer_name",
-        key: "customer_name",
-      },
+      title: "CUSTOMER EMAIL",
+      dataIndex: "customerEmail",
+      key: "customerEmail",
+    },
     {
       title: "PAYMENT METHOD",
       dataIndex: "payment_method",
@@ -82,39 +83,36 @@ const OrderTable = () => {
       key: "status",
       render: (status: string) => {
         let color = "blue";
-        if (status === "pending") color = "red";
-        if (status === "inprocess") color = "orange"
+
+        if (status === "Pending") color = "orange";
         if (status === "shipped") color = "green";
-        if (status === "delivered") color = "blue";
+        if (status === "Confirmed") color = "blue";
         return <Tag color={color}>{status}</Tag>;
       },
     },
     {
       title: "ACTIONS",
       key: "actions",
-      render: (_:any, record:any) => (
+      render: (_: any, record: any) => (
         <div>
           <Button type="link" onClick={() => viewOrder(record.order)}>
             View
           </Button>
           <Button type="link" danger onClick={() => deleteOrder(record.order)}>
-            Delete
+            Reject
           </Button>
         </div>
       ),
     },
   ];
 
- 
   return (
-    <div className=" w-[100%] h-[100%] flex flex-col  items-center  p-2 gap-2 ">
-     
+    <div className=" w-[140%] ">
       <Table
         columns={columns}
         dataSource={paginatedData}
-        style={{ width: "100%" }}
-        className=" shadow-lg max-sm:overflow-x-auto"
-        scroll={{ x: 1000 }} 
+        className=" shadow-lg max-sm:overflow-x-auto w-[99vw]"
+        scroll={{ x: 1000 }}
         pagination={{
           current: currentPage,
           pageSize: pageSize,

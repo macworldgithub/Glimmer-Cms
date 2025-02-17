@@ -76,8 +76,30 @@ export const Ecommerce_Dashboard = createAsyncThunk(
   }
 );
 
+export const getDashBoardOrders = createAsyncThunk(
+  "getAllOrders",
+  async (page: number, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
 
-export const getAllStoreOrders = createAsyncThunk(
+      const response = await axios.get(
+        `${BACKEND_URL}/order/getOrdersByStore?status=Pending`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
+export const getOrderListOrders = createAsyncThunk(
   "getAllOrders",
   async (_, { rejectWithValue, getState }) => {
     try {
@@ -93,7 +115,7 @@ export const getAllStoreOrders = createAsyncThunk(
         }
       );
 
-      return response.data; 
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");
     }
