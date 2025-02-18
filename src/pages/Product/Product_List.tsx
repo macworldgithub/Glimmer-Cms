@@ -208,11 +208,6 @@ const ProductTableWithHeader = () => {
     { title: "Created at", dataIndex: "created_at", key: "created_At" },
   ];
 
-  // Pagination logic
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
-
   return (
     <div>
       {/* Header Section */}
