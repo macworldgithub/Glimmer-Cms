@@ -6,10 +6,13 @@ interface SearchBarProps {
         name?: string;
         category?: string;
         created_at?: string;
+        customer_email?: string;
     }) => void;
-    categories: { name: string; id: string }[];
+    categories?: { name: string; id: string }[];
     hideName?: boolean;
     hideCreatedAt?: boolean;
+    hideCustomerEmail?: boolean;
+    hideCategory?: boolean;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -17,11 +20,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
     categories,
     hideName = true,
     hideCreatedAt = true,
+    hideCustomerEmail = true,
+    hideCategory = true,
 }) => {
     const [filters, setFilters] = useState<{
         name?: string;
         category?: string;
         created_at?: string;
+        customer_email?: string;
     }>({});
 
     const handleInputChange = (key: string, value: string) => {
@@ -46,19 +52,29 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     className="w-1/3"
                 />
             )}
+            {!hideCustomerEmail && (
+                <Input
+                    placeholder="Search by Customer Email"
+                    onChange={(e) => handleInputChange("customer_email", e.target.value)}
+                    allowClear
+                    className="w-1/3"
+                />
+            )}
 
-            <Select
-                placeholder="Filter by Category"
-                onChange={(value) => handleInputChange("category", value)}
-                allowClear
-                className="w-1/3"
-            >
-                {categories.map((cat) => (
-                    <Select.Option key={cat.id} value={cat.id}>
-                        {cat.name}
-                    </Select.Option>
-                ))}
-            </Select>
+            {!hideCategory &&
+                <Select
+                    placeholder="Filter by Category"
+                    onChange={(value) => handleInputChange("category", value)}
+                    allowClear
+                    className="w-1/3"
+                >
+                    {categories.map((cat) => (
+                        <Select.Option key={cat.id} value={cat.id}>
+                            {cat.name}
+                        </Select.Option>
+                    ))}
+                </Select>
+            }
 
             {!hideCreatedAt && (
                 <DatePicker

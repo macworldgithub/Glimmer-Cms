@@ -9,6 +9,7 @@ import SearchBar from "../../components/SearchBar"; // Import SearchBar
 import { AppDispatch, RootState } from "../../store/store";
 import { getAllProductItem } from "../../api/category/api";
 import dayjs from "dayjs";
+import { useSearchParams } from "react-router-dom";
 
 interface TableData {
   name: string;
@@ -45,14 +46,16 @@ const ProductTableWithHeader = () => {
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
   const [selections, setSelections] = useState<CategorySelection[]>([]);
-  const [filters, setFilters] = useState<{
-    name?: string;
-    category?: string;
-    created_at?: string;
-  }>({});
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const pageSize = 8;
+
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const nameFilter = searchParams.get("name") || "";
+  const categoryFilter = searchParams.get("category") || "";
+  const createdAtFilter = searchParams.get("created_at") || "";
 
   useEffect(() => {
     const fetchSelections = async () => {
@@ -90,17 +93,16 @@ const ProductTableWithHeader = () => {
   }));
 
   useEffect(() => {
-    console.log("Filters applied:", filters);
     //@ts-ignore
     dispatch(
       getAllProducts({
         page_no: currentPage,
-        name: filters.name ?? "",
-        category: filters.category ?? "",
-        created_at: filters.created_at ?? "",
+        name: nameFilter,
+        category: categoryFilter,
+        created_at: createdAtFilter,
       })
     );
-  }, [dispatch, currentPage, filters]);
+  }, [dispatch, currentPage, nameFilter, categoryFilter, createdAtFilter]);
 
   const rawProductList = useSelector(
     (state: RootState) => state.AllProducts.products
@@ -127,34 +129,27 @@ const ProductTableWithHeader = () => {
   const productList = useMemo(() => {
     return Array.isArray(rawProductList)
       ? {
-          products: transformProductData(rawProductList, selections),
-          total: rawProductList.length,
-        }
+        products: transformProductData(rawProductList, selections),
+        total: rawProductList.length,
+      }
       : rawProductList || { products: [], total: 0 };
   }, [rawProductList, selections]);
 
-  console.log("111111");
-  console.log(productList);
-  
+
   const filteredProducts = productList.products.filter((product: TableData) => {
-    const categoryFilter = filters.category ? filters.category.trim() : null;
-    const nameFilter = filters.name ? filters.name.toLowerCase().trim() : null;
-    const createdAtFilter = filters.created_at ? filters.created_at.trim() : null;
-  
     const productCategory = product.category ? product.category.trim() : "";
     const productName = product.name ? product.name.toLowerCase().trim() : "";
     const productCreatedAt = product.created_at
       ? dayjs(product.created_at).format("YYYY-MM-DD")
       : "";
-  
-    const isCategoryMatch = !categoryFilter || productCategory === categoryFilter;
-    const isNameMatch = !nameFilter || productName.includes(nameFilter);
-    const isCreatedAtMatch =
-      !createdAtFilter || dayjs(productCreatedAt).isSame(createdAtFilter, "day");
-  
-    return isCategoryMatch && isNameMatch && isCreatedAtMatch;
+
+    return (
+      (!categoryFilter || productCategory === categoryFilter) &&
+      (!nameFilter || productName.includes(nameFilter.toLowerCase())) &&
+      (!createdAtFilter || dayjs(productCreatedAt).isSame(createdAtFilter, "day"))
+    );
   });
-  
+
 
   const handleUpdate = (record: TableData) => {
     setSelectedProduct(null);
@@ -169,17 +164,14 @@ const ProductTableWithHeader = () => {
     setIsDeleteModalVisible(true);
   };
 
-  const handleSearch = (newFilters: {
-    name?: string;
-    category?: string;
-    created_at?: string;
-  }) => {
-    console.log("11111111");
-    console.log("New filters:", newFilters); 
-    setFilters(newFilters);
-    setCurrentPage(1); // Reset to the first page when applying new filters
+  const handleSearch = (newFilters: { name?: string; category?: string; created_at?: string }) => {
+    setSearchParams({
+      page: "1",
+      name: newFilters.name || "",
+      category: newFilters.category || "",
+      created_at: newFilters.created_at || "",
+    });
   };
-
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
     { title: "Description", dataIndex: "description", key: "description" },
@@ -230,7 +222,7 @@ const ProductTableWithHeader = () => {
 
       {/* SearchBar */}
       <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} hideName={false}
-        hideCreatedAt={false} />
+        hideCreatedAt={false} hideCategory={false} />
 
       {/* Modals */}
       {selectedProduct && (
@@ -258,12 +250,12 @@ const ProductTableWithHeader = () => {
         <Table
           columns={columns}
           //@ts-ignore
-          dataSource={filters.name || filters.category || filters.created_at ? paginatedProducts : productList?.products}
+          dataSource={filteredProducts}
           pagination={{
             current: currentPage,
             pageSize: pageSize,
             total: productList?.total,
-            onChange: (page) => setCurrentPage(page),
+            onChange: (page) => setSearchParams({ page: page.toString(), name: nameFilter, category: categoryFilter, created_at: createdAtFilter }),
           }}
           className="border-t"
           scroll={{ x: 1000 }}

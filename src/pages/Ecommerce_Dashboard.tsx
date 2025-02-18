@@ -298,8 +298,8 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="flex max-xl:flex-col">
-        <div className="w-[70%] max-xl:w-full">
+      <div className="flex max-xl:flex-col ">
+        <div className="w-[99vw] justify-between max-xl:w-full">
           <OrderTable />
         </div>
       </div>
