@@ -63,6 +63,8 @@ interface Product {
   category: string;
   sub_category: string;
   item: string;
+  type: any[];
+  size: any[];
 }
 interface UpdateModalProps {
   visible: boolean;
@@ -106,6 +108,9 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     name: "",
   });
   const [selectedItem, setSelectedItem] = useState({ id: "", name: "" });
+
+  const [type, setType] = useState<any>();
+  const [size, setSize] = useState<any>();
 
   const token = useSelector((state: RootState) => state.Login.token);
 
@@ -168,6 +173,22 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     formData.append("category", form.getFieldValue("categoryId"));
     formData.append("sub_category", form.getFieldValue("sub_categoryId"));
     formData.append("item", form.getFieldValue("itemId"));
+
+    if (size?.length > 0) {
+      size?.forEach((size, index) => {
+        formData.append(`size${index + 1}`, JSON.stringify(size));
+      });
+    } else {
+      formData.append(`size1`, JSON.stringify([]));
+    }
+
+    if (type?.length > 0) {
+      type?.forEach((type, index) => {
+        formData.append(`type${index + 1}`, JSON.stringify(type));
+      });
+    } else {
+      formData.append(`type1`, JSON.stringify([]));
+    }
 
     // Append images (check if file or URL)
     Object.entries(pictures).forEach(([key, value]) => {
@@ -285,6 +306,9 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
       id: product.item,
       name: getItemById(selections, product.item)?.name,
     }));
+
+    setType(product.type);
+    setSize(product.size);
   }, [selections]);
 
   useEffect(() => {
@@ -296,6 +320,60 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     form.setFieldValue("itemId", selectedItem.id);
     // console.log(() => getCategoryById(selections, product.category), "le bhai");
   }, [selectedCategory, selectedSubCategory, selectedItem]);
+
+  const handleSizeChange = (id: string | null, value: string) => {
+    if (!id) return; // If id is null, do nothing
+
+    setSize((prevSizes) =>
+      prevSizes.map(
+        (item) => (item.id === id ? { ...item, value: value } : item) // Update only the matching item
+      )
+    );
+  };
+  const handleTypeChange = (id: string | null, value: string) => {
+    if (!id) return; // If id is null, do nothing
+
+    setType((prevSizes) =>
+      prevSizes.map(
+        (item) => (item.id === id ? { ...item, value: value } : item) // Update only the matching item
+      )
+    );
+  };
+
+  const handleUnitSizeChange = (id: string | null, value: string) => {
+    if (!id) return; // If id is null, do nothing
+
+    setSize((prevSizes) =>
+      prevSizes.map(
+        (item) => (item.id === id ? { ...item, unit: value } : item) // Update only the matching item
+      )
+    );
+  };
+
+  const handleSizeDelete = (id: string | null) => {
+    if (!id) return; // If id is null, do nothing
+
+    setSize((prevSizes) => prevSizes.filter((item) => item.id !== id));
+  };
+  const handleTypeDelete = (id: string | null) => {
+    if (!id) return; // If id is null, do nothing
+
+    setType((prevSizes) => prevSizes.filter((item) => item.id !== id));
+  };
+
+  const handleAddSize = () => {
+    setSize((prevSizes) => [
+      ...prevSizes, // Keep existing items
+      { id: Date.now().toString(), value: "", unit: "" }, // Add new item
+    ]);
+  };
+
+  const handleAddType = () => {
+    setType((prevSizes) => [
+      ...prevSizes, // Keep existing items
+      { id: Date.now().toString(), value: "", unit: "" }, // Add new item
+    ]);
+  };
 
   return (
     <Modal
@@ -427,6 +505,64 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
             <Option value="Inactive">Inactive</Option>
           </Select>
         </Form.Item>
+        <div>
+          {size?.map((item, index) => (
+            <Form.Item label={`Size ${index + 1}`}>
+              <div className="flex gap-3 ">
+                <Input
+                  defaultValue={item?.value}
+                  onChange={(e) => handleSizeChange(item?.id, e.target.value)}
+                />
+                <Form.Item label="Unit">
+                  <Input
+                    defaultValue={item?.unit}
+                    onChange={(e) =>
+                      handleUnitSizeChange(item?.id, e.target.value)
+                    }
+                  />
+                </Form.Item>
+                <Button
+                  type="primary"
+                  danger
+                  onClick={() => handleSizeDelete(item?.id)}
+                >
+                  {" "}
+                  Delete
+                </Button>
+              </div>
+            </Form.Item>
+          ))}
+
+          <Button type="primary" onClick={handleAddSize} className="mb-1">
+            Add Size +
+          </Button>
+        </div>
+
+        <div>
+          {type?.map((item, index) => (
+            <Form.Item label={`Type ${index + 1}`}>
+              <div className="flex gap-3 ">
+                <Input
+                  defaultValue={item?.value}
+                  onChange={(e) => handleTypeChange(item?.id, e.target.value)}
+                />
+
+                <Button
+                  type="primary"
+                  danger
+                  onClick={() => handleTypeDelete(item?.id)}
+                >
+                  {" "}
+                  Delete
+                </Button>
+              </div>
+            </Form.Item>
+          ))}
+
+          <Button type="primary" onClick={handleAddType} className="mb-1">
+            Add Type +
+          </Button>
+        </div>
 
         <div className="flex flex-wrap gap-4">
           <div className="flex flex-wrap gap-4">

@@ -94,7 +94,15 @@ export const addProductApi = createAsyncThunk(
       formData.append("sub_category", product.subcategory);
       formData.append("item", product.item);
 
-      // Append images to FormData
+      product.size.forEach((size, index) => {
+        formData.append(`size${index + 1}`, JSON.stringify(size));
+      });
+
+      // ✅ Append type objects as separate fields (type1, type2, etc.)
+      product.type.forEach((type, index) => {
+        formData.append(`type${index + 1}`, JSON.stringify(type));
+      });
+
       // @ts-ignore
       product.images.forEach((file: File, index: number) => {
         formData.append(`image${index + 1}`, file);
