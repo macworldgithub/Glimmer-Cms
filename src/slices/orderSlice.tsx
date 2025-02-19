@@ -48,6 +48,7 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 import { getDashBoardOrders, getOrderListOrders } from "../api/order/api";
+import { update_product_of_order } from "../api/order/api";
 
 interface Items {
   product: any;
@@ -78,6 +79,22 @@ const initialState: AllOrder = {
   orderTotalPages: 0, // Add initial value for orderPage
 };
 
+const removeProductFromOrder = (
+  orders: Order[],
+  orderId: string,
+  productId: string
+): Order[] => {
+  return orders.map((order) => {
+    if (order._id === orderId) {
+      return {
+        ...order,
+        items: order.items.filter((item) => item.product._id !== productId), // Removing product and quantity
+      };
+    }
+    return order;
+  });
+};
+
 const allOrderSlice = createSlice({
   name: "allOrders",
   initialState,
@@ -88,7 +105,20 @@ const allOrderSlice = createSlice({
 
       state.dashboardOrders = orders;
       state.dashboardTotalPages = totalPages;
-    });
+    }),
+      builder.addCase(getOrderListOrders.fulfilled, (state, action) => {
+        const { orders, toalPages } = action.payload;
+        state.orderList = orders;
+        state.orderTotalPages = toalPages;
+      }),
+      builder.addCase(update_product_of_order.fulfilled, (state, action) => {
+        const { message, status, orderId, productId } = action.payload;
+        state.dashboardOrders = removeProductFromOrder(
+          state.dashboardOrders,
+          orderId,
+          productId
+        );
+      });
   },
 });
 
