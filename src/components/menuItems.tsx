@@ -115,16 +115,16 @@ export const getMenuItems = (
             // },
           ],
         },
-        {
-          key: "ecommerce-customer",
-          icon: <UserOutlined />,
-          label: "Customer",
-        },
-        {
-          key: "ecommerce-reviews",
-          icon: <FileOutlined />,
-          label: "Managing Reviews",
-        },
+        // {
+        //   key: "ecommerce-customer",
+        //   icon: <UserOutlined />,
+        //   label: "Customer",
+        // },
+        // {
+        //   key: "ecommerce-reviews",
+        //   icon: <FileOutlined />,
+        //   label: "Managing Reviews",
+        // },
       ]
     : []),
 

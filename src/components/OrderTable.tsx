@@ -211,7 +211,7 @@ const OrderTable = () => {
   ];
 
   return (
-    <div className=" w-[145%] ">
+    <div className="w-full overflow-x-hidden">
       <StoreOrderModal
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
@@ -222,7 +222,7 @@ const OrderTable = () => {
       <Table
         columns={columns}
         dataSource={paginatedData}
-        className=" shadow-lg max-sm:overflow-x-auto w-[99vw]"
+        className=" shadow-lg w-full"
         scroll={{ x: 1000 }}
         pagination={{
           current: currentPage,
