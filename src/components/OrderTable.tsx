@@ -3,6 +3,11 @@ import React from "react";
 import { useState } from "react";
 import { Table, Tag, Button } from "antd";
 
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../store/store";
+import { update_product_of_order } from "../api/order/api";
+import StoreOrderModal from "./StoreOrderModal";
+
 const allData = [
   {
     key: "1",
@@ -41,15 +46,75 @@ const allData = [
   },
 ];
 
+const mergeOrderWithProduct = (orderData) => {
+  const mergedData = orderData[0]?.items?.map((item: any) => {
+    // Merge parent order info with product info
+    return {
+      orderId: orderData[0]._id,
+      customerId: orderData[0].customerId,
+      paymentMethod: orderData[0].paymentMethod,
+      customerEmail: orderData[0].customerEmail,
+      total: orderData[0].total,
+      discountedTotal: orderData[0].discountedTotal,
+      status: orderData[0].status,
+      createdAt: orderData[0].createdAt,
+      updatedAt: orderData[0].updatedAt,
+      productId: item.product._id,
+      productName: item.product.name,
+
+      productPrice: item.product.base_price,
+      productDiscountedPrice: item.product.discounted_price,
+
+      productStatus: item.product.status,
+      quantity: item.quantity,
+      productType: item.product.type.map((t) => (
+        <span className="flex w-[40px]">{t.value}</span>
+      )), // Assuming multiple types can be present
+      productSize: item.product.size.map((s) => (
+        <span className="flex w-[40px]">
+          {s.value} {s.unit}
+        </span>
+      )),
+      // Assuming multiple sizes can be present
+    };
+  });
+
+  // Output merged data to the console
+  return mergedData;
+};
+
 const OrderTable = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [actionType, setActionType] = useState("");
+  const [selectedRecord, setSelectedRecord] = useState(null);
+
+  const showModal = (type, record) => {
+    setActionType(type);
+    setSelectedRecord(record);
+    setIsModalVisible(true);
+
+    setTimeout(() => {
+      setIsModalVisible(true);
+    }, 0);
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
+  const dispatch = useDispatch();
 
-  const paginatedData = allData.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
+  const paginatedData = mergeOrderWithProduct(
+    useSelector((state: RootState) => state.AllOrders.dashboardOrders)
   );
 
+  const totalPages = useSelector(
+    (state: RootState) => state.AllOrders.dashboardTotalPages
+  );
+
+  console.log(
+    "lelo",
+    paginatedData,
+    useSelector((state: RootState) => state.AllOrders.dashboardOrders)
+  );
   const viewOrder = (orderId: string) => {
     console.log("Viewing order:", orderId);
     // Add logic to view the order
@@ -63,18 +128,43 @@ const OrderTable = () => {
   const columns = [
     {
       title: "ORDER ID",
-      dataIndex: "order_id",
-      key: "order_id",
+      dataIndex: "orderId",
+      key: "orderId",
     },
     {
-        title: "CUSTOMER NAME",
-        dataIndex: "customer_name",
-        key: "customer_name",
-      },
+      title: "CUSTOMER EMAIL",
+      dataIndex: "customerEmail",
+      key: "customerEmail",
+    },
+    {
+      title: "PRODUCT ID",
+      dataIndex: "productId",
+      key: "productId",
+    },
+    {
+      title: "Size",
+      dataIndex: "productSize",
+      key: "productSize",
+    },
+    {
+      title: "Type",
+      dataIndex: "productType",
+      key: "productType",
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
     {
       title: "PAYMENT METHOD",
-      dataIndex: "payment_method",
-      key: "payment method",
+      dataIndex: "paymentMethod",
+      key: "paymentMethod",
+    },
+    {
+      title: "PKR",
+      dataIndex: "discountedTotal",
+      key: "discountedTotal",
     },
     {
       title: "ORDER STATUS",
@@ -82,43 +172,62 @@ const OrderTable = () => {
       key: "status",
       render: (status: string) => {
         let color = "blue";
-        if (status === "pending") color = "red";
-        if (status === "inprocess") color = "orange"
+        if (status === "Pending") color = "orange";
         if (status === "shipped") color = "green";
-        if (status === "delivered") color = "blue";
+        if (status === "Confirmed") color = "blue";
+        return <Tag color={color}>{status}</Tag>;
+      },
+    },
+    {
+      title: "PRODUCT STATUS",
+      dataIndex: "productStatus",
+      key: "productStatus",
+      render: (status: string) => {
+        let color = "blue";
+        if (status === "Pending") color = "orange";
+        if (status === "shipped") color = "green";
+        if (status === "Confirmed") color = "blue";
         return <Tag color={color}>{status}</Tag>;
       },
     },
     {
       title: "ACTIONS",
       key: "actions",
-      render: (_:any, record:any) => (
+      render: (_: any, record: any) => (
         <div>
-          <Button type="link" onClick={() => viewOrder(record.order)}>
-            View
+          <Button
+            type="link"
+            danger
+            onClick={() => showModal("Rejected", record)}
+          >
+            Reject
           </Button>
-          <Button type="link" danger onClick={() => deleteOrder(record.order)}>
-            Delete
+          <Button type="link" onClick={() => showModal("Confirmed", record)}>
+            Accept
           </Button>
         </div>
       ),
     },
   ];
 
- 
   return (
-    <div className=" w-[100%] h-[100%] flex flex-col  items-center  p-2 gap-2 ">
-     
+    <div className=" w-[145%] ">
+      <StoreOrderModal
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        actionType={actionType}
+        record={selectedRecord}
+        setRecord={setSelectedRecord}
+      />
       <Table
         columns={columns}
         dataSource={paginatedData}
-        style={{ width: "100%" }}
-        className=" shadow-lg max-sm:overflow-x-auto"
-        scroll={{ x: 1000 }} 
+        className=" shadow-lg max-sm:overflow-x-auto w-[99vw]"
+        scroll={{ x: 1000 }}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
-          total: allData.length,
+          total: totalPages * pageSize,
           onChange: (page) => setCurrentPage(page),
         }}
       />

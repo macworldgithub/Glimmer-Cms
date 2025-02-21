@@ -76,10 +76,9 @@ export const Ecommerce_Dashboard = createAsyncThunk(
   }
 );
 
-
-export const getAllStoreOrders = createAsyncThunk(
-  "getAllOrders",
-  async (_, { rejectWithValue, getState }) => {
+export const getDashBoardOrders = createAsyncThunk(
+  "getAllDashboardOrders",
+  async (page: number, { rejectWithValue, getState }) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
@@ -87,15 +86,78 @@ export const getAllStoreOrders = createAsyncThunk(
       const response = await axios.get(
         `${BACKEND_URL}/order/getOrdersByStore`,
         {
+          params: {
+            page: page, // Use the dynamic page number
+            limit: 8, // Default limit
+            status: "Pending",
+          },
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      return response.data; 
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
+export const getOrderListOrders = createAsyncThunk(
+  "getAllOrderListOrders",
+  async (page: number, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.get(
+        `${BACKEND_URL}/order/getOrdersByStore`,
+        {
+          params: {
+            page: page, // Use the dynamic page number
+            status: "Confirmed",
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
+export const update_product_of_order = createAsyncThunk(
+  "updateProductOfOrder",
+  async (
+    payload: { orderId: string; productId: string; status: string },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const res = await axios.post(
+        `${BACKEND_URL}/order/updateProductStatus`,
+        {
+          orderId: payload.orderId,
+          productId: payload.productId,
+          status: payload.status,
+        }, // Corrected payload usage
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return res.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );

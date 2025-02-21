@@ -7,10 +7,48 @@ import {
   CloseCircleOutlined,
   RollbackOutlined,
 } from "@ant-design/icons";
-import { getAllStoreOrders } from "../api/order/api";
+// import { getAllStoreOrders } from "../api/order/api";
 import { AppDispatch, RootState } from "../store/store";
+import { getOrderListOrders } from "../api/order/api";
 
 const { Title, Text } = Typography;
+
+const mergeOrderWithProduct = (orderData) => {
+  const mergedData = orderData[0]?.items?.map((item: any) => {
+    // Merge parent order info with product info
+    return {
+      orderId: orderData[0]._id,
+      customerId: orderData[0].customerId,
+      paymentMethod: orderData[0].paymentMethod,
+      customerEmail: orderData[0].customerEmail,
+      total: orderData[0].total,
+      discountedTotal: orderData[0].discountedTotal,
+      status: orderData[0].status,
+      createdAt: orderData[0].createdAt,
+      updatedAt: orderData[0].updatedAt,
+      productId: item.product._id,
+      productName: item.product.name,
+
+      productPrice: item.product.base_price,
+      productDiscountedPrice: item.product.discounted_price,
+
+      productStatus: item.product.status,
+      quantity: item.quantity,
+      productType: item.product.type.map((t) => (
+        <span className="flex w-[40px]">{t.value}</span>
+      )), // Assuming multiple types can be present
+      productSize: item.product.size.map((s) => (
+        <span className="flex w-[40px]">
+          {s.value} {s.unit}
+        </span>
+      )),
+      // Assuming multiple sizes can be present
+    };
+  });
+
+  // Output merged data to the console
+  return mergedData;
+};
 
 const OrderList = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -24,22 +62,13 @@ const OrderList = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    console.log("Filters applied:", filters);
-    dispatch(getAllStoreOrders());
-  }, [dispatch, currentPage, filters]);
+    //@ts-ignore
+    dispatch(getOrderListOrders(1));
+  }, []);
 
-  const orderList = useSelector((state: RootState) => state.AllOrders.orders);
-
-  const viewOrder = (record: any) => {
-    console.log("View Order:", record);
-    setSelectedOrder(record); 
-    setIsModalVisible(true); 
-  };
-
-  const deleteOrder = (record: any) => {
-    console.log("Delete Order:", record);
-    setSelectedOrder(record);
-  };
+  const orderList = useSelector((state: RootState) =>
+    mergeOrderWithProduct(state.AllOrders.orderList)
+  );
 
   const closeModal = () => {
     setIsModalVisible(false);
@@ -48,53 +77,87 @@ const OrderList = () => {
 
   const columns = [
     {
-      title: "Order ID",
-      dataIndex: "_id",
-      key: "_id",
+      title: "ORDER ID",
+      dataIndex: "orderId",
+      key: "orderId",
     },
     {
-      title: "Created At",
-      dataIndex: "createdAt",
-      key: "createdAt",
-    },
-    {
-      title: "Customer Email",
+      title: "CUSTOMER EMAIL",
       dataIndex: "customerEmail",
       key: "customerEmail",
     },
     {
-      title: "Total",
-      dataIndex: "total",
-      key: "total",
+      title: "PRODUCT ID",
+      dataIndex: "productId",
+      key: "productId",
     },
     {
-      title: "Status",
+      title: "Size",
+      dataIndex: "productSize",
+      key: "productSize",
+    },
+    {
+      title: "Type",
+      dataIndex: "productType",
+      key: "productType",
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
+      title: "PAYMENT METHOD",
+      dataIndex: "paymentMethod",
+      key: "paymentMethod",
+    },
+    {
+      title: "PKR",
+      dataIndex: "discountedTotal",
+      key: "discountedTotal",
+    },
+    {
+      title: "ORDER STATUS",
       dataIndex: "status",
       key: "status",
       render: (status: string) => {
-        let color =
-          status === "Completed"
-            ? "green"
-            : status === "Pending"
-            ? "orange"
-            : "red";
+        let color = "blue";
+        if (status === "Pending") color = "orange";
+        if (status === "shipped") color = "green";
+        if (status === "Confirmed") color = "blue";
         return <Tag color={color}>{status}</Tag>;
       },
     },
     {
-      title: "Actions",
-      key: "actions",
-      render: (text: string, record: any) => (
-        <div>
-          <Button type="link" onClick={() => viewOrder(record)}>
-            View
-          </Button>
-          <Button type="link" danger onClick={() => deleteOrder(record)}>
-            Delete
-          </Button>
-        </div>
-      ),
+      title: "PRODUCT STATUS",
+      dataIndex: "productStatus",
+      key: "productStatus",
+      render: (status: string) => {
+        let color = "blue";
+        if (status === "Pending") color = "orange";
+        if (status === "shipped") color = "green";
+        if (status === "Confirmed") color = "blue";
+        return <Tag color={color}>{status}</Tag>;
+      },
     },
+    //  {
+    //    title: "ACTIONS",
+    //    key: "actions",
+    //    render: (_: any, record: any) => (
+    //      <div>
+    //        <Button
+    //          type="link"
+    //          danger
+    //          onClick={() => showModal("Rejected", record)}
+    //        >
+    //          Reject
+    //        </Button>
+    //        <Button type="link" onClick={() => showModal("Confirmed", record)}>
+    //          Accept
+    //        </Button>
+    //      </div>
+    //    ),
+    //  },
   ];
 
   const paymentData = [
@@ -147,13 +210,13 @@ const OrderList = () => {
       </div>
       <Table
         columns={columns}
-        dataSource={orderList ? orderList : []}
+        dataSource={orderList}
         rowKey="_id"
         style={{ width: "100%" }}
         pagination={{
           pageSize: 10,
           current: currentPage,
-          onChange: (page) => setCurrentPage(page), 
+          onChange: (page) => setCurrentPage(page),
         }}
       />
 
@@ -174,7 +237,11 @@ const OrderList = () => {
               </Col>
               <Col span={12}>
                 <Title level={5}>Order Status</Title>
-                <Tag color={selectedOrder?.status === "Confirmed" ? "green" : "red"}>
+                <Tag
+                  color={
+                    selectedOrder?.status === "Confirmed" ? "green" : "red"
+                  }
+                >
                   {selectedOrder?.status}
                 </Tag>
               </Col>

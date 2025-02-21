@@ -31,7 +31,7 @@
 //     },
 //   },
 //   extraReducers(builder) {
-      
+
 //     builder.addCase(getAllOrders.fulfilled, (state, action) => {
 //         console.log("aa", state)
 //       //   state.orders = action.payload;
@@ -46,55 +46,79 @@
 // // export const { addToProductList } = orderSlice.actions;
 // export default orderSlice;
 
-
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllOrders } from "../api/order/api";
+import { getDashBoardOrders, getOrderListOrders } from "../api/order/api";
+import { update_product_of_order } from "../api/order/api";
+
+interface Items {
+  product: any;
+  quantity: number;
+}
 
 interface Order {
   _id: string;
   created_at: string;
-  customer: string;
-  payment: number;
-  status: "Completed" | "Pending" | "Failed";
-  method: string;
+  customerId: string;
+  customerEmail: string;
+  items: Items[];
+  status: "Pending" | "Confirmed" | "Shipped" | "Delivered" | "Cancelled";
   actions?: string;
 }
 
 interface AllOrder {
-  orders: Order[];
-  page: number;
+  dashboardOrders: Order[];
+  dashboardTotalPages: number;
+  orderList: Order[];
+  orderTotalPages: number;
 }
 
 const initialState: AllOrder = {
-  orders: [],
-  page: 1,
+  dashboardOrders: [],
+  dashboardTotalPages: 0,
+  orderList: [], // Add initial value for orderList
+  orderTotalPages: 0, // Add initial value for orderPage
 };
 
-// const orderSlice = createSlice({
-//   name: "allOrders",
-//   initialState,
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder.addCase(getAllOrders.fulfilled, (state, action) => {
-//       state.orders = action.payload; // Assuming the payload is the array of orders.
-//     });
-//     builder.addCase(getAllOrders.rejected, (state, action) => {
-//       console.error("Failed to fetch orders:", action.payload);
-//     });
-//   },
-// });
+const removeProductFromOrder = (
+  orders: Order[],
+  orderId: string,
+  productId: string
+): Order[] => {
+  return orders.map((order) => {
+    if (order._id === orderId) {
+      return {
+        ...order,
+        items: order.items.filter((item) => item.product._id !== productId), // Removing product and quantity
+      };
+    }
+    return order;
+  });
+};
 
 const allOrderSlice = createSlice({
   name: "allOrders",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getAllOrders.fulfilled, (state, action) => {
-      state.orders = action.payload; // Assuming the payload is the array of orders.
-    });
-    builder.addCase(getAllOrders.rejected, (state, action) => {
-      console.error("Failed to fetch orders:", action.payload);
-    });
+    builder.addCase(getDashBoardOrders.fulfilled, (state, action) => {
+      const { orders, totalPages } = action.payload;
+
+      state.dashboardOrders = orders;
+      state.dashboardTotalPages = totalPages;
+    }),
+      builder.addCase(getOrderListOrders.fulfilled, (state, action) => {
+        const { orders, toalPages } = action.payload;
+        state.orderList = orders;
+        state.orderTotalPages = toalPages;
+      }),
+      builder.addCase(update_product_of_order.fulfilled, (state, action) => {
+        const { message, status, orderId, productId } = action.payload;
+        state.dashboardOrders = removeProductFromOrder(
+          state.dashboardOrders,
+          orderId,
+          productId
+        );
+      });
   },
 });
 
