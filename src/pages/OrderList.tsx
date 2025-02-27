@@ -14,6 +14,10 @@ import { getOrderListOrders } from "../api/order/api";
 const { Title, Text } = Typography;
 
 const mergeOrderWithProduct = (orderData) => {
+  if (!orderData || orderData.length === 0) {
+    return [];
+  }
+
   const mergedData = orderData[0]?.items?.map((item: any) => {
     // Merge parent order info with product info
     return {
