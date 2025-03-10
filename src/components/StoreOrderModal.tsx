@@ -11,7 +11,7 @@ const OrderModal = ({ isVisible, onClose, actionType, record, setRecord }) => {
       try {
         const updatedRecord = {
           ...record,
-          status: "Accepted",
+          status: actionType,
         };
         await dispatch(
           //@ts-ignore

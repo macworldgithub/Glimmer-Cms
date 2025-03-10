@@ -57,7 +57,7 @@ const mergeOrderWithProduct = (orderData) => {
   // });
 };
 
-const OrderTable = ({ currentPage, setCurrentPage }) => {
+const OrderTable = ({ currentPage, setCurrentPage, showActions }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [actionType, setActionType] = useState("");
   const [selectedRecord, setSelectedRecord] = useState(null);
@@ -156,7 +156,7 @@ const OrderTable = ({ currentPage, setCurrentPage }) => {
         return <Tag color={color}>{status}</Tag>;
       },
     },
-    {
+    showActions && {
       title: "ACTIONS",
       key: "actions",
       render: (_: any, record: any) => (
@@ -168,13 +168,13 @@ const OrderTable = ({ currentPage, setCurrentPage }) => {
           >
             Reject
           </Button>
-          <Button type="link" onClick={() => showModal("Confirmed", record)}>
+          <Button type="link" onClick={() => showModal("Accepted", record)}>
             Accept
           </Button>
         </div>
       ),
     },
-  ];
+  ].filter(Boolean);
 
   return (
     <div className="w-full overflow-x-hidden">

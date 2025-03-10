@@ -10,65 +10,75 @@ import {
 // import { getAllStoreOrders } from "../api/order/api";
 import { AppDispatch, RootState } from "../store/store";
 import { getOrderListOrders } from "../api/order/api";
+import OrderTable from "../components/OrderTable";
 
 const { Title, Text } = Typography;
 
+// const mergeOrderWithProduct = (orderData) => {
+//   if (!orderData || orderData.length === 0) {
+//     return [];
+//   }
+
+//   const mergedData = orderData[0]?.items?.map((item: any) => {
+//     // Merge parent order info with product info
+//     return {
+//       orderId: orderData[0]._id,
+//       customerId: orderData[0].customerId,
+//       paymentMethod: orderData[0].paymentMethod,
+//       customerEmail: orderData[0].customerEmail,
+//       total: orderData[0].total,
+//       discountedTotal: orderData[0].discountedTotal,
+//       status: orderData[0].status,
+//       createdAt: orderData[0].createdAt,
+//       updatedAt: orderData[0].updatedAt,
+//       productId: item.product._id,
+//       productName: item.product.name,
+
+//       productPrice: item.product.base_price,
+//       productDiscountedPrice: item.product.discounted_price,
+
+//       productStatus: item.product.status,
+//       quantity: item.quantity,
+//       productType: item.product.type.map((t) => (
+//         <span className="flex w-[40px]">{t.value}</span>
+//       )), // Assuming multiple types can be present
+//       productSize: item.product.size.map((s) => (
+//         <span className="flex w-[40px]">
+//           {s.value} {s.unit}
+//         </span>
+//       )),
+//       // Assuming multiple sizes can be present
+//     };
+//   });
+
+//   // Output merged data to the console
+//   return mergedData;
+// };
+
 const mergeOrderWithProduct = (orderData) => {
-  if (!orderData || orderData.length === 0) {
-    return [];
-  }
-
-  const mergedData = orderData[0]?.items?.map((item: any) => {
-    // Merge parent order info with product info
-    return {
-      orderId: orderData[0]._id,
-      customerId: orderData[0].customerId,
-      paymentMethod: orderData[0].paymentMethod,
-      customerEmail: orderData[0].customerEmail,
-      total: orderData[0].total,
-      discountedTotal: orderData[0].discountedTotal,
-      status: orderData[0].status,
-      createdAt: orderData[0].createdAt,
-      updatedAt: orderData[0].updatedAt,
-      productId: item.product._id,
-      productName: item.product.name,
-
-      productPrice: item.product.base_price,
-      productDiscountedPrice: item.product.discounted_price,
-
-      productStatus: item.product.status,
-      quantity: item.quantity,
-      productType: item.product.type.map((t) => (
-        <span className="flex w-[40px]">{t.value}</span>
-      )), // Assuming multiple types can be present
-      productSize: item.product.size.map((s) => (
-        <span className="flex w-[40px]">
-          {s.value} {s.unit}
-        </span>
-      )),
-      // Assuming multiple sizes can be present
-    };
-  });
-
-  // Output merged data to the console
-  return mergedData;
-};
-
+  return orderData.map((order: any) => ({
+    orderId: order._id,
+    customerEmail: order.customerEmail,
+    customerName: order.customerName,
+    productId: order.productList[0].product._id,
+    productSize: order.productList[0].product.size[0].value,
+    productType: order.productList[0].product.size[0].value,
+    quantity: order.productList[0].quantity,
+    productStatus: order.productList[0].orderProductStatus,
+    storeId: order.productList[0].storeId,
+    paymentMethod: order.paymentMethod,
+    total: order.total,
+    discountedTotal: order.discountedTotal,
+    status: order.productList[0].orderProductStatus,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+  }));
+}
 const OrderList = () => {
-  const dispatch = useDispatch<AppDispatch>();
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const [filters, setFilters] = useState<{
-    customerEmail?: string;
-    created_at?: string;
-  }>({});
   const [currentPage, setCurrentPage] = useState(1);
-
-  useEffect(() => {
-    //@ts-ignore
-    dispatch(getOrderListOrders(1));
-  }, []);
 
   const orderList = useSelector((state: RootState) =>
     mergeOrderWithProduct(state.AllOrders.orderList)
@@ -144,24 +154,6 @@ const OrderList = () => {
         return <Tag color={color}>{status}</Tag>;
       },
     },
-    //  {
-    //    title: "ACTIONS",
-    //    key: "actions",
-    //    render: (_: any, record: any) => (
-    //      <div>
-    //        <Button
-    //          type="link"
-    //          danger
-    //          onClick={() => showModal("Rejected", record)}
-    //        >
-    //          Reject
-    //        </Button>
-    //        <Button type="link" onClick={() => showModal("Confirmed", record)}>
-    //          Accept
-    //        </Button>
-    //      </div>
-    //    ),
-    //  },
   ];
 
   const paymentData = [
@@ -212,17 +204,15 @@ const OrderList = () => {
           </div>
         ))}
       </div>
-      <Table
-        columns={columns}
-        dataSource={orderList}
-        rowKey="_id"
-        style={{ width: "100%" }}
-        pagination={{
-          pageSize: 10,
-          current: currentPage,
-          onChange: (page) => setCurrentPage(page),
-        }}
-      />
+      <div className="flex max-xl:flex-col w-full">
+        <div className="w-full justify-between ">
+          <OrderTable
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            showActions={false}
+          />
+        </div>
+      </div>
 
       {/* Modal to view order details */}
       <Modal

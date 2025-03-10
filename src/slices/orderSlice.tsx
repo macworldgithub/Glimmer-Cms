@@ -47,7 +47,12 @@
 // export default orderSlice;
 
 import { createSlice } from "@reduxjs/toolkit";
-import { getAllOrders, getDashBoardOrders, getOrderListOrders, updateProductStatus } from "../api/order/api";
+import {
+  getAllOrders,
+  getDashBoardOrders,
+  getOrderListOrders,
+  updateProductStatus,
+} from "../api/order/api";
 
 interface Items {
   product: any;
@@ -126,15 +131,15 @@ const initialState: AllOrder = {
 const removeProductFromOrder = (
   orders: Order[],
   orderId: string,
-  productId: string,
-  // _storeId: string,
-  // _status: string,
+  productId: string
 ): Order[] => {
   return orders.map((order) => {
     if (order._id === orderId) {
       return {
         ...order,
-        items: order.items.filter((item) => item.product._id !== productId), // Removing product and quantity
+        productList: order.productList.filter(
+          (product) => product.product._id !== productId
+        ),
       };
     }
     return order;
@@ -168,13 +173,27 @@ const allOrderSlice = createSlice({
       //   );
       // });
       builder.addCase(updateProductStatus.fulfilled, (state, action) => {
-        state.allOrders = state.allOrders.map(order =>
-          order._id === action.payload.updatedOrder._id ? action.payload.updatedOrder : order
+        // The updated order after the API call
+        const updatedOrder = action.payload.updatedOrder;
+        const productId = updatedOrder.productList[0]?.product._id;
+
+        // Update the order in state.allOrders with the new status
+        state.allOrders = state.allOrders.map((order) =>
+          order._id === updatedOrder._id ? updatedOrder : order
         );
+
+        // Now, remove the product from the order's items array
+        if (productId) {
+          state.allOrders = removeProductFromOrder(
+            state.allOrders,
+            updatedOrder._id,
+            productId
+          );
+        }
       });
-      builder.addCase(getAllOrders.fulfilled, (state, action) => {
-        state.allOrders = action.payload;
-      });
+    builder.addCase(getAllOrders.fulfilled, (state, action) => {
+      state.allOrders = action.payload;
+    });
   },
 });
 

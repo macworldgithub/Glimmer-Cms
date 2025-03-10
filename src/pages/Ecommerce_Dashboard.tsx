@@ -316,6 +316,7 @@ const Dashboard = () => {
           <OrderTable
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
+            showActions={true}
           />
         </div>
       </div>
