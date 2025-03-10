@@ -11,7 +11,7 @@ import transaction from "../assets/Profile/transaction.png";
 import wallet from "../assets/Profile/wallet.png";
 import OrderTable from "../components/OrderTable";
 
-import { getDashBoardOrders } from "../api/order/api";
+import { getAllOrders, getDashBoardOrders } from "../api/order/api";
 
 import { useDispatch, UseDispatch } from "react-redux";
 
@@ -57,11 +57,12 @@ type DashboardData = {
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     //@ts-ignore
-    dispatch(getDashBoardOrders(1));
-  }, []);
+    dispatch(getAllOrders({ page_no: currentPage }));
+  }, [currentPage]);
 
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
     null
@@ -312,7 +313,10 @@ const Dashboard = () => {
 
       <div className="flex max-xl:flex-col w-full">
         <div className="w-full justify-between ">
-          <OrderTable />
+          <OrderTable
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+          />
         </div>
       </div>
     </div>

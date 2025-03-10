@@ -1,21 +1,31 @@
 import { Modal } from "antd";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { update_product_of_order } from "../api/order/api";
+import { updateProductStatus } from "../api/order/api";
 
 const OrderModal = ({ isVisible, onClose, actionType, record, setRecord }) => {
   const dispatch = useDispatch();
 
-  const handleOk = () => {
+  const handleOk = async () => {
     if (record) {
-      dispatch(
-        //@ts-ignore
-        update_product_of_order({
-          orderId: record.orderId,
-          productId: record.productId,
-          status: actionType,
-        })
-      );
+      try {
+        const updatedRecord = {
+          ...record,
+          status: "Accepted",
+        };
+        await dispatch(
+          //@ts-ignore
+          updateProductStatus({
+            order_id: record.orderId,
+            product_id: record.productId,
+            store_id: record.storeId,
+            order_product_status: updatedRecord.status,
+          })
+        );
+        console.log("Update successful");
+      } catch (error) {
+        console.error("Update failed:", error);
+      }
     }
     onClose();
   };

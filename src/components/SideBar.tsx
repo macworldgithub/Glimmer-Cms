@@ -41,7 +41,6 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
       setShowSaloon(false);
     }
 
-    console.log("looop", data);
   }, []);
 
   const menuItems = getMenuItems(showEcommerce, showSaloon, showSuperAdmin);

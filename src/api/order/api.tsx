@@ -34,13 +34,12 @@ import { RootState } from "../../store/store";
 
 export const getAllOrders = createAsyncThunk(
   "getAllOrders",
-  async (payload: { page_no: number }, { rejectWithValue, getState }) => {
+  async (payload: { page_no: number; store_id: number | string }, { rejectWithValue, getState }) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
-
       const response = await axios.get(
-        `${BACKEND_URL}/order/get_all_store_orders?page_no=${payload.page_no}`,
+        `${BACKEND_URL}/order/get_all_store_orders?page_no=${payload.page_no}&store_id=${state.Login._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -131,31 +130,30 @@ export const getOrderListOrders = createAsyncThunk(
   }
 );
 
-export const update_product_of_order = createAsyncThunk(
+export const updateProductStatus = createAsyncThunk(
   "updateProductOfOrder",
   async (
-    payload: { orderId: string; productId: string; status: string },
+    payload: { order_id: string; product_id: string; store_id: string; order_product_status: string },
     { rejectWithValue, getState }
   ) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
-
-      const res = await axios.post(
+      const res = await axios.put(
         `${BACKEND_URL}/order/updateProductStatus`,
         {
-          orderId: payload.orderId,
-          productId: payload.productId,
-          status: payload.status,
-        }, // Corrected payload usage
+          order_id: payload.order_id,
+          product_id: payload.product_id,
+          store_id: payload.store_id,
+          order_product_status: payload.order_product_status,
+        }, 
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      return res.data;
+      return { updatedOrder: res.data };
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }

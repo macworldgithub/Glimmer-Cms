@@ -5,91 +5,63 @@ import { Table, Tag, Button } from "antd";
 
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store/store";
-import { update_product_of_order } from "../api/order/api";
 import StoreOrderModal from "./StoreOrderModal";
 
-const allData = [
-  {
-    key: "1",
-    order_id: "12345",
-    customer_name: "John Doe",
-    payment_method: "Credit Card",
-    status: "delivered",
-  },
-  {
-    key: "2",
-    order_id: "67890",
-    customer_name: "Jane Smith",
-    payment_method: "PayPal",
-    status: "inprocess",
-  },
-  {
-    key: "3",
-    order_id: "11223",
-    customer_name: "Alice Brown",
-    payment_method: "Credit Card",
-    status: "pending",
-  },
-  {
-    key: "4",
-    order_id: "44556",
-    customer_name: "Bob Williams",
-    payment_method: "Debit Card",
-    status: "shipped",
-  },
-  {
-    key: "5",
-    order_id: "77889",
-    customer_name: "Clara Johnson",
-    payment_method: "Cash",
-    status: "delivered",
-  },
-];
-
 const mergeOrderWithProduct = (orderData) => {
-  if (!orderData || orderData.length === 0) {
-    return [];
-  }
-  const mergedData = orderData[0]?.items?.map((item: any) => {
-    // Merge parent order info with product info
-    return {
-      orderId: orderData[0]._id,
-      customerId: orderData[0].customerId,
-      paymentMethod: orderData[0].paymentMethod,
-      customerEmail: orderData[0].customerEmail,
-      total: orderData[0].total,
-      discountedTotal: orderData[0].discountedTotal,
-      status: orderData[0].status,
-      createdAt: orderData[0].createdAt,
-      updatedAt: orderData[0].updatedAt,
-      productId: item.product._id,
-      productName: item.product.name,
-
-      productPrice: item.product.base_price,
-      productDiscountedPrice: item.product.discounted_price,
-
-      productStatus: item.product.status,
-      quantity: item.quantity,
-      productType: item.product.type.map((t) => (
-        <span className="flex w-[40px]">{t.value}</span>
-      )), // Assuming multiple types can be present
-      productSize: item.product.size.map((s) => (
-        <span className="flex w-[40px]">
-          {s.value} {s.unit}
-        </span>
-      )),
-      // Assuming multiple sizes can be present
-    };
-  });
-
-  // Output merged data to the console
-  return mergedData;
+  return orderData.map((order: any) => ({
+    orderId: order._id,
+    customerEmail: order.customerEmail,
+    customerName: order.customerName,
+    productId: order.productList[0].product._id,
+    productSize: order.productList[0].product.size[0].value,
+    productType: order.productList[0].product.size[0].value,
+    quantity: order.productList[0].quantity,
+    productStatus: order.productList[0].orderProductStatus,
+    storeId: order.productList[0].storeId,
+    paymentMethod: order.paymentMethod,
+    total: order.total,
+    discountedTotal: order.discountedTotal,
+    status: order.productList[0].orderProductStatus,
+    createdAt: order.createdAt,
+    updatedAt: order.updatedAt,
+  }));
+  // return orderData.flatMap((order: any) => {
+  //   console.log(order);
+  //   if (!order || !Array.isArray(order.productList)) {
+  //     return []; // Return empty array if no products exist
+  //   }
+  //   return order.productList.map((product: any) => ({
+  //     orderId: order._id,
+  //     customerId: order.customerId,
+  //     customerEmail: order.customerEmail,
+  //     customerName: order.customerName,
+  //     paymentMethod: order.paymentMethod,
+  //     total: order.total,
+  //     discountedTotal: order.discountedTotal,
+  //     status: order.status,
+  //     createdAt: order.createdAt,
+  //     updatedAt: order.updatedAt,
+  //     productId: product._id,
+  //     productName: product.name,
+  //     productPrice: product.base_price,
+  //     productDiscountedPrice: product.discounted_price,
+  //     productStatus: product.status,
+  //     quantity: product.quantity,
+  //     productType: product.type?.map((t) => (
+  //       <span className="flex w-[40px]">{t.value}</span>
+  //     )),
+  //     productSize: product.size?.map((s) => (
+  //       <span className="flex w-[40px]">{s.value} {s.unit}</span>
+  //     )),
+  //   }));
+  // });
 };
 
-const OrderTable = () => {
+const OrderTable = ({ currentPage, setCurrentPage }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [actionType, setActionType] = useState("");
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const pageSize = 8;
 
   const showModal = (type, record) => {
     setActionType(type);
@@ -101,23 +73,14 @@ const OrderTable = () => {
     }, 0);
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
-  const dispatch = useDispatch();
-
-  const paginatedData = mergeOrderWithProduct(
-    useSelector((state: RootState) => state.AllOrders.dashboardOrders)
+  const allOrders = useSelector(
+    (state: RootState) => state.AllOrders.allOrders
   );
-
   const totalPages = useSelector(
     (state: RootState) => state.AllOrders.dashboardTotalPages
   );
+  const paginatedData = mergeOrderWithProduct(allOrders);
 
-  console.log(
-    "lelo",
-    paginatedData,
-    useSelector((state: RootState) => state.AllOrders.dashboardOrders)
-  );
   const viewOrder = (orderId: string) => {
     console.log("Viewing order:", orderId);
     // Add logic to view the order
