@@ -58,6 +58,32 @@ export const getAllOrders = createAsyncThunk(
     }
   }
 );
+export const getAllUpdatedOrders = createAsyncThunk(
+  "getAllUpdatedOrders",
+  async (payload: { page_no: number }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+      const response = await axios.get(
+        `${BACKEND_URL}/order/get_all_orders?page_no=${payload.page_no}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log("Response", response.data);
+      // Validate that the response is an array or expected data structure.
+      if (!Array.isArray(response.data.orders)) {
+        throw new Error("Invalid data format: orders must be an array.");
+      }
+
+      return response.data.orders; // Assuming `orders` is the array of order objects.
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
 
 export const Ecommerce_Dashboard = createAsyncThunk(
   "ecommerce_dashboard",

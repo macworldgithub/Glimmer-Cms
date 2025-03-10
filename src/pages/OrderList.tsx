@@ -8,54 +8,13 @@ import {
   RollbackOutlined,
 } from "@ant-design/icons";
 // import { getAllStoreOrders } from "../api/order/api";
-import { AppDispatch, RootState } from "../store/store";
-import { getOrderListOrders } from "../api/order/api";
-import OrderTable from "../components/OrderTable";
+import { RootState } from "../store/store";
+import { getAllUpdatedOrders } from "../api/order/api";
 
 const { Title, Text } = Typography;
 
-// const mergeOrderWithProduct = (orderData) => {
-//   if (!orderData || orderData.length === 0) {
-//     return [];
-//   }
-
-//   const mergedData = orderData[0]?.items?.map((item: any) => {
-//     // Merge parent order info with product info
-//     return {
-//       orderId: orderData[0]._id,
-//       customerId: orderData[0].customerId,
-//       paymentMethod: orderData[0].paymentMethod,
-//       customerEmail: orderData[0].customerEmail,
-//       total: orderData[0].total,
-//       discountedTotal: orderData[0].discountedTotal,
-//       status: orderData[0].status,
-//       createdAt: orderData[0].createdAt,
-//       updatedAt: orderData[0].updatedAt,
-//       productId: item.product._id,
-//       productName: item.product.name,
-
-//       productPrice: item.product.base_price,
-//       productDiscountedPrice: item.product.discounted_price,
-
-//       productStatus: item.product.status,
-//       quantity: item.quantity,
-//       productType: item.product.type.map((t) => (
-//         <span className="flex w-[40px]">{t.value}</span>
-//       )), // Assuming multiple types can be present
-//       productSize: item.product.size.map((s) => (
-//         <span className="flex w-[40px]">
-//           {s.value} {s.unit}
-//         </span>
-//       )),
-//       // Assuming multiple sizes can be present
-//     };
-//   });
-
-//   // Output merged data to the console
-//   return mergedData;
-// };
-
 const mergeOrderWithProduct = (orderData) => {
+  console.log("Order Data:", orderData);
   return orderData.map((order: any) => ({
     orderId: order._id,
     customerEmail: order.customerEmail,
@@ -73,21 +32,33 @@ const mergeOrderWithProduct = (orderData) => {
     createdAt: order.createdAt,
     updatedAt: order.updatedAt,
   }));
-}
+};
+
 const OrderList = () => {
+  const dispatch = useDispatch();
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
 
-  const orderList = useSelector((state: RootState) =>
-    mergeOrderWithProduct(state.AllOrders.orderList)
-  );
+  useEffect(() => {
+    //@ts-ignore
+    dispatch(getAllUpdatedOrders({ page_no: currentPage }));
+  }, [currentPage]);
 
   const closeModal = () => {
     setIsModalVisible(false);
     setSelectedOrder(null);
   };
+  const allOrders = useSelector(
+    (state: RootState) => state.AllOrders.orderList
+  );
+  console.log(allOrders);
+  const totalPages = useSelector(
+    (state: RootState) => state.AllOrders.dashboardTotalPages
+  );
+  const paginatedData = mergeOrderWithProduct(allOrders);
 
   const columns = [
     {
@@ -154,8 +125,7 @@ const OrderList = () => {
         return <Tag color={color}>{status}</Tag>;
       },
     },
-  ];
-
+  ].filter(Boolean);
   const paymentData = [
     {
       count: 56,
@@ -204,15 +174,18 @@ const OrderList = () => {
           </div>
         ))}
       </div>
-      <div className="flex max-xl:flex-col w-full">
-        <div className="w-full justify-between ">
-          <OrderTable
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            showActions={false}
-          />
-        </div>
-      </div>
+      <Table
+        columns={columns}
+        dataSource={paginatedData}
+        className=" shadow-lg w-full"
+        scroll={{ x: 1000 }}
+        pagination={{
+          current: currentPage,
+          pageSize: pageSize,
+          total: totalPages * pageSize,
+          onChange: (page) => setCurrentPage(page),
+        }}
+      />
 
       {/* Modal to view order details */}
       <Modal

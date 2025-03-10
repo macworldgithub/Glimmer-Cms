@@ -49,6 +49,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   getAllOrders,
+  getAllUpdatedOrders,
   getDashBoardOrders,
   getOrderListOrders,
   updateProductStatus,
@@ -193,6 +194,9 @@ const allOrderSlice = createSlice({
       });
     builder.addCase(getAllOrders.fulfilled, (state, action) => {
       state.allOrders = action.payload;
+    });
+    builder.addCase(getAllUpdatedOrders.fulfilled, (state, action) => {
+      state.orderList = action.payload;
     });
   },
 });
