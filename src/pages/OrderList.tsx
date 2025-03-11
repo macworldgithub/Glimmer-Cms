@@ -45,6 +45,8 @@ const OrderList = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [orders, setOrders] = useState([]);
   const token = useSelector((state: RootState) => state.Login.token);
+  const store_id = useSelector((state: RootState) => state.Login._id);
+
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalOrders, setTotalOrders] = useState(1);
@@ -52,7 +54,7 @@ const OrderList = () => {
   const pageSize = 10;
   const fetchData = async () => {
     const response = await axios.get(
-      `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&store_id=${"677651fd872afc44dec1c2db"}`,
+      `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&store_id=${store_id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

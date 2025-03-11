@@ -11,6 +11,7 @@ const OrderDetailPage = () => {
   //   const order = location.state?.data;
   const [order, setOrders] = useState(location.state?.data);
   const token = useSelector((state: RootState) => state.Login.token);
+  const store_id = useSelector((state: RootState) => state.Login._id);
   const fetchData = async () => {
     const response = await axios.get(
       `${BACKEND_URL}/order/get_order_by_id?id=${location.state?.data._id}`,
@@ -132,7 +133,7 @@ const OrderDetailPage = () => {
       {
         order_id: order?._id,
         product_id: prodId,
-        store_id: "677651fd872afc44dec1c2db",
+        store_id: store_id,
         order_product_status: "Accepted",
       },
       {
@@ -153,7 +154,7 @@ const OrderDetailPage = () => {
       {
         order_id: order?._id,
         product_id: prodId,
-        store_id: "677651fd872afc44dec1c2db",
+        store_id: store_id,
         order_product_status: "Rejected",
       },
       {
