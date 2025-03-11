@@ -112,6 +112,7 @@ interface Order {
   paymentMethod: string;
   ShippingInfo: ShippingInfo;
   productList: OrderProduct[];
+  status: string; 
 }
 interface AllOrder {
   dashboardOrders: Order[];
@@ -193,6 +194,7 @@ const allOrderSlice = createSlice({
         }
       });
     builder.addCase(getAllOrders.fulfilled, (state, action) => {
+      console.log("Fulfilled Action Payload:", action.payload);
       state.allOrders = action.payload;
       console.log(state.allOrders);
     });

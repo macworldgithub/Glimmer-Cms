@@ -47,7 +47,7 @@ const OrderList = () => {
 
   useEffect(() => {
     //@ts-ignore
-    dispatch(getAllUpdatedOrders({ page_no: currentPage }));
+    dispatch(getAllUpdatedOrders({ page_no: currentPage, store_id: '677651fd872afc44dec1c2db' }));
   }, [currentPage]);
 
   const closeModal = () => {

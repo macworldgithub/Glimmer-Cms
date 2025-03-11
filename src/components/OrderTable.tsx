@@ -8,6 +8,7 @@ import { RootState } from "../store/store";
 import StoreOrderModal from "./StoreOrderModal";
 
 const mergeOrderWithProduct = (orderData) => {
+  console.log(orderData);
   return orderData.map((order: any) => ({
     orderId: order._id,
     customerEmail: order.customerEmail,
@@ -85,16 +86,7 @@ const OrderTable = ({ currentPage, setCurrentPage, showActions }) => {
     (state: RootState) => state.AllOrders.dashboardTotalPages
   );
   const paginatedData = mergeOrderWithProduct(allOrders);
-
-  const viewOrder = (orderId: string) => {
-    console.log("Viewing order:", orderId);
-    // Add logic to view the order
-  };
-
-  const deleteOrder = (orderId: string) => {
-    console.log("Deleting order:", orderId);
-    // Add logic to delete the order
-  };
+  console.log(paginatedData);
 
   const columns = [
     {

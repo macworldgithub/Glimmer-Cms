@@ -34,18 +34,23 @@ import { RootState } from "../../store/store";
 
 export const getAllOrders = createAsyncThunk(
   "getAllOrders",
-  async (payload: { page_no: number; store_id: number | string }, { rejectWithValue, getState }) => {
+  async (payload: { page_no: number; store_id: string; order_id?: string; status?: string }, { rejectWithValue, getState }) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
-      const response = await axios.get(
-        `${BACKEND_URL}/order/get_all_store_orders?page_no=${payload.page_no}&store_id=${state.Login._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const queryParams = new URLSearchParams({
+        page_no: payload.page_no.toString(),
+        store_id: state.Login._id.toString(),
+      });
+
+      if (payload.order_id) queryParams.append("order_id", payload.order_id);
+      if (payload.status) queryParams.append("status", payload.status);
+
+      const response = await axios.get(`${BACKEND_URL}/order/get_all_store_orders?${queryParams.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       // Validate that the response is an array or expected data structure.
       if (!Array.isArray(response.data.orders)) {
@@ -60,12 +65,12 @@ export const getAllOrders = createAsyncThunk(
 );
 export const getAllUpdatedOrders = createAsyncThunk(
   "getAllUpdatedOrders",
-  async (payload: { page_no: number }, { rejectWithValue, getState }) => {
+  async (payload: { page_no: number; store_id: number | string }, { rejectWithValue, getState }) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
       const response = await axios.get(
-        `${BACKEND_URL}/order/get_all_orders?page_no=${payload.page_no}`,
+        `${BACKEND_URL}/order/get_all_admin_orders?page_no=${payload.page_no}&store_id=${state.Login._id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
