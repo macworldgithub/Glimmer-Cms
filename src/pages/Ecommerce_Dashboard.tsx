@@ -313,11 +313,7 @@ const Dashboard = () => {
 
       <div className="flex max-xl:flex-col w-full">
         <div className="w-full justify-between ">
-          <OrderTable
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            showActions={true}
-          />
+          <OrderTable />
         </div>
       </div>
     </div>

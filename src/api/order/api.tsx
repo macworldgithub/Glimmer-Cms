@@ -34,7 +34,15 @@ import { RootState } from "../../store/store";
 
 export const getAllOrders = createAsyncThunk(
   "getAllOrders",
-  async (payload: { page_no: number; store_id: string; order_id?: string; status?: string }, { rejectWithValue, getState }) => {
+  async (
+    payload: {
+      page_no: number;
+      store_id: string;
+      order_id?: string;
+      status?: string;
+    },
+    { rejectWithValue, getState }
+  ) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
@@ -46,11 +54,14 @@ export const getAllOrders = createAsyncThunk(
       if (payload.order_id) queryParams.append("order_id", payload.order_id);
       if (payload.status) queryParams.append("status", payload.status);
 
-      const response = await axios.get(`${BACKEND_URL}/order/get_all_store_orders?${queryParams.toString()}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.get(
+        `${BACKEND_URL}/order/get_all_store_orders?${queryParams.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // Validate that the response is an array or expected data structure.
       if (!Array.isArray(response.data.orders)) {
@@ -65,7 +76,10 @@ export const getAllOrders = createAsyncThunk(
 );
 export const getAllUpdatedOrders = createAsyncThunk(
   "getAllUpdatedOrders",
-  async (payload: { page_no: number; store_id: number | string }, { rejectWithValue, getState }) => {
+  async (
+    payload: { page_no: number; store_id: number | string },
+    { rejectWithValue, getState }
+  ) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
@@ -77,13 +91,13 @@ export const getAllUpdatedOrders = createAsyncThunk(
           },
         }
       );
-      console.log("Response", response.data);
+      console.log("Response", "laoal", response.data);
       // Validate that the response is an array or expected data structure.
-      if (!Array.isArray(response.data.orders)) {
+      if (!Array.isArray(response.data)) {
         throw new Error("Invalid data format: orders must be an array.");
       }
 
-      return response.data.orders; // Assuming `orders` is the array of order objects.
+      return response.data; // Assuming `orders` is the array of order objects.
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");
     }
@@ -164,7 +178,12 @@ export const getOrderListOrders = createAsyncThunk(
 export const updateProductStatus = createAsyncThunk(
   "updateProductOfOrder",
   async (
-    payload: { order_id: string; product_id: string; store_id: string; order_product_status: string },
+    payload: {
+      order_id: string;
+      product_id: string;
+      store_id: string;
+      order_product_status: string;
+    },
     { rejectWithValue, getState }
   ) => {
     try {
@@ -177,7 +196,7 @@ export const updateProductStatus = createAsyncThunk(
           product_id: payload.product_id,
           store_id: payload.store_id,
           order_product_status: payload.order_product_status,
-        }, 
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,

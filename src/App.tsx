@@ -22,6 +22,7 @@ import SignupStore from "./pages/SignupStore.tsx";
 import Email from "./pages/Email.tsx";
 import Storeactivity from "./pages/Storeactivity.tsx";
 import { useEffect, useState } from "react";
+import OrderDetailPage from "./pages/single-order-detail.tsx";
 
 function App() {
   //  const isAuthenticated = false;
@@ -69,7 +70,7 @@ function App() {
           {/* Nested routes */}
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="orderList" element={<OrderList />} />
-          <Route path="orderDetails" element={<OrderDetails />} />
+          <Route path="order-details/:id" element={<OrderDetailPage />} />
           <Route path="Product_List" element={<ProductList />} />
           <Route path="Add_Product" element={<Add_Product />} />
           <Route path="Category_List" element={<Category_List />} />

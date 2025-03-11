@@ -199,6 +199,7 @@ const allOrderSlice = createSlice({
       console.log(state.allOrders);
     });
     builder.addCase(getAllUpdatedOrders.fulfilled, (state, action) => {
+      console.log(action.payload, "papa");
       state.orderList = action.payload;
       console.log(state.allOrders);
     });

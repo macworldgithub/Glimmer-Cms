@@ -1,123 +1,60 @@
-import React from "react";
-
-import { useState } from "react";
-import { Table, Tag, Button } from "antd";
-
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Table, Tag, Modal, Row, Col, Typography, Space } from "antd";
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  CloseCircleOutlined,
+  RollbackOutlined,
+} from "@ant-design/icons";
 import { RootState } from "../store/store";
-import StoreOrderModal from "./StoreOrderModal";
+import { BACKEND_URL } from "../config/server";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const mergeOrderWithProduct = (orderData) => {
-  console.log(orderData);
-  return orderData.map((order: any) => ({
-    orderId: order._id,
-    customerEmail: order.customerEmail,
-    customerName: order.customerName,
-    productId: order.productList[0].product._id,
-    productSize: order.productList[0].product.size
-      .map((s) => s.value)
-      .join(", "),
-    productType: order.productList[0].product.type
-      .map((t) => t.value)
-      .join(", "),
-    quantity: order.productList[0].quantity,
-    productStatus: order.productList[0].orderProductStatus,
-    storeId: order.productList[0].storeId,
-    paymentMethod: order.paymentMethod,
-    total: order.total,
-    discountedTotal: order.discountedTotal,
-    status: order.productList[0].orderProductStatus,
-    createdAt: order.createdAt,
-    updatedAt: order.updatedAt,
-  }));
-  // return orderData.flatMap((order: any) => {
-  //   console.log(order);
-  //   if (!order || !Array.isArray(order.productList)) {
-  //     return []; // Return empty array if no products exist
-  //   }
-  //   return order.productList.map((product: any) => ({
-  //     orderId: order._id,
-  //     customerId: order.customerId,
-  //     customerEmail: order.customerEmail,
-  //     customerName: order.customerName,
-  //     paymentMethod: order.paymentMethod,
-  //     total: order.total,
-  //     discountedTotal: order.discountedTotal,
-  //     status: order.status,
-  //     createdAt: order.createdAt,
-  //     updatedAt: order.updatedAt,
-  //     productId: product._id,
-  //     productName: product.name,
-  //     productPrice: product.base_price,
-  //     productDiscountedPrice: product.discounted_price,
-  //     productStatus: product.status,
-  //     quantity: product.quantity,
-  //     productType: product.type?.map((t) => (
-  //       <span className="flex w-[40px]">{t.value}</span>
-  //     )),
-  //     productSize: product.size?.map((s) => (
-  //       <span className="flex w-[40px]">{s.value} {s.unit}</span>
-  //     )),
-  //   }));
-  // });
-};
-
-const OrderTable = ({ currentPage, setCurrentPage, showActions }) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [actionType, setActionType] = useState("");
-  const [selectedRecord, setSelectedRecord] = useState(null);
-  const pageSize = 8;
-
-  const showModal = (type, record) => {
-    setActionType(type);
-    setSelectedRecord(record);
-    setIsModalVisible(true);
-
-    setTimeout(() => {
-      setIsModalVisible(true);
-    }, 0);
+const OrderTable = () => {
+  const [orders, setOrders] = useState([]);
+  const token = useSelector((state: RootState) => state.Login.token);
+  const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalOrders, setTotalOrders] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
+  const fetchData = async () => {
+    const response = await axios.get(
+      `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&store_id=${"677651fd872afc44dec1c2db"}&status=Pending`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(response.data);
+    setOrders(response.data.orders);
+    setTotalOrders(response.data.totalOrders);
+    setTotalPages(response.data.totalPages);
   };
-
-  const allOrders = useSelector(
-    (state: RootState) => state.AllOrders.allOrders
-  );
-  console.log(allOrders);
-  const totalPages = useSelector(
-    (state: RootState) => state.AllOrders.dashboardTotalPages
-  );
-  const paginatedData = mergeOrderWithProduct(allOrders);
-  console.log(paginatedData);
+  useEffect(() => {
+    fetchData();
+  }, [currentPage]);
 
   const columns = [
     {
       title: "ORDER ID",
-      dataIndex: "orderId",
-      key: "orderId",
+      dataIndex: "_id",
+      key: "_id",
     },
     {
       title: "CUSTOMER EMAIL",
       dataIndex: "customerEmail",
       key: "customerEmail",
     },
+
     {
-      title: "PRODUCT ID",
-      dataIndex: "productId",
-      key: "productId",
-    },
-    {
-      title: "Size",
-      dataIndex: "productSize",
-      key: "productSize",
-    },
-    {
-      title: "Type",
-      dataIndex: "productType",
-      key: "productType",
-    },
-    {
-      title: "Quantity",
+      title: "Product Quantity",
       dataIndex: "quantity",
       key: "quantity",
+      render: (_, record) => <p>{record.productList.length}</p>,
     },
     {
       title: "PAYMENT METHOD",
@@ -125,7 +62,7 @@ const OrderTable = ({ currentPage, setCurrentPage, showActions }) => {
       key: "paymentMethod",
     },
     {
-      title: "PKR",
+      title: "Total (PKR)",
       dataIndex: "discountedTotal",
       key: "discountedTotal",
     },
@@ -142,55 +79,94 @@ const OrderTable = ({ currentPage, setCurrentPage, showActions }) => {
       },
     },
     {
-      title: "PRODUCT STATUS",
-      dataIndex: "productStatus",
-      key: "productStatus",
-      render: (status: string) => {
-        let color = "blue";
-        if (status === "Pending") color = "orange";
-        if (status === "shipped") color = "green";
-        if (status === "Confirmed") color = "blue";
-        return <Tag color={color}>{status}</Tag>;
-      },
-    },
-    showActions && {
-      title: "ACTIONS",
-      key: "actions",
-      render: (_: any, record: any) => (
-        <div>
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Space>
           <Button
-            type="link"
-            danger
-            onClick={() => showModal("Rejected", record)}
+            type="primary"
+            onClick={() =>
+              navigate(`/order-details/${record._id}`, {
+                state: { data: record },
+              })
+            }
           >
-            Reject
+            View Details
           </Button>
-          <Button type="link" onClick={() => showModal("Accepted", record)}>
-            Accept
-          </Button>
-        </div>
+        </Space>
       ),
     },
+
+    // {
+    //   title: "PRODUCT STATUS",
+    //   dataIndex: "productStatus",
+    //   key: "productStatus",
+    //   render: (status: string) => {
+    //     let color = "blue";
+    //     if (status === "Pending") color = "orange";
+    //     if (status === "shipped") color = "green";
+    //     if (status === "Confirmed") color = "blue";
+    //     return <Tag color={color}>{status}</Tag>;
+    //   },
+    // },
   ].filter(Boolean);
+  const paymentData = [
+    {
+      count: 56,
+      label: "Pending Payment",
+      icon: (
+        <ClockCircleOutlined
+          style={{ fontSize: "30px", color: "yellowgreen" }}
+        />
+      ),
+    },
+    {
+      count: 156852,
+      label: "Completed Payment",
+      icon: (
+        <CheckCircleOutlined
+          style={{ fontSize: "30px", color: "greenyellow" }}
+        />
+      ),
+    },
+    {
+      count: 156,
+      label: "Refunded",
+      icon: (
+        <RollbackOutlined
+          style={{ fontSize: "30px", color: "rebeccapurple" }}
+        />
+      ),
+    },
+    {
+      count: 156,
+      label: "Failed",
+      icon: <CloseCircleOutlined style={{ fontSize: "30px", color: "red" }} />,
+    },
+  ];
 
   return (
-    <div className="w-full overflow-x-hidden">
-      <StoreOrderModal
-        isVisible={isModalVisible}
-        onClose={() => setIsModalVisible(false)}
-        actionType={actionType}
-        record={selectedRecord}
-        setRecord={setSelectedRecord}
-      />
+    <div className="w-full h-full flex flex-col items-center p-2 gap-2">
+      <div className="w-full h-max border flex py-5 rounded-lg shadow-lg justify-around flex-wrap bg-white">
+        {paymentData.map((item, index) => (
+          <div key={index} className="flex flex-col w-[200px] h-max">
+            <div className="flex w-full justify-between">
+              <p className="font-medium text-[24px]">{item.count}</p>
+              {item.icon}
+            </div>
+            <p>{item.label}</p>
+          </div>
+        ))}
+      </div>
       <Table
         columns={columns}
-        dataSource={paginatedData}
+        dataSource={orders}
         className=" shadow-lg w-full"
         scroll={{ x: 1000 }}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
-          total: totalPages * pageSize,
+          total: totalPages,
           onChange: (page) => setCurrentPage(page),
         }}
       />

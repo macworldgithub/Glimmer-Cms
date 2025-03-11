@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
-import ApexCharts from 'react-apexcharts';
+import ApexCharts from "react-apexcharts";
 import { FiTrendingUp } from "react-icons/fi";
 import laptop from "../assets/Profile/laptop_pic.png";
 const Dashboard = () => {
-
   const options = {
     chart: {
       height: 350,
-      type: 'area',
+      type: "area",
       toolbar: {
         show: false, // Hide toolbar (zoom, pan, reset)
-      }
+      },
     },
     dataLabels: {
       enabled: false,
@@ -40,28 +39,28 @@ const Dashboard = () => {
     grid: {
       show: false, // Hide background grid lines
     },
-    colors: ['#71DD37'], // Green color
+    colors: ["#71DD37"], // Green color
     fill: {
-      type: 'gradient',
+      type: "gradient",
       gradient: {
-        shade: 'light',
+        shade: "light",
         type: "vertical",
         shadeIntensity: 0.5,
-        gradientToColors: ['#28A745'], // Green gradient
+        gradientToColors: ["#28A745"], // Green gradient
         inverseColors: false,
         opacityFrom: 0.5,
         opacityTo: 0.2,
-        stops: [0, 100]
-      }
+        stops: [0, 100],
+      },
     },
     stroke: {
-      curve: 'smooth',
-      width: 2
+      curve: "smooth",
+      width: 2,
     },
     tooltip: {
       x: {
         formatter: function (value) {
-          return value;  
+          return value;
         },
       },
     },
@@ -69,7 +68,7 @@ const Dashboard = () => {
 
   const series = [
     {
-      name: 'Orders',
+      name: "Orders",
       data: [175, 275, 140, 205, 190, 295],
     },
   ];
@@ -81,8 +80,6 @@ const Dashboard = () => {
       user: {
         name: "John",
         badgeMsg: "You have done 72% more sales today.",
-
-
       },
       stats: {
         orders: "276k",
@@ -112,7 +109,9 @@ const Dashboard = () => {
   }, []);
 
   if (!data) {
-    return <div className="text-center text-gray-500">Loading dashboard...</div>;
+    return (
+      <div className="text-center text-gray-500">Loading dashboard...</div>
+    );
   }
 
   return (
@@ -121,10 +120,18 @@ const Dashboard = () => {
       <div className="flex gap-6 mb-6">
         <div className=" w-[70%] bg-white p-4 rounded-lg shadow mt-4 flex relative">
           <div className="w-[75%]">
-          <h3 className="text-lg font-bold text-[#787BFF] pl-2">Congratulations {data.user.name}! 🎉</h3>
-          <p className="text-gray-500 pl-2">You have done 72% more sales today.</p>
-          <p className="text-gray-500 pl-2">Check your new badge in your profile.</p>
-          <button className="  text-gray-500 hover:border border-gray-300 px-4 py-2 rounded max-sm:text-[10px] mt-4">View Badges</button>
+            <h3 className="text-lg font-bold text-[#787BFF] pl-2">
+              Congratulations {data.user.name}! 🎉
+            </h3>
+            <p className="text-gray-500 pl-2">
+              You have done 72% more sales today.
+            </p>
+            <p className="text-gray-500 pl-2">
+              Check your new badge in your profile.
+            </p>
+            <button className="  text-gray-500 hover:border border-gray-300 px-4 py-2 rounded max-sm:text-[10px] mt-4">
+              View Badges
+            </button>
           </div>
           <div className="w-[25%] max-sm:w-full max-sm:mt-2 absolute bottom-0 right-6">
             <img src={laptop} className="h-44 max-sm:h-20 " />
@@ -134,11 +141,13 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow w-1/2 ">
             <div>
               <h3 className="text-gray-500 pl-4 pt-4">Order</h3>
-              <p className="text-xl font-bold text-gray-700 pl-4">{data.stats.orders}</p>
+              <p className="text-xl font-bold text-gray-700 pl-4">
+                {data.stats.orders}
+              </p>
             </div>
             <div className="">
               <ApexCharts
-              //@ts-ignore
+                //@ts-ignore
                 options={options}
                 series={series}
                 type="area"
@@ -149,13 +158,14 @@ const Dashboard = () => {
           </div>
           <div className="bg-white p-4 rounded-lg shadow w-1/2">
             <h3 className="text-gray-500">Sales</h3>
-            <p className="text-xl font-bold text-gray-700">${data.stats.sales}</p>
+            <p className="text-xl font-bold text-gray-700">
+              ${data.stats.sales}
+            </p>
             <span className="text-[#71DD37] flex items-center text-sm">
               <FiTrendingUp className="mr-1" /> +28.42%
             </span>
           </div>
         </div>
-
       </div>
 
       {/* Second Section */}

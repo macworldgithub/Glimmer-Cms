@@ -10,6 +10,9 @@ import {
 // import { getAllStoreOrders } from "../api/order/api";
 import { RootState } from "../store/store";
 import { getAllUpdatedOrders } from "../api/order/api";
+import { BACKEND_URL } from "../config/server";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -38,65 +41,50 @@ const mergeOrderWithProduct = (orderData) => {
 };
 
 const OrderList = () => {
-  const dispatch = useDispatch();
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const [orders, setOrders] = useState([]);
+  const token = useSelector((state: RootState) => state.Login.token);
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 8;
-
-  useEffect(() => {
-    dispatch(
-      getAllUpdatedOrders({
-        page_no: currentPage,
-        store_id: "677651fd872afc44dec1c2db",
-      })
+  const [totalOrders, setTotalOrders] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 10;
+  const fetchData = async () => {
+    const response = await axios.get(
+      `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&store_id=${"677651fd872afc44dec1c2db"}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
-  }, [currentPage]);
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-    setSelectedOrder(null);
+    console.log(response.data);
+    setOrders(response.data.orders);
+    setTotalOrders(response.data.totalOrders);
+    setTotalPages(response.data.totalPages);
   };
-  const allOrders = useSelector(
-    (state: RootState) => state.AllOrders.allOrders
-  );
-  console.log(allOrders, "pakka");
-  const totalPages = useSelector(
-    (state: RootState) => state.AllOrders.dashboardTotalPages
-  );
-  const paginatedData = mergeOrderWithProduct(allOrders);
+  useEffect(() => {
+    fetchData();
+  }, [currentPage]);
 
   const columns = [
     {
       title: "ORDER ID",
-      dataIndex: "orderId",
-      key: "orderId",
+      dataIndex: "_id",
+      key: "_id",
     },
     {
       title: "CUSTOMER EMAIL",
       dataIndex: "customerEmail",
       key: "customerEmail",
     },
+
     {
-      title: "PRODUCT ID",
-      dataIndex: "productId",
-      key: "productId",
-    },
-    // {
-    //   title: "Size",
-    //   dataIndex: "productSize",
-    //   key: "productSize",
-    // },
-    // {
-    //   title: "Type",
-    //   dataIndex: "productType",
-    //   key: "productType",
-    // },
-    {
-      title: "Quantity",
+      title: "Product Quantity",
       dataIndex: "quantity",
       key: "quantity",
+      render: (_, record) => <p>{record.productList.length}</p>,
     },
     {
       title: "PAYMENT METHOD",
@@ -104,7 +92,7 @@ const OrderList = () => {
       key: "paymentMethod",
     },
     {
-      title: "PKR",
+      title: "Total (PKR)",
       dataIndex: "discountedTotal",
       key: "discountedTotal",
     },
@@ -121,17 +109,33 @@ const OrderList = () => {
       },
     },
     {
-      title: "PRODUCT STATUS",
-      dataIndex: "productStatus",
-      key: "productStatus",
-      render: (status: string) => {
-        let color = "blue";
-        if (status === "Pending") color = "orange";
-        if (status === "shipped") color = "green";
-        if (status === "Confirmed") color = "blue";
-        return <Tag color={color}>{status}</Tag>;
-      },
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Button
+          type="primary"
+          onClick={() =>
+            navigate(`/order-details/${record._id}`, {
+              state: { data: record },
+            })
+          }
+        >
+          View Details
+        </Button>
+      ),
     },
+    // {
+    //   title: "PRODUCT STATUS",
+    //   dataIndex: "productStatus",
+    //   key: "productStatus",
+    //   render: (status: string) => {
+    //     let color = "blue";
+    //     if (status === "Pending") color = "orange";
+    //     if (status === "shipped") color = "green";
+    //     if (status === "Confirmed") color = "blue";
+    //     return <Tag color={color}>{status}</Tag>;
+    //   },
+    // },
   ].filter(Boolean);
   const paymentData = [
     {
@@ -183,70 +187,16 @@ const OrderList = () => {
       </div>
       <Table
         columns={columns}
-        dataSource={paginatedData}
+        dataSource={orders}
         className=" shadow-lg w-full"
         scroll={{ x: 1000 }}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
-          total: totalPages * pageSize,
+          total: totalPages,
           onChange: (page) => setCurrentPage(page),
         }}
       />
-
-      {/* Modal to view order details */}
-      <Modal
-        title={`Order Details - ${selectedOrder?._id}`}
-        visible={isModalVisible}
-        onCancel={closeModal}
-        footer={null}
-        width={800}
-      >
-        {selectedOrder && (
-          <div>
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <Title level={5}>Customer Email</Title>
-                <Text>{selectedOrder?.customerEmail}</Text>
-              </Col>
-              <Col span={12}>
-                <Title level={5}>Order Status</Title>
-                <Tag
-                  color={
-                    selectedOrder?.status === "Confirmed" ? "green" : "red"
-                  }
-                >
-                  {selectedOrder?.status}
-                </Tag>
-              </Col>
-            </Row>
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <Title level={5}>Total</Title>
-                <Text>{selectedOrder?.total}</Text>
-              </Col>
-              <Col span={12}>
-                <Title level={5}>Discounted Total</Title>
-                <Text>{selectedOrder?.discountedTotal}</Text>
-              </Col>
-            </Row>
-
-            <Title level={4}>Items:</Title>
-            {selectedOrder?.items?.map((item: any, index: number) => (
-              <Row gutter={[16, 16]} key={index}>
-                <Col span={12}>
-                  <Title level={5}>Product Name</Title>
-                  <Text>{item.product.name}</Text>
-                </Col>
-                <Col span={12}>
-                  <Title level={5}>Quantity</Title>
-                  <Text>{item.quantity}</Text>
-                </Col>
-              </Row>
-            ))}
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };
