@@ -14,14 +14,17 @@ import { getAllUpdatedOrders } from "../api/order/api";
 const { Title, Text } = Typography;
 
 const mergeOrderWithProduct = (orderData) => {
-  console.log("Order Data:", orderData);
   return orderData.map((order: any) => ({
     orderId: order._id,
     customerEmail: order.customerEmail,
     customerName: order.customerName,
     productId: order.productList[0].product._id,
-    productSize: order.productList[0].product.size[0].value,
-    productType: order.productList[0].product.size[0].value,
+    productSize: order.productList[0].product.size
+      .map((s) => s.value)
+      .join(", "),
+    productType: order.productList[0].product.type
+      .map((t) => t.value)
+      .join(", "),
     quantity: order.productList[0].quantity,
     productStatus: order.productList[0].orderProductStatus,
     storeId: order.productList[0].storeId,
@@ -52,7 +55,7 @@ const OrderList = () => {
     setSelectedOrder(null);
   };
   const allOrders = useSelector(
-    (state: RootState) => state.AllOrders.orderList
+    (state: RootState) => state.AllOrders.allOrders
   );
   console.log(allOrders);
   const totalPages = useSelector(

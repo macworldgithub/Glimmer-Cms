@@ -194,9 +194,11 @@ const allOrderSlice = createSlice({
       });
     builder.addCase(getAllOrders.fulfilled, (state, action) => {
       state.allOrders = action.payload;
+      console.log(state.allOrders);
     });
     builder.addCase(getAllUpdatedOrders.fulfilled, (state, action) => {
       state.orderList = action.payload;
+      console.log(state.allOrders);
     });
   },
 });
