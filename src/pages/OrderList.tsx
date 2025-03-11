@@ -46,8 +46,12 @@ const OrderList = () => {
   const pageSize = 8;
 
   useEffect(() => {
-    //@ts-ignore
-    dispatch(getAllUpdatedOrders({ page_no: currentPage, store_id: '677651fd872afc44dec1c2db' }));
+    dispatch(
+      getAllUpdatedOrders({
+        page_no: currentPage,
+        store_id: "677651fd872afc44dec1c2db",
+      })
+    );
   }, [currentPage]);
 
   const closeModal = () => {
@@ -57,7 +61,7 @@ const OrderList = () => {
   const allOrders = useSelector(
     (state: RootState) => state.AllOrders.allOrders
   );
-  console.log(allOrders);
+  console.log(allOrders, "pakka");
   const totalPages = useSelector(
     (state: RootState) => state.AllOrders.dashboardTotalPages
   );
@@ -79,16 +83,16 @@ const OrderList = () => {
       dataIndex: "productId",
       key: "productId",
     },
-    {
-      title: "Size",
-      dataIndex: "productSize",
-      key: "productSize",
-    },
-    {
-      title: "Type",
-      dataIndex: "productType",
-      key: "productType",
-    },
+    // {
+    //   title: "Size",
+    //   dataIndex: "productSize",
+    //   key: "productSize",
+    // },
+    // {
+    //   title: "Type",
+    //   dataIndex: "productType",
+    //   key: "productType",
+    // },
     {
       title: "Quantity",
       dataIndex: "quantity",

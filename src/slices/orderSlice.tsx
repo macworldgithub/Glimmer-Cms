@@ -112,7 +112,7 @@ interface Order {
   paymentMethod: string;
   ShippingInfo: ShippingInfo;
   productList: OrderProduct[];
-  status: string; 
+  status: string;
 }
 interface AllOrder {
   dashboardOrders: Order[];
