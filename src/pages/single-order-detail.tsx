@@ -14,7 +14,7 @@ const OrderDetailPage = () => {
   const store_id = useSelector((state: RootState) => state.Login._id);
   const fetchData = async () => {
     const response = await axios.get(
-      `${BACKEND_URL}/order/get_order_by_id?id=${location.state?.data._id}`,
+      `${BACKEND_URL}/order/get_store_order_by_id?order_id=${location.state?.data._id}&store_id=${store_id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -22,7 +22,7 @@ const OrderDetailPage = () => {
       }
     );
     // console.log(response.data);
-    setOrders(response.data[0]);
+    setOrders(response.data);
   };
   useEffect(() => {
     fetchData();
@@ -188,35 +188,35 @@ const OrderDetailPage = () => {
           <div>
             <h2 className="text-lg font-semibold">Shipping Information</h2>
             <p>
-              <strong>Full Name:</strong> {order.ShippingInfo.fullName}
+              <strong>Full Name:</strong> {order?.ShippingInfo?.fullName}
             </p>
             <p>
-              <strong>Email:</strong> {order.ShippingInfo.email}
+              <strong>Email:</strong> {order?.ShippingInfo?.email}
             </p>
             <p>
-              <strong>Phone:</strong> {order.ShippingInfo.phone}
+              <strong>Phone:</strong> {order?.ShippingInfo?.phone}
             </p>
             <div className="flex gap-6 flex-wrap">
               <p>
-                <strong>Country:</strong> {order.ShippingInfo.country}
+                <strong>Country:</strong> {order?.ShippingInfo?.country}
               </p>
               <p>
-                <strong>City:</strong> {order.ShippingInfo.city}
+                <strong>City:</strong> {order?.ShippingInfo?.city}
               </p>
               <p>
-                <strong>State:</strong> {order.ShippingInfo.state}
+                <strong>State:</strong> {order?.ShippingInfo?.state}
               </p>
               <p>
-                <strong>Zip Code:</strong> {order.ShippingInfo.zip}
+                <strong>Zip Code:</strong> {order?.ShippingInfo?.zip}
               </p>
             </div>
             <p>
-              <strong>Address:</strong> {order.ShippingInfo.address},{" "}
-              {order.ShippingInfo.city}, {order.ShippingInfo.country}
+              <strong>Address:</strong> {order?.ShippingInfo?.address},{" "}
+              {order?.ShippingInfo?.city}, {order?.ShippingInfo?.country}
             </p>
             <p>
               <strong>Shipping Method:</strong>{" "}
-              {order.ShippingInfo.shippingMethod}
+              {order?.ShippingInfo?.shippingMethod}
             </p>
           </div>
         </div>
