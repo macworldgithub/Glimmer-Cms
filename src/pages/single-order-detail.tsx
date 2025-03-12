@@ -221,23 +221,28 @@ const OrderDetailPage = () => {
           </div>
         </div>
 
-        <h2 className="text-lg font-semibold mt-4">Order Summary</h2>
-        <Table
-          columns={columns}
-          dataSource={order.productList.map((item) => ({
-            key: item.product._id,
-            image: item.product.image1,
-            name: item.product.name,
-            quantity: item.quantity,
-            type: item.product.type[0],
-            size: item.product.size[0],
-            base_price: item.product.base_price,
-            discounted_price: item.product.discounted_price,
-            total_price: item.total_price,
-            orderProductStatus: item.orderProductStatus,
-          }))}
-          pagination={false}
-        />
+        <div className="w-full overflow-hidden">
+          <h2 className="text-lg font-semibold mt-4">Order Summary</h2>
+          <div className="max-h-96 overflow-y-auto border rounded-lg">
+            <Table
+              columns={columns}
+              dataSource={order.productList.map((item) => ({
+                key: item.product._id,
+                image: item.product.image1,
+                name: item.product.name,
+                quantity: item.quantity,
+                type: item.product.type[0],
+                size: item.product.size[0],
+                base_price: item.product.base_price,
+                discounted_price: item.product.discounted_price,
+                total_price: item.total_price,
+                orderProductStatus: item.orderProductStatus,
+              }))}
+              pagination={false}
+            />
+          </div>
+        </div>
+
         <div className="flex justify-between mt-4">
           <p>
             <strong>Total Price:</strong> ${order.total}
