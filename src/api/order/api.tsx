@@ -104,6 +104,49 @@ export const getAllUpdatedOrders = createAsyncThunk(
   }
 );
 
+export const getStoreRevenueSales = createAsyncThunk(
+  "getStoreRevenueSales",
+  async (
+    payload: {
+      page_no: number;
+      store_id: string;
+      order_id?: string;
+      status?: string;
+    },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+      const queryParams = new URLSearchParams({
+        page_no: payload.page_no.toString(),
+        store_id: state.Login._id.toString(),
+      });
+
+      if (payload.order_id) queryParams.append("order_id", payload.order_id);
+      if (payload.status) queryParams.append("status", payload.status);
+
+      const response = await axios.get(
+        `${BACKEND_URL}/order/get_store_revenue_sales?${queryParams.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Validate that the response is an array or expected data structure.
+      if (!Array.isArray(response.data.orders)) {
+        throw new Error("Invalid data format: orders must be an array.");
+      }
+
+      return response.data.orders; // Assuming `orders` is the array of order objects.
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
 export const Ecommerce_Dashboard = createAsyncThunk(
   "ecommerce_dashboard",
   async (payload: { page_no: number }, { rejectWithValue, getState }) => {

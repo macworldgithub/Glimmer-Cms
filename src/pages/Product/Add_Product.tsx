@@ -81,7 +81,7 @@ const ProductPage = () => {
 
   const [isInStock, setIsInStock] = useState(true);
 
-  const HandleChange = (name: string, value: string | number |any) => {
+  const HandleChange = (name: string, value: string | number | any) => {
     dispatch(updateProduct({ [name]: value }));
   };
 
@@ -171,6 +171,20 @@ const ProductPage = () => {
 
   useEffect(() => {}, [subcategory]);
 
+  const handleDiscountChange = (value) => {
+    let discount = parseFloat(value);
+
+    // Ensure discount does not exceed 100
+    if (discount > 100) discount = 100;
+    if (discount < 0 || isNaN(discount)) discount = 0;
+
+    HandleChange("discounted_price", discount);
+  };
+
+  const calculateDiscountedPrice = () => {
+    if (!addProduct.base_price || !addProduct.discounted_price) return 0;
+    return (addProduct.base_price * (100 - addProduct.discounted_price)) / 100;
+  };
   return (
     <div className=" mx-auto overflow-hidden">
       <div className="p-6 flex flex-col md:flex-row md:items-center md:justify-between ">
@@ -422,10 +436,15 @@ const ProductPage = () => {
                 placeholder="Discounted Price"
                 className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
                 value={addProduct.discounted_price}
-                onChange={(e) =>
-                  HandleChange("discounted_price", parseFloat(e.target.value))
-                }
+                onChange={(e) => handleDiscountChange(e.target.value)}
+                max={100}
               />
+              <p className="text-sm text-gray-600 mt-1">
+                Final Price:{" "}
+                <span className="font-semibold text-black">
+                  {calculateDiscountedPrice().toFixed(2)} (PKR)
+                </span>
+              </p>
             </div>
 
             {/*

@@ -84,6 +84,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [selections, setSelection] = useState<Selection[]>([]);
+  const [finalPrice, setFinalPrice] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -375,6 +376,14 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
     ]);
   };
 
+  const calculateDiscountedPrice = () => {
+    const basePrice = form.getFieldValue("base_price") || 0;
+    const discountPrice = form.getFieldValue("discounted_price") || 0;
+
+    const discountedPrice = (basePrice * (100 - discountPrice)) / 100;
+    setFinalPrice(parseFloat(discountedPrice.toFixed(2)));
+  };
+
   return (
     <Modal
       title="Update Product"
@@ -488,13 +497,29 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
           name="base_price"
           rules={[{ required: true, message: "Please enter the base price" }]}
         >
-          <InputNumber min={0} style={{ width: "100%" }} />
+          <InputNumber
+            min={0}
+            style={{ width: "100%" }}
+            onChange={calculateDiscountedPrice}
+          />
         </Form.Item>
 
         <Form.Item label="Discounted Price" name="discounted_price">
-          <InputNumber min={0} style={{ width: "100%" }} />
+          <InputNumber
+            min={0}
+            max={100}
+            style={{ width: "100%" }}
+            onChange={(value) => {
+              if (value > 100) value = 100;
+              form.setFieldsValue({ discounted_price: value });
+              calculateDiscountedPrice();
+            }}
+          />
         </Form.Item>
-
+        <p className="text-sm text-gray-600 mt-1">
+          Final Price:{" "}
+          <span className="font-semibold text-black">${finalPrice}</span>
+        </p>
         <Form.Item
           label="Status"
           name="status"
