@@ -139,54 +139,11 @@ const OrderList = () => {
     //   },
     // },
   ].filter(Boolean);
-  const paymentData = [
-    {
-      count: 56,
-      label: "Pending Payment",
-      icon: (
-        <ClockCircleOutlined
-          style={{ fontSize: "30px", color: "yellowgreen" }}
-        />
-      ),
-    },
-    {
-      count: 156852,
-      label: "Completed Payment",
-      icon: (
-        <CheckCircleOutlined
-          style={{ fontSize: "30px", color: "greenyellow" }}
-        />
-      ),
-    },
-    {
-      count: 156,
-      label: "Refunded",
-      icon: (
-        <RollbackOutlined
-          style={{ fontSize: "30px", color: "rebeccapurple" }}
-        />
-      ),
-    },
-    {
-      count: 156,
-      label: "Failed",
-      icon: <CloseCircleOutlined style={{ fontSize: "30px", color: "red" }} />,
-    },
-  ];
+  
 
   return (
     <div className="w-full h-full flex flex-col items-center p-2 gap-2">
-      <div className="w-full h-max border flex py-5 rounded-lg shadow-lg justify-around flex-wrap bg-white">
-        {paymentData.map((item, index) => (
-          <div key={index} className="flex flex-col w-[200px] h-max">
-            <div className="flex w-full justify-between">
-              <p className="font-medium text-[24px]">{item.count}</p>
-              {item.icon}
-            </div>
-            <p>{item.label}</p>
-          </div>
-        ))}
-      </div>
+      
       <Table
         columns={columns}
         dataSource={orders}

@@ -181,10 +181,6 @@ const ProductPage = () => {
     HandleChange("discounted_price", discount);
   };
 
-  const calculateDiscountedPrice = () => {
-    if (!addProduct.base_price || !addProduct.discounted_price) return 0;
-    return (addProduct.base_price * (100 - addProduct.discounted_price)) / 100;
-  };
   return (
     <div className=" mx-auto overflow-hidden">
       <div className="p-6 flex flex-col md:flex-row md:items-center md:justify-between ">
@@ -415,13 +411,13 @@ const ProductPage = () => {
             <h2 className="text-lg font-medium mb-4">Pricing</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Base Price
+                Actual Price
               </label>
               <input
                 type="number"
                 placeholder="Price"
                 className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
-                value={addProduct.base_price}
+                value={addProduct.base_price || ""}
                 onChange={(e) =>
                   HandleChange("base_price", parseFloat(e.target.value))
                 }
@@ -429,24 +425,35 @@ const ProductPage = () => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Discounted Price
+                Discounted Percentage (%)
               </label>
               <input
                 type="number"
                 placeholder="Discounted Price"
                 className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
-                value={addProduct.discounted_price}
+                value={addProduct.discounted_price || ""}
                 onChange={(e) => handleDiscountChange(e.target.value)}
                 max={100}
               />
-              <p className="text-sm text-gray-600 mt-1">
-                Final Price:{" "}
-                <span className="font-semibold text-black">
-                  {calculateDiscountedPrice().toFixed(2)} (PKR)
-                </span>
-              </p>
             </div>
-
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Final Price
+              </label>
+              <input
+                type="number"
+                placeholder="Final Price"
+                className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400 bg-gray-100"
+                value={
+                  addProduct.base_price && addProduct.discounted_price
+                    ? (addProduct.base_price -
+                      (addProduct.base_price * addProduct.discounted_price) /
+                        100).toFixed(2)
+                    : addProduct.base_price || ""
+                }
+                readOnly
+              />
+            </div>
             {/*
             <div className="flex items-center justify-between border-t border-gray-300 pt-4">
               <span className="text-sm font-medium text-gray-700">

@@ -12,6 +12,9 @@ const OrderDetailPage = () => {
   const [order, setOrders] = useState(location.state?.data);
   const token = useSelector((state: RootState) => state.Login.token);
   const store_id = useSelector((state: RootState) => state.Login._id);
+  const showActionColumn = order.productList.some(
+    (item) => item.orderProductStatus === "Pending"
+  );
   const fetchData = async () => {
     const response = await axios.get(
       `${BACKEND_URL}/order/get_store_order_by_id?order_id=${location.state?.data._id}&store_id=${store_id}`,
@@ -78,19 +81,19 @@ const OrderDetailPage = () => {
       title: "Base Price",
       dataIndex: "base_price",
       key: "base_price",
-      render: (price) => `$${price}`,
+      render: (price) => `${price} PKR`,
     },
     {
       title: "Discounted Price",
       dataIndex: "discounted_price",
       key: "discounted_price",
-      render: (price) => <Tag color="green">${price}</Tag>,
+      render: (price) => <Tag color="green">{price} PKR</Tag>,
     },
     {
       title: "Total Price",
       dataIndex: "total_price",
       key: "total_price",
-      render: (price) => `$${price}`,
+      render: (price) => `${price} PKR`,
     },
     {
       title: "Status",
@@ -100,32 +103,31 @@ const OrderDetailPage = () => {
         <Tag color={status === "Accepted" ? "blue" : "red"}>{status}</Tag>
       ),
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <>
-          {record.orderProductStatus === "Pending" ? (
-            <div className="space-x-5">
-              <Button
-                className="bg-green-500 text-white"
-                onClick={() => handleAccept(record.key)}
-              >
-                Accept
-              </Button>
-              <Button
-                className="bg-red-500 text-white"
-                onClick={() => handleReject(record.key)}
-              >
-                Reject
-              </Button>
-            </div>
-          ) : (
-            <p className="text-red-500 font-bold">N/A</p>
-          )}
-        </>
-      ),
-    },
+    ...(showActionColumn
+      ? [
+          {
+            title: "Action",
+            key: "action",
+            render: (_, record) =>
+              record.orderProductStatus === "Pending" && (
+                <div className="space-x-5">
+                  <Button
+                    className="bg-green-500 text-white"
+                    onClick={() => handleAccept(record.key)}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    className="bg-red-500 text-white"
+                    onClick={() => handleReject(record.key)}
+                  >
+                    Reject
+                  </Button>
+                </div>
+              ),
+          },
+        ]
+      : []),
   ];
   const handleAccept = async (prodId) => {
     const response = await axios.put(
@@ -245,11 +247,11 @@ const OrderDetailPage = () => {
 
         <div className="flex justify-between mt-4">
           <p>
-            <strong>Total Price:</strong> ${order.total}
+            <strong>Total Price:</strong> {order.total} PKR
           </p>
           <p>
             <strong>Discounted Total:</strong>{" "}
-            <Tag color="green">${order.discountedTotal}</Tag>
+            <Tag color="green">{order.discountedTotal} PKR</Tag>
           </p>
           <p>
             <strong>Payment Method:</strong> {order.paymentMethod}

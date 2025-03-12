@@ -74,20 +74,8 @@ export const getMenuItems = (
         {
           key: "ecommerce-order",
           icon: <OrderedListOutlined />,
-          label: "Order",
-          children: [
-            {
-              key: "order-list",
-              label: "Order List",
-              //@ts-ignore
-              path: "/orderList",
-            },
-            {
-              key: "order-details",
-              label: "Order Details",
-              path: "/orderDetails",
-            },
-          ],
+          label: "Order List and Details",
+          path: "/orderList",
         },
         {
           key: "ecommerce-products",
@@ -120,11 +108,11 @@ export const getMenuItems = (
         //   icon: <UserOutlined />,
         //   label: "Customer",
         // },
-        // {
-        //   key: "ecommerce-reviews",
-        //   icon: <FileOutlined />,
-        //   label: "Managing Reviews",
-        // },
+        {
+          key: "ecommerce-reviews",
+          icon: <FileOutlined />,
+          label: "Managing Reviews",
+        },
       ]
     : []),
 
