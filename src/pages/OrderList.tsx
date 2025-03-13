@@ -12,7 +12,7 @@ import { RootState } from "../store/store";
 import { getAllUpdatedOrders } from "../api/order/api";
 import { BACKEND_URL } from "../config/server";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -48,10 +48,12 @@ const OrderList = () => {
   const store_id = useSelector((state: RootState) => state.Login._id);
 
   const navigate = useNavigate();
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalOrders, setTotalOrders] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
   const pageSize = 10;
+  const currentPage = Number(searchParams.get("page")) || 1;
+
   const fetchData = async () => {
     const response = await axios.get(
       `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&store_id=${store_id}`,
@@ -153,7 +155,7 @@ const OrderList = () => {
           current: currentPage,
           pageSize: pageSize,
           total: totalPages,
-          onChange: (page) => setCurrentPage(page),
+          onChange: (page) => setSearchParams({ page: page.toString() }),
         }}
       />
     </div>
