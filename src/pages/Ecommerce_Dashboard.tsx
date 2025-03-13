@@ -117,16 +117,16 @@ const Dashboard = () => {
           <p className="text-gray-600 text-xl font-bold">{dashboardData?.revenue}</p>
         </div>
         {/* Recent Sales Card - Dynamic */}
-        <div className="w-1/2 max-sm:w-full bg-white shadow-md p-4 rounded-md">
+        {/* <div className="w-1/2 max-sm:w-full bg-white shadow-md p-4 rounded-md">
           <h3 className="text-lg text-gray-500">Recent Sales</h3>
           <p className="text-gray-600 text-xl font-bold">
             {dashboardData.recentSales}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* Expenses Card - Dynamic */}
-      <div className="bg-white shadow-md p-4 rounded-md mt-4">
+      {/* <div className="bg-white shadow-md p-4 rounded-md mt-4">
         <h3 className="text-lg text-gray-500">Expenses</h3>
         <p className="text-gray-600 text-xl font-bold">
           {dashboardData.expenses.title}
@@ -138,7 +138,7 @@ const Dashboard = () => {
         <span className="text-gray-500 font-medium bg-gray-200 p-2">
           {dashboardData.expenses.value} YEAR
         </span>
-      </div>
+      </div> */}
 
       {/* Orders Table */}
       <div className="flex max-xl:flex-col">
