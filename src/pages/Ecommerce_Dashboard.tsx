@@ -54,12 +54,12 @@ const Dashboard = () => {
         const { totalRevenue, salesCount, totalCount } = response.data;
 
         setDashboardData({
-          revenue: `$${totalRevenue}`,
+          revenue: totalRevenue,
           totalProducts: totalCount.toString(),
           salesCount: {
-            Accepted: salesCount?.Accepted ?? 2,
-            Rejected: salesCount?.Rejected ?? 3,
-            Pending: salesCount?.Pending ?? 100,
+            Accepted: salesCount?.Accepted ?? 0,
+            Rejected: salesCount?.Rejected ?? 0,
+            Pending: salesCount?.Pending ?? 0,
           },
           recentSales: "482k",
           expenses: { title: "4,234", value: "2023" },
@@ -114,7 +114,8 @@ const Dashboard = () => {
             <img src={revenue} alt="" />
           </div>
           <h3 className="text-lg text-gray-500">Revenue</h3>
-          <p className="text-gray-600 text-xl font-bold">{dashboardData?.revenue}</p>
+          <p className="text-gray-600 text-xl font-bold">{dashboardData?.revenue} <span className="text-blue-500 text-sm">PKR</span></p>
+
         </div>
         {/* Recent Sales Card - Dynamic */}
         {/* <div className="w-1/2 max-sm:w-full bg-white shadow-md p-4 rounded-md">
