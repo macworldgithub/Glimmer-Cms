@@ -34,7 +34,8 @@ const OrderTable = () => {
     console.log(response.data);
     setOrders(response.data.orders);
     setTotalOrders(response.data.totalOrders);
-    setTotalPages(response.data.totalPages);
+    setTotalPages(Math.ceil(response.data.totalOrders / pageSize)); 
+    // setTotalPages(response.data.totalPages);
   };
   useEffect(() => {
     fetchData();
@@ -124,7 +125,7 @@ const OrderTable = () => {
         pagination={{
           current: currentPage,
           pageSize: pageSize,
-          total: totalPages,
+          total: totalOrders,
           onChange: (page) => setCurrentPage(page),
         }}
       />
