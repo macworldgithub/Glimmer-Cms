@@ -206,8 +206,6 @@ const Dashboard = () => {
           },
         });
 
-        console.log("Response:", response.data);
-
         const { totalRevenue, salesCount, totalCount } = response.data;
 
         setTotalPages(Math.ceil(totalCount / itemsPerPage));
@@ -278,7 +276,7 @@ const Dashboard = () => {
 
       {/* Orders Table */}
       <div className="flex max-xl:flex-col">
-        <div className="w-[70%] max-xl:w-full">
+        <div className="w-full max-xl:w-full">
           <OrderTable />
         </div>
       </div>

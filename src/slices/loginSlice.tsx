@@ -81,14 +81,14 @@ const loginSlice = createSlice({
       state.email = store.email;
       state.country = store.country;
       state.address = store.address;
-      state.store_image = store.store_image;
+      state.store_image = `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${store.store_image}`;
       state.token = token;
       state.isAuthenticated = true; // Mark as authenticated
       state.role = role;
     });
 
     builder.addCase(signInAdmin.fulfilled, (state, action) => {
-      const { admin, token, role } = action.payload;
+      const { admin, token, role, store_image } = action.payload;
 
       state.email = admin.email;
       state.name = admin.name;
@@ -96,6 +96,7 @@ const loginSlice = createSlice({
       state.token = token;
       state.isAuthenticated = true; // Mark as authenticated
       state.role = role;
+      state.store_image = store_image;
     });
 
     builder.addCase(signInStore.rejected, (state, action) => {

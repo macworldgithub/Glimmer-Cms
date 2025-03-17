@@ -5,7 +5,7 @@ import Logo from "../assets/Logo/logo.png";
 import { AppDispatch } from "../store/store";
 
 import { useDispatch } from "react-redux";
-import { signInAdmin, signInStore } from "../api/auth/api";
+import { signInAdmin, signInSalon, signInStore } from "../api/auth/api";
 
 const options = [
   { label: "Admin", value: 1 },
@@ -45,6 +45,22 @@ const Login = () => {
   };
 
   const HandleLogin = () => {
+    if (loginCredentials.category === 1) {
+      dispatch(
+        signInAdmin({
+          email: loginCredentials.userName,
+          password: loginCredentials.password,
+        })
+      );
+    }
+    if (loginCredentials.category === 2) {
+      dispatch(
+        signInSalon({
+          email: loginCredentials.userName,
+          password: loginCredentials.password,
+        })
+      );
+    }
     if (loginCredentials.category === 3) {
       dispatch(
         signInStore({
@@ -54,14 +70,6 @@ const Login = () => {
       );
     }
 
-    if (loginCredentials.category === 1) {
-      dispatch(
-        signInAdmin({
-          email: loginCredentials.userName,
-          password: loginCredentials.password,
-        })
-      );
-    }
   };
   return (
     <div className="w-[100vw] h-[100vh] bg-[#F5F5F9] flex justify-center items-center ">

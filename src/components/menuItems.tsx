@@ -46,6 +46,12 @@ export const getMenuItems = (
           label: "Create Store",
           path: "/makestore",
         },
+        {
+          key: "salon",
+          icon: <DashboardOutlined />,
+          label: "Create Salon",
+          path: "/salon",
+        },
 
         {
           key: "email",

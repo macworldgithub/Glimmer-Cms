@@ -1,4 +1,4 @@
-import { Table } from "antd";
+import { Button, Checkbox, Input, Table } from "antd";
 import "antd/dist/reset.css";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -240,6 +240,19 @@ const ProductTableWithHeader = () => {
         />
       )}
 
+      <div className="flex flex-wrap gap-4 py-4">
+        <Input
+          type="number"
+          placeholder="Flat Discount"
+          className="w-1/3"
+        />
+        <Checkbox className="flex items-center">
+          For all Products
+        </Checkbox>
+        <Button type="primary">
+          Update Price
+        </Button>
+      </div>
       {/* Table Section */}
       <div className="overflow-x-auto shadow-lg">
         <Table

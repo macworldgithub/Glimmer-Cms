@@ -19,6 +19,21 @@ export const signInStore = createAsyncThunk(
   }
 );
 
+export const signInSalon = createAsyncThunk(
+  "auth/signupSalon",
+  async (payload: { email: string; password: string }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${BACKEND_URL}/auth/signin/salon`,
+        payload
+      );
+      return response.data; // Return the response data if successful
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
 export const signInAdmin = createAsyncThunk(
   "auth/signInAdmin",
   async (payload: { email: string; password: string }, { rejectWithValue }) => {
@@ -37,6 +52,20 @@ export const signInAdmin = createAsyncThunk(
 export const createStore = async (form: FormData) => {
   try {
     const res = await axios.post(`${BACKEND_URL}/auth/signup/store`, form, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Important for sending FormData
+      },
+    });
+    return res.data; // Return the response data
+  } catch (error) {
+    console.error("Error creating store:", error);
+    throw error; // Re-throw the error to handle it in the caller
+  }
+};
+
+export const createSalon = async (form: FormData) => {
+  try {
+    const res = await axios.post(`${BACKEND_URL}/auth/signup/salon`, form, {
       headers: {
         "Content-Type": "multipart/form-data", // Important for sending FormData
       },

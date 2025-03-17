@@ -23,6 +23,7 @@ import Email from "./pages/Email.tsx";
 import Storeactivity from "./pages/Storeactivity.tsx";
 import { useEffect, useState } from "react";
 import OrderDetailPage from "./pages/single-order-detail.tsx";
+import Salon from "./pages/Salon.tsx";
 
 function App() {
   //  const isAuthenticated = false;
@@ -76,6 +77,7 @@ function App() {
           <Route path="Category_List" element={<Category_List />} />
           <Route path="Create_Category" element={<Create_Category />} />
           <Route path="makestore" element={<SignupStore />} />
+          <Route path="salon" element={<Salon />} />
           <Route path="email" element={<Email />} />
           <Route path="store" element={<Storeactivity />} />
 

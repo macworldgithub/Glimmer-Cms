@@ -28,8 +28,6 @@ const OrderTable = () => {
         }
       );
   
-      console.log("API Response:", response.data); 
-  
       setOrders(response.data.orders);
       setTotalOrders(response.data.totalCount); 
     } catch (error) {
