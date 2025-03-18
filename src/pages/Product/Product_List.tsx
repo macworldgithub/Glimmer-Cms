@@ -2,7 +2,7 @@ import { Button, Checkbox, Input, Table } from "antd";
 import "antd/dist/reset.css";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllProducts } from "../../api/products/api";
+import { getAllProducts, updateProductPrices } from "../../api/products/api";
 import DeleteProductModal from "../../components/DeleteProductModal";
 import UpdateModal from "../../components/UpdateProductModal";
 import SearchBar from "../../components/SearchBar"; // Import SearchBar
@@ -47,6 +47,9 @@ const ProductTableWithHeader = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [selections, setSelections] = useState<CategorySelection[]>([]);
+  const [checkedNames, setCheckedNames] = useState({});
+  const [allChecked, setAllChecked] = useState(false);
+  const [discount, setDiscount] = useState<number>(0);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -129,13 +132,66 @@ const ProductTableWithHeader = () => {
   const productList = useMemo(() => {
     return Array.isArray(rawProductList)
       ? {
-        products: transformProductData(rawProductList, selections),
-        total: rawProductList.length,
-      }
+          products: transformProductData(rawProductList, selections),
+          total: rawProductList.length,
+        }
       : rawProductList || { products: [], total: 0 };
   }, [rawProductList, selections]);
 
+  useEffect(() => {
+    setCheckedNames((prev) => {
+      const newCheckedState = { ...prev };
+      productList.products.forEach((product) => {
+        if (!(product._id in newCheckedState)) {
+          newCheckedState[product._id] = false;
+        }
+      });
+      return newCheckedState;
+    });
+  }, [productList.products]);
 
+  useEffect(() => {
+    const allCheckedState = {};
+    productList.products.forEach((product) => {
+      allCheckedState[product._id] = allChecked;
+    });
+    setCheckedNames(allCheckedState);
+  }, [allChecked, productList.products]);
+
+  const handleCheck = (productId) => {
+    setCheckedNames((prev) => ({ ...prev, [productId]: !prev[productId] }));
+  };
+
+  const handleCheckAll = () => {
+    setAllChecked(!allChecked);
+  };
+  const handleUpdatePrice = async () => {
+    console.log(checkedNames);
+    const selectedProductIds = Object.keys(checkedNames).filter(
+      (id) => checkedNames[id]
+    );
+
+    if (selectedProductIds.length === 0) {
+      alert("Please select at least one product to update.");
+      return;
+    }
+
+    if (discount <= 0) {
+      alert("Please enter a valid discount greater than 0.");
+      return;
+    }
+
+    try {
+      await dispatch(
+        updateProductPrices({ discount, productIds: selectedProductIds })
+      ).unwrap();
+      alert("Product prices updated successfully!");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating prices:", error);
+      alert("Failed to update product prices.");
+    }
+  };
   const filteredProducts = productList.products.filter((product: TableData) => {
     const productCategory = product.category ? product.category.trim() : "";
     const productName = product.name ? product.name.toLowerCase().trim() : "";
@@ -173,9 +229,33 @@ const ProductTableWithHeader = () => {
     });
   };
   const columns = [
-    { title: "Name", dataIndex: "name", key: "name" },
+    {
+      title: (
+        <Checkbox onChange={handleCheckAll} checked={allChecked}>
+          Name
+        </Checkbox>
+      ),
+      dataIndex: "name",
+      key: "name",
+      render: (text, record) => (
+        <div className="flex items-center">
+          <Checkbox
+            onChange={() => handleCheck(record._id)}
+            checked={checkedNames[record._id] || false}
+          />
+          <span className="ml-2">{text}</span>
+        </div>
+      ),
+    },
     { title: "Description", dataIndex: "description", key: "description" },
-    { title: "Price", dataIndex: "base_price", key: "base_price" },
+    {
+      title: "Price",
+      dataIndex: "base_price",
+      key: "base_price",
+      render: (text: number) => {
+        return text.toFixed(2); 
+      },
+    },
     {
       title: "Discounted Price",
       dataIndex: "discounted_price",
@@ -242,14 +322,13 @@ const ProductTableWithHeader = () => {
 
       <div className="flex flex-wrap gap-4 py-4">
         <Input
+          id="discount"
           type="number"
           placeholder="Flat Discount"
+          onChange={(e) => setDiscount(parseFloat(e.target.value))}
           className="w-1/3"
         />
-        <Checkbox className="flex items-center">
-          For all Products
-        </Checkbox>
-        <Button type="primary">
+        <Button type="primary" onClick={handleUpdatePrice}>
           Update Price
         </Button>
       </div>

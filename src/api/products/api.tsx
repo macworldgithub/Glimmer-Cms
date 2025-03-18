@@ -40,6 +40,34 @@ export const getAllProducts = createAsyncThunk(
   }
 );
 
+export const updateProductPrices = createAsyncThunk(
+  "bulk_update_product_prices",
+  async (
+    { discount, productIds }: { discount: number, productIds: string[] },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make the API call to update prices
+      const response = await axios.put(
+        `${BACKEND_URL}/product/bulk_update_product_prices`,
+        { discount, productIds },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data; // Return success data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update prices");
+    }
+  }
+);
+
 // export const addProductApi = createAsyncThunk(
 //   "addProduct",
 //   async (payload: {}, { rejectWithValue, getState }) => {
