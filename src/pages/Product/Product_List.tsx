@@ -329,7 +329,7 @@ const ProductTableWithHeader = () => {
           className="w-1/3"
         />
         <Button type="primary" onClick={handleUpdatePrice}>
-          Update Price
+          Apply Discount
         </Button>
       </div>
       {/* Table Section */}
