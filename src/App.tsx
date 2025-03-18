@@ -24,15 +24,14 @@ import Storeactivity from "./pages/Storeactivity.tsx";
 import { useEffect, useState } from "react";
 import OrderDetailPage from "./pages/single-order-detail.tsx";
 import Salon from "./pages/Salon.tsx";
+import Salon_Dashboard from "./pages/Salon_Dashboard.tsx";
 
 function App() {
   //  const isAuthenticated = false;
   const isAuthenticated = useSelector(
     (state: RootState) => state.Login.isAuthenticated
   );
-
   const role = useSelector((state: RootState) => state.Login.role);
-
   const [frontPage, setFrontPage] = useState("dasboard");
 
   useEffect(() => {
@@ -40,6 +39,8 @@ function App() {
       setFrontPage("dashboard");
     } else if (role === "store") {
       setFrontPage("E_Dashboard");
+    } else if (role === "salon") {
+      setFrontPage("S_Dashboard")
     }
   }, [role]);
 
@@ -82,6 +83,7 @@ function App() {
           <Route path="store" element={<Storeactivity />} />
 
           <Route path="E_Dashboard" element={<Ecommerce_Dashboard />} />
+          <Route path="S_Dashboard" element={<Salon_Dashboard />} />
         </Route>
       </Routes>
     </Router>

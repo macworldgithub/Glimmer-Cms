@@ -122,40 +122,41 @@ export const getMenuItems = (
       ]
     : []),
 
-  ...(showSaloon
-    ? [
-        {
-          key: "saloon",
-          icon: <ScissorOutlined />,
-          label: "Saloon",
-          children: [
-            {
-              key: "saloon-dashboard",
-              icon: <DashboardOutlined />,
-              label: "Dashboard",
-            },
-            {
-              key: "saloon-order",
-              icon: <OrderedListOutlined />,
-              label: "Order",
-            },
-            {
-              key: "saloon-services",
-              icon: <FileOutlined />,
-              label: "Services",
-            },
-            {
-              key: "saloon-customer",
-              icon: <UserOutlined />,
-              label: "Customer",
-            },
-            {
-              key: "saloon-reviews",
-              icon: <FileOutlined />,
-              label: "Managing Reviews",
-            },
-          ],
-        },
-      ]
-    : []),
+    ...(showSaloon
+      ? [
+          {
+            key: "salon-dashboard",
+            icon: <DashboardOutlined />,
+            label: "Dashboard",
+            path: "/S_Dashboard",
+          },
+  
+          {
+            key: "salon-booking",
+            icon: <OrderedListOutlined />,
+            label: "Booking and Details",
+            path: "/booking",
+          },
+          {
+            key: "salon-products",
+            icon: <FileOutlined />,
+            label: "Products",
+            children: [
+              {
+                key: "products",
+                icon: <FileOutlined />,
+                label: "Product List",
+                path: "/Product_List",
+              },
+  
+              {
+                key: "add-product",
+                icon: <FileOutlined />,
+                label: "Add Product",
+                path: "/Add_Product",
+              },
+            ],
+          },
+        ]
+      : []),
 ];

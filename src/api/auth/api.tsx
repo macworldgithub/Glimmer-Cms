@@ -20,7 +20,7 @@ export const signInStore = createAsyncThunk(
 );
 
 export const signInSalon = createAsyncThunk(
-  "auth/signupSalon",
+  "auth/signInSalon",
   async (payload: { email: string; password: string }, { rejectWithValue }) => {
     try {
       const response = await axios.post(

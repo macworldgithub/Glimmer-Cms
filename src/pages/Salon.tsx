@@ -11,6 +11,7 @@ const Salon = () => {
     ownerName: "",
     about: "",
     ownerContactEmail: "",
+    contactNumber: "",
     email: "",
     password: "",
     address: "",
@@ -55,6 +56,10 @@ const Salon = () => {
       alert("Owner Contact Email is required.");
       return;
     }
+    if (!formData.contactNumber.trim()) {
+      alert("Owner Contact Number is required.");
+      return;
+    }
     if (!formData.email.trim()) {
       alert("Email is required.");
       return;
@@ -71,6 +76,7 @@ const Salon = () => {
     formDataToSubmit.append("owner_name", formData.ownerName);
     formDataToSubmit.append("about", formData.about);
     formDataToSubmit.append("owner_contact_email", formData.ownerContactEmail);
+    formDataToSubmit.append("contact_number", formData.contactNumber);
     formDataToSubmit.append("email", formData.email);
     formDataToSubmit.append("password", formData.password);
     formDataToSubmit.append("address", formData.address);
@@ -86,6 +92,7 @@ const Salon = () => {
         ownerName: "",
         about: "",
         ownerContactEmail: "",
+        contactNumber: "",
         email: "",
         password: "",
         address: "",
@@ -121,7 +128,7 @@ const Salon = () => {
           { label: "Owner Contact Email", name: "ownerContactEmail", type: "email" },
           { label: "Email", name: "email", type: "email" },
           { label: "Password", name: "password", type: "password" },
-          { label: "Contact Number", name: "number", type: "number" },
+          { label: "Contact Number", name: "contactNumber", type: "number" },
           { label: "Address", name: "address", type: "text" },
         ].map(({ label, name, type }) => (
           <div key={name} className="flex flex-col">

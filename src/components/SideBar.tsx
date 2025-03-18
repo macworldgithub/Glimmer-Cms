@@ -40,6 +40,11 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed }) => {
       setShowEcommerce(false);
       setShowSaloon(false);
     }
+    if (role === "salon") {
+      setShowSuperAdmin(false);
+      setShowEcommerce(false);
+      setShowSaloon(true);
+    }
 
   }, []);
 
