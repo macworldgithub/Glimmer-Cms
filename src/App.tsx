@@ -8,7 +8,6 @@ import Login from "./auth/login";
 import MainLayout from "./layout/MainLayout.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 
-import OrderDetails from "./pages/OrderDetails.tsx";
 import OrderList from "./pages/OrderList.tsx";
 
 import Ecommerce_Dashboard from "./pages/Ecommerce_Dashboard.tsx";
@@ -25,6 +24,8 @@ import { useEffect, useState } from "react";
 import OrderDetailPage from "./pages/single-order-detail.tsx";
 import Salon from "./pages/Salon.tsx";
 import Salon_Dashboard from "./pages/Salon_Dashboard.tsx";
+import Booking from "./pages/Booking.tsx";
+import Services from "./pages/Services.tsx";
 
 function App() {
   //  const isAuthenticated = false;
@@ -84,6 +85,8 @@ function App() {
 
           <Route path="E_Dashboard" element={<Ecommerce_Dashboard />} />
           <Route path="S_Dashboard" element={<Salon_Dashboard />} />
+          <Route path="booking" element={<Booking />} />
+          <Route path="services" element={<Services />} />
         </Route>
       </Routes>
     </Router>

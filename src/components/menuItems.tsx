@@ -47,6 +47,12 @@ export const getMenuItems = (
           path: "/makestore",
         },
         {
+          key: "services",
+          icon: <DashboardOutlined />,
+          label: "Create Services",
+          path: "/services",
+        },
+        {
           key: "salon",
           icon: <DashboardOutlined />,
           label: "Create Salon",
@@ -132,30 +138,36 @@ export const getMenuItems = (
           },
   
           {
-            key: "salon-booking",
+            key: "booking",
             icon: <OrderedListOutlined />,
             label: "Booking and Details",
             path: "/booking",
           },
           {
-            key: "salon-products",
+            key: "salon-services",
             icon: <FileOutlined />,
-            label: "Products",
+            label: "Services",
             children: [
               {
-                key: "products",
+                key: "manage-services",
                 icon: <FileOutlined />,
-                label: "Product List",
-                path: "/Product_List",
+                label: "Manage Services",
+                path: "/manage-services",
               },
   
               {
-                key: "add-product",
+                key: "add-services",
                 icon: <FileOutlined />,
-                label: "Add Product",
-                path: "/Add_Product",
+                label: "Add Services",
+                path: "/add-services",
               },
             ],
+          },
+          {
+            key: "salon-profile",
+            icon: <OrderedListOutlined />,
+            label: "Salon Profile",
+            path: "/salon-profile",
           },
         ]
       : []),
