@@ -1,5 +1,7 @@
 import { BACKEND_URL } from "../../config/server";
 import axios from "axios";
+import { RootState } from "../../store/store";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const getAllServices = async () => {
   try {
@@ -15,7 +17,6 @@ export const getAllServices = async () => {
 
 export const getAllServicesById = async (category_id) => {
   try {
-    console.log("Category ID", category_id)
     const res = await axios.get(
       `${BACKEND_URL}/salon-services-categories/getCategryById/${category_id}`
     );
@@ -25,3 +26,30 @@ export const getAllServicesById = async (category_id) => {
     throw error;
   }
 };
+
+export const updateService = createAsyncThunk(
+  "update",
+  async (
+    { category_id, data }: { category_id: string; data: any },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/salon-services-categories/update/${category_id}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update");
+    }
+  }
+);
