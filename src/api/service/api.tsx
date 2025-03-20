@@ -3,6 +3,18 @@ import axios from "axios";
 import { RootState } from "../../store/store";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+export interface UpdateSalonApi {
+  salon_name: string;
+  owner_name: string;
+  about: string;
+  owner_contact_email: string;
+  contact_number: string;
+  email: string;
+  password: string;
+  address: string;
+  salon_image: string;
+}
+
 export const getAllServices = async () => {
   try {
     const res = await axios.get(
@@ -77,3 +89,29 @@ export const deleteService = createAsyncThunk(
     }
   }
 );
+
+export const updateSalonApi = async (token: string, data: UpdateSalonApi) => {
+  const formData = new FormData();
+
+  formData.append("salon_name", data.salon_name);
+  formData.append("owner_name", data.owner_name);
+  formData.append("about", data.about);
+  formData.append("owner_contact_email", data.owner_contact_email);
+  formData.append("contact_number", data.contact_number);
+  formData.append("email", data.email);
+  formData.append("password", data.password);
+  formData.append("address", data.address);
+  formData.append("salon_image", data.salon_image);
+
+  const response = await axios.put(
+    `${BACKEND_URL}/salon/update`,
+    formData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return response.data;
+};

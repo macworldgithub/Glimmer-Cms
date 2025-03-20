@@ -173,5 +173,5 @@ const loginSlice = createSlice({
   },
 });
 
-export const { changeAuthentication, logout, updateStore } = loginSlice.actions;
+export const { changeAuthentication, logout, updateStore, updateSalon } = loginSlice.actions;
 export default loginSlice;

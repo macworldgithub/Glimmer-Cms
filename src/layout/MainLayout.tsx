@@ -11,6 +11,8 @@ import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
 
 import { Navigate } from "react-router-dom";
+import SalonProfile from "../components/SalonProfile";
+import UpdateSalonModal from "../components/UpdateSalon";
 
 const { Header, Content } = Layout;
 
@@ -18,7 +20,7 @@ const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const role = useSelector((state: RootState) => state.Login.role);
-
+  console.log(role);
   const [profile, setProfile] = useState<boolean>(false);
   // const {
   //   token: { colorBgContainer, borderRadiusLG },
@@ -55,7 +57,12 @@ const MainLayout = () => {
           />
           <div className="flex items-center gap-2 pr-2">
             <Bell />
-            <Profile profile={profile} setProfile={setProfile} />
+            {(role === "store" || role === "super_admin") && (
+              <Profile profile={profile} setProfile={setProfile} />
+            )}
+            {role === "salon" && (
+              <SalonProfile profile={profile} setProfile={setProfile} />
+            )}
           </div>
         </Header>
         <Content
@@ -69,7 +76,12 @@ const MainLayout = () => {
             height: "60vh", // Full height minus the header height (adjust as needed)
           }}
         >
-          <UpdateStoreModal profile={profile} setProfile={setProfile} />
+          {(role === "store" || role === "super_admin") && (
+            <UpdateStoreModal profile={profile} setProfile={setProfile} />
+          )}
+          {role === "salon" && (
+            <UpdateSalonModal profile={profile} setProfile={setProfile} />
+          )}
           <Outlet />
         </Content>
       </Layout>
