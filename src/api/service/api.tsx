@@ -53,3 +53,27 @@ export const updateService = createAsyncThunk(
     }
   }
 );
+
+export const deleteService = createAsyncThunk(
+  "delete",
+  async (
+    { category_id }: { category_id: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+      const res = await axios.delete(
+        `${BACKEND_URL}/salon-services-categories/delete/${category_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return res.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update");
+    }
+  }
+);
