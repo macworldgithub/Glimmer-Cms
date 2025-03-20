@@ -159,7 +159,7 @@ export const getMenuItems = (
                 key: "add-services",
                 icon: <FileOutlined />,
                 label: "Add Services",
-                path: "/add-services",
+                path: "/Add_services",
               },
             ],
           },

@@ -7,12 +7,14 @@ import allProductsSlice from "../slices/allProductSlice";
 import loginSlice from "../slices/loginSlice";
 import orderSlice from "../slices/orderSlice";
 import allOrderSlice from "../slices/orderSlice";
+import addSalonSlice from "../slices/addSalonSlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
   Login: loginSlice.reducer,
   AllProducts: allProductsSlice.reducer,
   AddProduct: addProductSlice.reducer,
+  AddSalon: addSalonSlice.reducer,
   // Orders: orderSlice.reducer,
   AllOrders: allOrderSlice.reducer,
 });
@@ -24,7 +26,7 @@ type RootReducerType = ReturnType<typeof rootReducer>;
 const persistConfig: PersistConfig<any> = {
   key: "glimmer", // Key for storage
   storage, // Default storage for web
-  blacklist: ["AddProduct", "AllProducts", "AllOrders"],
+  blacklist: ["AddProduct", "AllProducts", "AllOrders", "AddSalon"],
 };
 
 const persistedReducer = persistReducer<RootReducerType>(

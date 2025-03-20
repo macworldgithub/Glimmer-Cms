@@ -26,6 +26,7 @@ import Salon from "./pages/Salon.tsx";
 import Salon_Dashboard from "./pages/Salon_Dashboard.tsx";
 import Booking from "./pages/Booking.tsx";
 import Services from "./pages/Services.tsx";
+import Add_Services from "./pages/Add_Services.tsx";
 
 function App() {
   //  const isAuthenticated = false;
@@ -87,6 +88,8 @@ function App() {
           <Route path="S_Dashboard" element={<Salon_Dashboard />} />
           <Route path="booking" element={<Booking />} />
           <Route path="services" element={<Services />} />
+          <Route path="Add_Services" element={<Add_Services />} />
+
         </Route>
       </Routes>
     </Router>

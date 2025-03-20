@@ -115,3 +115,52 @@ export const updateSalonApi = async (token: string, data: UpdateSalonApi) => {
   );
   return response.data;
 };
+
+export const addSalonApi = createAsyncThunk(
+  "addSalon",
+  async (payload: {}, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const salon = state.AddSalon;
+
+      // Construct FormData
+      const formData = new FormData();
+      formData.append("name", salon.name);
+      formData.append("about", salon.about);
+      formData.append("duration", salon.duration.toString());
+      formData.append("base_price", salon.base_price.toString());
+      formData.append(
+        "discounted_price",
+        salon.discounted_price ? salon.discounted_price.toString() : "0"
+      );
+      formData.append("status", salon.status);
+      formData.append("categoryId", salon.categoryId);
+      formData.append("subCategoryName", salon.subCategoryName);
+      formData.append("subSubCategoryName", salon.subSubCategoryName);
+
+      // @ts-ignore
+      product.images.forEach((file: File, index: number) => {
+        formData.append(`image${index + 1}`, file);
+      });
+
+      // Make API request
+      const response = await axios.post(
+        `${BACKEND_URL}/salon-services/createService`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Bearer token
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(response, "result");
+
+      return response.data; // Return the response data if successful
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
