@@ -15,6 +15,8 @@ const Salon = () => {
     email: "",
     password: "",
     address: "",
+    openingHour: "",
+    closingHour: ""
   });
 
   const handleChange = (
@@ -80,6 +82,8 @@ const Salon = () => {
     formDataToSubmit.append("email", formData.email);
     formDataToSubmit.append("password", formData.password);
     formDataToSubmit.append("address", formData.address);
+    formDataToSubmit.append("openingHour", formData.openingHour);
+    formDataToSubmit.append("closingHour", formData.closingHour);
 
     try {
       const response = await createSalon(formDataToSubmit); // Call createStore
@@ -96,6 +100,8 @@ const Salon = () => {
         email: "",
         password: "",
         address: "",
+        openingHour: "",
+        closingHour: "",
       });
       setStoreImageFile(null);
       setPreviewImage(null); // Reset preview image
@@ -130,6 +136,8 @@ const Salon = () => {
           { label: "Password", name: "password", type: "password" },
           { label: "Contact Number", name: "contactNumber", type: "number" },
           { label: "Address", name: "address", type: "text" },
+          { label: "Opeing Hour", name: "openingHour", type: "number" },
+          { label: "Closing Hour", name: "closingHour", type: "number" },
         ].map(({ label, name, type }) => (
           <div key={name} className="flex flex-col">
             <label className="font-medium text-gray-700">{label}</label>

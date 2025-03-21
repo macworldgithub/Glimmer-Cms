@@ -14,6 +14,8 @@ interface Authentication {
   about?: string;
   owner_contact_email?: string;
   contact_number?: string;
+  openingHour?: string;
+  closingHour?: string;
   email: string;
   password: string;
   country?: string;
@@ -49,6 +51,8 @@ const initialSalonState: Authentication = {
   about: "",
   owner_contact_email: "",
   contact_number: "",
+  openingHour: "",
+  closingHour: "",
   email: "",
   password: "",
   address: "",
@@ -101,6 +105,8 @@ const loginSlice = createSlice({
         contact_number,
         email,
         address,
+        openingHour,
+        closingHour,
         salon_image,
       } = action.payload;
 
@@ -112,6 +118,8 @@ const loginSlice = createSlice({
       state.salon_image = salon_image;
       state.salon_name = salon_name;
       state.owner_name = owner_name;
+      state.openingHour = openingHour;
+      state.closingHour = closingHour;
     },
   },
   extraReducers(builder) {
@@ -151,6 +159,8 @@ const loginSlice = createSlice({
       state.about = salon.about;
       state.owner_contact_email = salon.owner_contact_email;
       state.contact_number = salon.contact_number;
+      state.openingHour = salon.openingHour;
+      state.closingHour = salon.closingHour;
       state.email = salon.email;
       state.address = salon.address;
       state.salon_image = `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.salon_image}`;

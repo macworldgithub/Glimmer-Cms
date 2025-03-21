@@ -9,6 +9,8 @@ export interface UpdateSalonApi {
   about: string;
   owner_contact_email: string;
   contact_number: string;
+  openingHour: string;
+  closingHour: string;
   email: string;
   password: string;
   address: string;
@@ -98,6 +100,8 @@ export const updateSalonApi = async (token: string, data: UpdateSalonApi) => {
   formData.append("about", data.about);
   formData.append("owner_contact_email", data.owner_contact_email);
   formData.append("contact_number", data.contact_number);
+  formData.append("opeingHour", data.openingHour);
+  formData.append("closingHour", data.closingHour);
   formData.append("email", data.email);
   formData.append("password", data.password);
   formData.append("address", data.address);

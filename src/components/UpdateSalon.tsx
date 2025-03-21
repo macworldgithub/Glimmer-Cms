@@ -31,6 +31,8 @@ const UpdateSalonModal: React.FC<PropsUpdateSalonModal> = ({
     email: salon.email,
     password: salon.password,
     address: salon.address,
+    openingHour: salon.openingHour,
+    closingHour: salon.closingHour,
     salon_image: salon.salon_image,
   });
   // Handle image upload
@@ -133,6 +135,20 @@ const UpdateSalonModal: React.FC<PropsUpdateSalonModal> = ({
         <Input
           value={formData.password}
           onChange={(e) => handleChange("password", e.target.value)}
+        />
+      </p>
+      <p>
+        <strong>Opening Hour:</strong>
+        <Input
+          value={formData.openingHour}
+          onChange={(e) => handleChange("openingHour", e.target.value)}
+        />
+      </p>
+      <p>
+        <strong>Closing Hour:</strong>
+        <Input
+          value={formData.closingHour}
+          onChange={(e) => handleChange("closingHour", e.target.value)}
         />
       </p>
       <p>
