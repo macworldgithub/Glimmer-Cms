@@ -44,7 +44,6 @@ const CreateServices = () => {
     name: "",
   });
   const [selectedProduct, setSelectedProduct] = useState({ _id: "", name: "" });
-
   const [newSubservice, setNewSubService] = useState<string>("");
   const [newProduct, setNewProduct] = useState<string>("");
 
@@ -180,10 +179,17 @@ const CreateServices = () => {
             );
           }
         }
-        // if (modalType === "Update") {
+        if (modalType === "Update") {
+          const oldSubserviceName = selectedSubservice.name;
 
-        // }
-        
+          if (oldSubserviceName && updatedSubservices[oldSubserviceName]) {
+            updatedSubservices[newSubserviceName] =
+              updatedSubservices[oldSubserviceName];
+
+            delete updatedSubservices[oldSubserviceName];
+          }
+        }
+
         const requestBody = {
           category: selectedService.category,
           services: updatedSubservices,
@@ -202,7 +208,9 @@ const CreateServices = () => {
     }
     if (modalType === "Delete") {
       try {
-        const res = await dispatch(deleteService({category_id: selectedService._id})).unwrap();
+        const res = await dispatch(
+          deleteService({ category_id: selectedService._id })
+        ).unwrap();
         if (res) {
           alert(`deleted ${selectedService.category}`);
         }
@@ -218,61 +226,66 @@ const CreateServices = () => {
   const closeProductModal = async () => {
     if (
       modalType === "Add" ||
-      (modalType === "Update" && selectedSubservice?._id)
+      (modalType === "Update" && selectedProduct?._id)
     ) {
       try {
         const newProductName = newProduct.trim();
-        const updatedProduct = { ...productItems };
+        const updatedProduct = { ...subservices };
+
         if (modalType === "Add") {
-          if (!updatedProduct[newProductName]) {
-            // If it's a new category, add it with an empty array
-            updatedProduct[newProductName] = [];
+          if (!updatedProduct[selectedSubservice.name]) {
+            updatedProduct[selectedSubservice.name] = [];
           }
-          // Prevent duplicate entries
+
+          // Prevent duplicates and add the new product
           if (
-            !updatedProduct[selectedSubservice.name]?.includes(
-              newProductName
-            )
+            !updatedProduct[selectedSubservice.name].includes(newProductName)
           ) {
-            updatedProduct[selectedSubservice.name]?.push(
-              newProductName
-            );
+            updatedProduct[selectedSubservice.name].push(newProductName);
           }
         }
-        // if (modalType === "Update") {
-
-        // }
+        if (modalType === "Update" && selectedProduct?._id) {
+          const oldProductName = selectedProduct._id;
         
+          if (selectedSubservice._id && updatedProduct[selectedSubservice._id]) {
+            // Find index of the existing product and replace it
+            const productIndex = updatedProduct[selectedSubservice.name].indexOf(oldProductName);
+            if (productIndex !== -1) {
+              updatedProduct[selectedSubservice.name][productIndex] = newProductName;
+            }
+          }
+        }
+
         const requestBody = {
-          category: selectedSubservice.name,
+          category: selectedService.category,
           services: updatedProduct,
         };
         console.log(requestBody);
-        console.log(selectedService._id);
-        console.log(selectedSubservice._id);
-        // const res = await dispatch(
-        //   updateService({ category_id: selectedSubservice._id, data: requestBody })
-        // ).unwrap();
-        // if (res) {
-        //   alert("New Product Updated");
-        //   setProductItems(updatedProduct);
-        //   setNewProduct("");
-        // }
-      } catch (error) {
-        console.error("error", error);
-      }
-    }
-    if (modalType === "Delete") {
-      try {
-        const res = await dispatch(deleteService({category_id: selectedService._id})).unwrap();
+        const res = await dispatch(
+          updateService({ category_id: selectedService._id, data: requestBody })
+        ).unwrap();
         if (res) {
-          alert(`deleted ${selectedService.category}`);
+          alert("New Product Updated");
+          setSubservices(updatedProduct);
+          setNewProduct("");
         }
       } catch (error) {
         console.error("error", error);
-        throw error;
       }
     }
+    // if (modalType === "Delete") {
+    //   try {
+    //     const res = await dispatch(
+    //       deleteService({ category_id: selectedService._id })
+    //     ).unwrap();
+    //     if (res) {
+    //       alert(`deleted ${selectedService.category}`);
+    //     }
+    //   } catch (error) {
+    //     console.error("error", error);
+    //     throw error;
+    //   }
+    // }
     setIsProductModalOpen(false);
     setModalType("");
   };
@@ -348,14 +361,14 @@ const CreateServices = () => {
       {/* Subcategory Actions */}
       {selectedService?._id && (
         <div className="mt-4 flex gap-3">
-          {/* {selectedSubservice?._id && (
+          {selectedSubservice?._id && (
             <Button
               className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
               onClick={() => openSubServiceModal("Update")}
             >
               Update Subservice
             </Button>
-          )} */}
+          )}
           <Button
             className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
             onClick={() => openSubServiceModal("Add")}
@@ -373,7 +386,7 @@ const CreateServices = () => {
         </div>
       )}
       {/* Product Actions */}
-      {/* {selectedSubservice._id && (
+      {selectedSubservice._id && (
         <div className="mt-4 flex gap-3">
           {selectedProduct?._id && (
             <Button
@@ -389,16 +402,16 @@ const CreateServices = () => {
           >
             Add Product
           </Button>
-          {selectedProduct?._id && (
+          {/* {selectedProduct?._id && (
             <Button
               className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
               onClick={() => openProductModal("Delete")}
             >
               Delete Product
             </Button>
-          )}
+          )} */}
         </div>
-      )} */}
+      )}
       {/* Subcategory Modal */}
       <Modal
         title={`${modalType} Subcategory`}
