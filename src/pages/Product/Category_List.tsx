@@ -39,7 +39,6 @@ const CategoryTableWithHeader = () => {
     category?: string;
   }>({});
 
-
   useEffect(() => {
     const fetchSelections = async () => {
       try {
@@ -86,13 +85,18 @@ const CategoryTableWithHeader = () => {
   };
 
   const aggregateCategoryData = (
-    data: { products: any[]; total: number }, 
+    data: { products: any[]; total: number },
     selections: CategorySelection[]
   ) => {
-    const categoryAggregates: { [key: string]: { totalProducts: number; totalPrice: number } } = {};
+    const categoryAggregates: {
+      [key: string]: { totalProducts: number; totalPrice: number };
+    } = {};
 
     if (!Array.isArray(data.products)) {
-      console.error("Expected data.products to be an array, but got:", data.products);
+      console.error(
+        "Expected data.products to be an array, but got:",
+        data.products
+      );
       return [];
     }
 
@@ -102,7 +106,9 @@ const CategoryTableWithHeader = () => {
         categoryAggregates[categoryId] = { totalProducts: 0, totalPrice: 0 };
       }
       categoryAggregates[categoryId].totalProducts += 1;
-      categoryAggregates[categoryId].totalPrice += parseFloat(product.base_price);
+      categoryAggregates[categoryId].totalPrice += parseFloat(
+        product.base_price
+      );
     });
 
     return Object.keys(categoryAggregates).map((categoryId) => {
@@ -116,9 +122,10 @@ const CategoryTableWithHeader = () => {
     });
   };
 
-
   const categoryList = useMemo(() => {
-    return rawProductList && rawProductList as unknown as Product && selections.length > 0
+    return rawProductList &&
+      (rawProductList as unknown as Product) &&
+      selections.length > 0
       ? aggregateCategoryData(rawProductList as any, selections)
       : [];
   }, [rawProductList, selections]);
@@ -136,12 +143,18 @@ const CategoryTableWithHeader = () => {
   const filteredCategories = useMemo(() => {
     return categoryList.filter((category: TableData) => {
       const categoryFilter = filters.category ? filters.category.trim() : null;
-      const nameFilter = filters.name ? filters.name.toLowerCase().trim() : null;
+      const nameFilter = filters.name
+        ? filters.name.toLowerCase().trim()
+        : null;
 
-      const categoryCategory = category.category ? category.category.trim() : "";
+      const categoryCategory = category.category
+        ? category.category.trim()
+        : "";
 
-      const isCategoryMatch = !categoryFilter || categoryCategory === categoryFilter;
-      const isNameMatch = !nameFilter || categoryCategory.toLowerCase().includes(nameFilter);
+      const isCategoryMatch =
+        !categoryFilter || categoryCategory === categoryFilter;
+      const isNameMatch =
+        !nameFilter || categoryCategory.toLowerCase().includes(nameFilter);
 
       return isCategoryMatch && isNameMatch;
     });
@@ -187,7 +200,6 @@ const CategoryTableWithHeader = () => {
     },
   ];
 
-
   const handleEdit = (record: TableData) => {
     alert(`Editing category: ${record.category}`);
   };
@@ -198,8 +210,7 @@ const CategoryTableWithHeader = () => {
         Category List
       </div>
 
-      <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} hideName={true}
-        hideCreatedAt={true} />
+      <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} />
 
       <div className="overflow-x-auto bg-white border-t shadow-lg rounded-lg">
         <Table
@@ -219,4 +230,3 @@ const CategoryTableWithHeader = () => {
 };
 
 export default CategoryTableWithHeader;
-
