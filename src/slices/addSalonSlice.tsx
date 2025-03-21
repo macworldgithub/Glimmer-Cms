@@ -3,9 +3,10 @@ import { addSalonApi } from "../api/service/api";
 
 export interface Service {
   name: string;
-  about: string;
+  description: string;
   duration: number;
-  images: string[];
+  images: { name: string; url: string }[];
+  requestedPrice: number;
   base_price: number;
   discounted_price: number;
   status: "Active" | "Inactive"; // Enum-like string literals
@@ -16,9 +17,10 @@ export interface Service {
 
 const initialState: Service = {
   name: "",
-  about: "",
+  description: "",
   duration: 0,
   images: [],
+  requestedPrice: 0,
   base_price: 0,
   discounted_price: 0,
   status: "Active",
@@ -31,7 +33,10 @@ const addSalonSlice = createSlice({
   name: "addSalon",
   initialState,
   reducers: {
-    addImages: (state, action) => {
+    addImages: (
+      state,
+      action: PayloadAction<{ name: string; url: string }[]>
+    ) => {
       if (state.images.length + action.payload.length <= 3) {
         state.images.push(...action.payload); // Add new images
       } else {

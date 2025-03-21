@@ -1,10 +1,12 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
-import { BACKEND_URL } from "../config/server";
-import { addImages, removeImage, resetImage } from "../slices/addProductSlice";
-import { updateSalon } from "../slices/addSalonSlice";
+import {
+  addImages,
+  removeImage,
+  resetImage,
+  updateSalon,
+} from "../slices/addSalonSlice";
 import {
   addSalonApi,
   getAllServices,
@@ -13,10 +15,18 @@ import {
 import { message } from "antd";
 
 const ServicePage = () => {
-  const token = useSelector((state: RootState) => state.Login.token);
   const dispatch = useDispatch();
   const addSalon = useSelector((state: RootState) => state.AddSalon);
-
+  const selectedService = useSelector(
+    (state: RootState) => state.AddSalon.categoryId
+  );
+  const selectedSubservice = useSelector(
+    (state: RootState) => state.AddSalon.subCategoryName
+  );
+  const selectedProduct = useSelector(
+    (state: RootState) => state.AddSalon.subSubCategoryName
+  );
+  console.log(selectedProduct);
   const [services, setServices] = useState<{ _id: string; category: string }[]>(
     []
   );
@@ -24,16 +34,6 @@ const ServicePage = () => {
     {}
   );
   const [productItems, setProductItems] = useState<string[]>([]);
-
-  const [selectedService, setselectedService] = useState({
-    _id: "",
-    category: "",
-  });
-  const [selectedSubservice, setselectedSubservice] = useState({
-    _id: "",
-    name: "",
-  });
-  const [selectedProduct, setSelectedProduct] = useState({ _id: "", name: "" });
 
   // Fetch Categories
   const fetchServices = async () => {
@@ -47,23 +47,15 @@ const ServicePage = () => {
 
   // Fetch Subservices and Products
   const fetchSubservicesAndProducts = async (categoryId: string) => {
-    if (!categoryId) {
-      console.warn("No category ID provided for fetching subservices.");
-      return;
-    }
     try {
       const data = await getAllServicesById(categoryId);
-
       if (Array.isArray(data.services)) {
-        // Case 1: Services is an array (direct products)
-        setSubservices({}); // No subservices, so set to empty object
-        setProductItems(data.services); // Set products directly
+        setSubservices({});
+        setProductItems(data.services);
       } else if (data.services && typeof data.services === "object") {
-        // Case 2: Services is an object (subservices with nested products)
-        setSubservices(data.services); // Set subservices
-        setProductItems([]); // Reset products
+        setSubservices(data.services);
+        setProductItems([]);
       } else {
-        // Fallback for invalid data
         setSubservices({});
         setProductItems([]);
       }
@@ -77,70 +69,72 @@ const ServicePage = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedService._id) {
-      fetchSubservicesAndProducts(selectedService._id);
+    if (selectedService) {
+      fetchSubservicesAndProducts(selectedService);
     }
-  }, [selectedService._id]);
+  }, [selectedService]);
 
   useEffect(() => {
-    if (selectedSubservice.name) {
+    if (selectedSubservice) {
       // Extract products (values) for the selected subservice category
-      const selectedProducts = subservices[selectedSubservice.name] || [];
+      const selectedProducts = subservices[selectedSubservice] || [];
       setProductItems(selectedProducts);
     }
-  }, [selectedSubservice.name, subservices]);
+  }, [selectedSubservice, subservices]);
 
-  const handleSelectService = (event: any) => {
+  const handleSelectService = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const id = event.target.value;
-    const category = event.target.options[event.target.selectedIndex].text;
-
-    setselectedService({
-      _id: id,
-      category: category || "",
-    });
-    setselectedSubservice({ _id: "", name: "" });
-    setSelectedProduct({ _id: "", name: "" });
+    if (!id) {
+      alert("Invalid selection");
+      return;
+    }
+    dispatch(
+      updateSalon({
+        categoryId: id,
+        subCategoryName: "", // Reset subcategory when a new service is selected
+        subSubCategoryName: "", // Reset subSubCategory
+      })
+    );
   };
 
-  const handleSelectSubservice = (event: any) => {
-    const id = event.target.value;
+  const handleSelectSubservice = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const name =
-      event.target.options[event.target.selectedIndex].getAttribute(
+      event.target.options[event.target.selectedIndex]?.getAttribute(
         "data-name"
       );
-
-    setselectedSubservice({
-      _id: id,
-      name: name || "",
-    });
+    dispatch(updateSalon({ subCategoryName: name || "" }));
   };
-  const handleSelectProduct = (event: any) => {
-    const id = event.target.value;
+
+  const handleSelectProduct = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const name =
-      event.target.options[event.target.selectedIndex].getAttribute(
+      event.target.options[event.target.selectedIndex]?.getAttribute(
         "data-name"
       );
-
-    setSelectedProduct({
-      _id: id,
-      name: name || "",
-    });
+    dispatch(updateSalon({ subSubCategoryName: name || "" }));
   };
+
   const HandleChange = (name: string, value: string | number | any) => {
     dispatch(updateSalon({ [name]: value }));
   };
 
   const images = useSelector((state: RootState) => state.AddSalon.images);
 
-  const handleFileChange = (e: any) => {
-    const files = Array.from(e.target.files) as File[]; // Get selected files
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []) as File[];
 
-    // Check if the total number of files exceeds 5
     if (files.length + images.length > 3) {
       alert("You can only upload up to 3 images.");
       return;
     }
-    dispatch(addImages(files));
+
+    const fileData = files.map((file) => ({
+      name: file.name,
+      url: URL.createObjectURL(file),
+    }));
+
+    dispatch(addImages(fileData));
   };
 
   const handleRemoveImage = (index: number) => {
@@ -152,6 +146,11 @@ const ServicePage = () => {
   };
 
   const HandleConfirm = () => {
+    const categoryId = selectedService;
+    if (!categoryId) {
+      alert("Please select a category before submitting.");
+      return;
+    }
     //@ts-ignore
     dispatch(addSalonApi({}));
   };
@@ -160,17 +159,12 @@ const ServicePage = () => {
 
   useEffect(() => {
     console.log(images, previewUrls, "problemo");
-    // Generate preview URLs for each file
-    if (images.length > 0) {
-      //@ts-ignore
-      const urls = images.map((file) => URL?.createObjectURL(file));
-      setPreviewUrls(urls);
+    const urls = images.map((image) => image.url);
+    setPreviewUrls(urls);
 
-      // Cleanup: Revoke URLs to prevent memory leaks
-      return () => {
-        urls.forEach((url) => URL.revokeObjectURL(url));
-      };
-    }
+    return () => {
+      urls.forEach((url) => URL.revokeObjectURL(url));
+    };
   }, [images]);
 
   const handleDiscountChange = (value) => {
@@ -228,8 +222,8 @@ const ServicePage = () => {
               <textarea
                 placeholder=""
                 className="w-full rounded-md shadow-sm p-3 border-solid border   border-gray-400"
-                value={addSalon.about}
-                onChange={(e) => HandleChange("about", e.target.value)}
+                value={addSalon.description}
+                onChange={(e) => HandleChange("description", e.target.value)}
               >
                 {" "}
               </textarea>
@@ -244,6 +238,18 @@ const ServicePage = () => {
                 className="w-full border-solid border border-gray-400 rounded-md shadow-sm p-3"
                 value={addSalon.duration || ""}
                 onChange={(e) => HandleChange("duration", e.target.value)}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-500 mb-1">
+                Requested Price
+              </label>
+              <input
+                type="number"
+                placeholder="Request Price to super admin"
+                className="w-full border-solid border border-gray-400 rounded-md shadow-sm p-3"
+                value={addSalon.requestedPrice || ""}
+                onChange={(e) => HandleChange("requestedPrice", e.target.value)}
               />
             </div>
           </div>
@@ -275,11 +281,11 @@ const ServicePage = () => {
 
             {/* Display Uploaded Images */}
             <div className="flex flex-wrap gap-4">
-              {previewUrls.map((url, index) => (
+              {images.map((image, index) => (
                 <div key={index} className="relative">
                   <img
-                    src={url}
-                    alt={`Uploaded ${index + 1}`}
+                    src={image.url} // Use stored URL
+                    alt={image.name}
                     className="w-32 h-32 object-cover rounded-md"
                   />
                   <button
@@ -360,6 +366,7 @@ const ServicePage = () => {
             Select Services:
             <select
               onChange={handleSelectService}
+              value={selectedService || ""}
               className="w-full mt-2 mb-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             >
               <option value="" disabled selected>
@@ -382,6 +389,7 @@ const ServicePage = () => {
             <select
               onChange={handleSelectSubservice}
               className="w-full mt-2 mb-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              value={selectedSubservice}
             >
               <option value="" disabled selected>
                 Select a Subservice
@@ -403,12 +411,13 @@ const ServicePage = () => {
             <select
               onChange={handleSelectProduct}
               className="w-full mt-2 mb-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              value={selectedProduct}
             >
               <option value="" disabled selected>
                 Select a Product
               </option>
               {productItems.map((product, index) => (
-                <option key={`${selectedService._id}-${index}`} value={product}>
+                <option key={`${selectedService}-${index}`} value={product} data-name={product}>
                   {product}
                 </option>
               ))}

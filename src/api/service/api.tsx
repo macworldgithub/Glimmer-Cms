@@ -128,12 +128,14 @@ export const addSalonApi = createAsyncThunk(
       const token = state.Login.token;
 
       const salon = state.AddSalon;
+      console.log(salon);
 
       // Construct FormData
       const formData = new FormData();
       formData.append("name", salon.name);
-      formData.append("about", salon.about);
+      formData.append("description", salon.description);
       formData.append("duration", salon.duration.toString());
+      formData.append("requestedPrice", salon.requestedPrice.toString());
       formData.append("base_price", salon.base_price.toString());
       formData.append(
         "discounted_price",
@@ -145,8 +147,8 @@ export const addSalonApi = createAsyncThunk(
       formData.append("subSubCategoryName", salon.subSubCategoryName);
 
       // @ts-ignore
-      product.images.forEach((file: File, index: number) => {
-        formData.append(`image${index + 1}`, file);
+      salon.images.forEach((file: File, index: number) => {
+        formData.append(`salon_image${index + 1}`, file);
       });
 
       // Make API request
