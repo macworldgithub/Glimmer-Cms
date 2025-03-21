@@ -3,6 +3,7 @@ import { getAllProducts, updateProductApi } from "../api/products/api";
 import { getAllServicesForSalon, updateSalonServiceApi } from "../api/service/api";
 
 interface Salon {
+  id: string;
   name: string;
   description: string;
   duration: number;
@@ -14,7 +15,6 @@ interface Salon {
   categoryId: string;
   subCategoryName: string;
   subSubCategoryName: string;
-  id: string;
 }
 
 interface AllSalon {

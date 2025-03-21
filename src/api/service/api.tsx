@@ -204,6 +204,7 @@ export const updateSalonServiceApi = createAsyncThunk(
   "updateSalonServiceApi",
   async (
     payload: {
+      id: string;
       name: string;
       description: string;
       duration: number;
@@ -212,7 +213,6 @@ export const updateSalonServiceApi = createAsyncThunk(
       base_price: number;
       discounted_price: number;
       status: "Active" | "Inactive";
-      id: string;
     },
     { rejectWithValue, getState }
   ) => {
@@ -226,7 +226,7 @@ export const updateSalonServiceApi = createAsyncThunk(
 
       // Make API request with the payload
       const response = await axios.put(
-        `${BACKEND_URL}/salon-services/updateServiceById?id=${body.id}`,
+        `${BACKEND_URL}/salon-services/updateServiceById`,
         body, // Use the payload directly
         {
           headers: {

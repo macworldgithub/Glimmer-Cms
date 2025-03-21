@@ -28,9 +28,7 @@ const ServiceList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const role = useSelector((state: RootState) => state.Login.role);
 
-  const [selectedProduct, setSelectedProduct] = useState<TableData | null>(
-    null
-  );
+  const [selectedSalon, setSelectedSalon] = useState<TableData | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [checkedNames, setCheckedNames] = useState({});
@@ -65,7 +63,6 @@ const ServiceList = () => {
   ]);
 
   const serviceList = useSelector((state: RootState) => state.AllSalon.salons);
-  console.log("Service list: ", serviceList);
   const handleCheck = (productId) => {
     setCheckedNames((prev) => ({ ...prev, [productId]: !prev[productId] }));
   };
@@ -74,7 +71,6 @@ const ServiceList = () => {
     setAllChecked(!allChecked);
   };
   const handleUpdatePrice = async () => {
-    console.log(checkedNames);
     const selectedProductIds = Object.keys(checkedNames).filter(
       (id) => checkedNames[id]
     );
@@ -129,15 +125,15 @@ const ServiceList = () => {
   });
 
   const handleUpdate = (record: TableData) => {
-    setSelectedProduct(null);
+    setSelectedSalon(null);
     setTimeout(() => {
-      setSelectedProduct(record);
+      setSelectedSalon(record);
       setIsModalVisible(true);
     }, 0);
   };
 
   const handleDelete = (record: TableData) => {
-    setSelectedProduct(record);
+    setSelectedSalon(record);
     setIsDeleteModalVisible(true);
   };
 
@@ -173,8 +169,16 @@ const ServiceList = () => {
       ),
     },
     { title: "Category Id", dataIndex: "categoryId", key: "categoryId" },
-    { title: "Sub Service", dataIndex: "subCategoryName", key: "subCategoryName" },
-    { title: "Product", dataIndex: "subSubCategoryName", key: "subSubCategoryName" },
+    {
+      title: "Sub Service",
+      dataIndex: "subCategoryName",
+      key: "subCategoryName",
+    },
+    {
+      title: "Product",
+      dataIndex: "subSubCategoryName",
+      key: "subSubCategoryName",
+    },
     {
       title: "Requested Price",
       dataIndex: "requestedPrice",
@@ -243,17 +247,17 @@ const ServiceList = () => {
       <SearchBar onSearch={handleSearch} showCategories={false} />
 
       {/* Modals */}
-      {selectedProduct && (
+      {selectedSalon && (
         <UpdateServiceModal
           visible={isModalVisible}
           //@ts-ignore
-          product={selectedProduct}
+          salon={{ ...selectedSalon, id: selectedSalon._id }}
           onClose={() => setIsModalVisible(false)}
           page={currentPage}
         />
       )}
 
-      {selectedProduct && role === "super_admin" && (
+      {selectedSalon && role === "super_admin" && (
         <DeleteProductModal
           visible={isDeleteModalVisible}
           //@ts-ignore

@@ -163,7 +163,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
 
   const handleSave = async () => {
     const formData = new FormData();
-
+    console.log(formData);
     formData.append("name", form.getFieldValue("name"));
     formData.append("quantity", form.getFieldValue("quantity"));
     formData.append("description", form.getFieldValue("description"));

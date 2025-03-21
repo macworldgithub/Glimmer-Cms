@@ -11,118 +11,144 @@ import {
 } from "antd";
 import { UploadOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllProducts } from "../api/products/api";
-
-import { getAllProductItem } from "../api/category/api";
 
 import { BACKEND_URL } from "../config/server";
 
 import axios from "axios";
 import { RootState } from "../store/store";
+import {
+  getAllServices,
+  getAllServicesById,
+  getAllServicesForSalon,
+} from "../api/service/api";
 const { TextArea } = Input;
 const { Option } = Select;
 
-interface Selection {
-  category_id: string;
-  category_name: string;
-  sub_categories: {
-    sub_category_id: string;
-    name: string;
-    items: {
-      item_id: string;
-      name: string;
-    }[];
-  }[];
-}
-
-interface Product {
+interface Salon {
+  id: string;
+  categoryId: string;
+  subCategoryName: string;
+  subSubCategoryName: string;
   name: string;
-  quantity: number;
   description: string;
+  duration: number;
   image1: string;
   image2: string;
   image3: string;
+  requestedPrice: number;
   base_price: number;
   discounted_price: number;
   status: "Active" | "Inactive";
-  store: string;
-  _id: string;
   actions: string;
-  category: string;
-  sub_category: string;
-  item: string;
-  type: any[];
-  size: any[];
 }
 interface UpdateModalProps {
   visible: boolean;
-  product: Product;
+  salon: Salon;
   onClose: () => void;
-  onSave: (updatedProduct: Product) => void;
+  onSave: (updatedSalon: Salon) => void;
   page: number;
 }
 
 const UpdateServiceModal: React.FC<UpdateModalProps> = ({
   visible,
-  product,
+  salon,
   onClose,
-  onSave,
   page,
 }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [selections, setSelection] = useState<Selection[]>([]);
   const [finalPrice, setFinalPrice] = useState(0);
+  const token = useSelector((state: RootState) => state.Login.token);
+
+  const [services, setServices] = useState<{ _id: string; category: string }[]>(
+    []
+  );
+  const [subservices, setSubservices] = useState<{ [key: string]: string[] }>(
+    {}
+  );
+  const [productItems, setProductItems] = useState<string[]>([]);
+
+  const [selectedService, setSelectedService] = useState({
+    _id: "",
+    category: "",
+  });
+  const [selectedSubservice, setSelectedSubservice] = useState({
+    _id: "",
+    name: "",
+  });
+  const [selectedProduct, setSelectedProduct] = useState({ _id: "", name: "" });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [productItemsRes] = await Promise.all([getAllProductItem()]);
-        const Selections = transformData(productItemsRes);
-        setSelection(Selections);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+    fetchServices();
   }, []);
 
-  const [selectedCategory, setSelectedCategory] = useState({
-    id: "",
-    name: "",
-  });
-  const [selectedSubCategory, setSelectedSubCategory] = useState({
-    id: "",
-    name: "",
-  });
-  const [selectedItem, setSelectedItem] = useState({ id: "", name: "" });
+  useEffect(() => {
+    if (selectedService._id) {
+      fetchSubservicesAndProducts(selectedService._id);
+    }
+  }, [selectedService._id]);
 
-  const [type, setType] = useState<any>();
-  const [size, setSize] = useState<any>();
+  useEffect(() => {
+    if (selectedSubservice.name) {
+      setProductItems(subservices[selectedSubservice.name] || []);
+    }
+  }, [selectedSubservice.name, subservices]);
 
-  const token = useSelector((state: RootState) => state.Login.token);
+  const fetchServices = async () => {
+    try {
+      const data = await getAllServices();
+      setServices(data);
+    } catch (error) {
+      message.error("Failed to fetch services");
+    }
+  };
+
+  const fetchSubservicesAndProducts = async (categoryId: string) => {
+    try {
+      const data = await getAllServicesById(categoryId);
+      if (Array.isArray(data.services)) {
+        setSubservices({});
+        setProductItems(data.services);
+      } else if (typeof data.services === "object") {
+        setSubservices(data.services);
+        setProductItems([]);
+      }
+    } catch (error) {
+      message.error("Failed to fetch subservices and products");
+    }
+  };
+
+  const handleSelectService = (event: any) => {
+    const id = event.target.value;
+    const category = event.target.options[event.target.selectedIndex].text;
+    setSelectedService({ _id: id, category });
+    setSelectedSubservice({ _id: "", name: "" });
+    setSelectedProduct({ _id: "", name: "" });
+  };
+
+  const handleSelectSubservice = (event: any) => {
+    const id = event.target.value;
+    const name =
+      event.target.options[event.target.selectedIndex].getAttribute(
+        "data-name"
+      );
+    setSelectedSubservice({ _id: id, name: name || "" });
+  };
+
+  const handleSelectProduct = (event: any) => {
+    const id = event.target.value;
+    const name =
+      event.target.options[event.target.selectedIndex].getAttribute(
+        "data-name"
+      );
+    setSelectedProduct({ _id: id, name: name || "" });
+  };
 
   const [pictures, setPictures] = useState<any>({
     image1: "",
     image2: "",
     image3: "",
   });
-
-  function transformData(data: any[]): Selection[] {
-    return data.map((category) => ({
-      category_id: category.product_category._id,
-      category_name: category.product_category.name,
-      sub_categories: category.sub_categories.map((subCategory) => ({
-        sub_category_id: subCategory._id,
-        name: subCategory.name,
-        items: subCategory.items.map((item) => ({
-          item_id: item._id,
-          name: item.name,
-        })),
-      })),
-    }));
-  }
 
   useEffect(() => {
     setPictures((image) => ({
@@ -151,33 +177,22 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
 
   const handleSave = async () => {
     const formData = new FormData();
-
+   
+    formData.append("id", salon.id);
     formData.append("name", form.getFieldValue("name"));
-    formData.append("quantity", form.getFieldValue("quantity"));
     formData.append("description", form.getFieldValue("description"));
+    formData.append("duration", form.getFieldValue("duration"));
     formData.append("base_price", form.getFieldValue("base_price"));
     formData.append("discounted_price", form.getFieldValue("discounted_price"));
+    formData.append("requestedPrice", form.getFieldValue("requestedPrice"));
     formData.append("status", form.getFieldValue("status"));
 
-    formData.append("category", form.getFieldValue("categoryId"));
-    formData.append("sub_category", form.getFieldValue("sub_categoryId"));
-    formData.append("item", form.getFieldValue("itemId"));
-
-    if (size?.length > 0) {
-      size?.forEach((size, index) => {
-        formData.append(`size${index + 1}`, JSON.stringify(size));
-      });
-    } else {
-      formData.append(`size1`, JSON.stringify([]));
-    }
-
-    if (type?.length > 0) {
-      type?.forEach((type, index) => {
-        formData.append(`type${index + 1}`, JSON.stringify(type));
-      });
-    } else {
-      formData.append(`type1`, JSON.stringify([]));
-    }
+    formData.append("categoryId", form.getFieldValue("categoryId"));
+    formData.append("subCategoryName", form.getFieldValue("subCategoryName"));
+    formData.append(
+      "subSubCategoryName",
+      form.getFieldValue("subSubCategoryName")
+    );
 
     // Append images (check if file or URL)
     Object.entries(pictures).forEach(([key, value]) => {
@@ -191,8 +206,9 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
     });
 
     try {
+        console.log("Form data", formData);
       const response = await axios.put(
-        `${BACKEND_URL}/product/update_store_product_by_id?id=${product._id}`,
+        `${BACKEND_URL}/salon-services/updateServiceById`,
         formData,
         {
           headers: {
@@ -201,10 +217,9 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
           },
         }
       );
-
-      alert("Product Updated successfully!");
+      alert("Salon Updated successfully!");
       //@ts-ignore
-      dispatch(getAllProducts({ page_no: page }));
+      dispatch(getAllServicesForSalon({ page_no: page }));
       console.log(response.data);
     } catch (error) {
       message.error("Failed to submit product.");
@@ -216,153 +231,12 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
     return image instanceof File ? URL.createObjectURL(image) : image;
   };
 
-  function getCategoryById(data: Selection[], categoryId: string) {
-    const category = data.find((cat) => cat.category_id === categoryId);
-
-    return category
-      ? { id: category.category_id, name: category.category_name }
-      : null;
-  }
-
-  function getSubCategoryById(data: Selection[], subCategoryId: string) {
-    for (const category of data) {
-      for (const subCategory of category.sub_categories) {
-        if (subCategory.sub_category_id === subCategoryId) {
-          console.log("chala sub category", {
-            id: subCategory.sub_category_id,
-            name: subCategory.name,
-          });
-          return { id: subCategory.sub_category_id, name: subCategory.name };
-        }
-      }
-    }
-    console.log("chala nhi sub category", data, subCategoryId);
-    return null; // Return null if subCategoryId is not found
-  }
-
-  function getItemById(data: Selection[], itemId: string) {
-    for (const category of data) {
-      for (const subCategory of category.sub_categories) {
-        const item = subCategory.items.find((it) => it.item_id === itemId);
-        if (item) {
-          return { id: item.item_id, name: item.name };
-        }
-      }
-    }
-    return null;
-  }
-
-  const HandleChangeCategory = (value: string) => {
-    const { id, name } = getCategoryById(selections, value);
-
-    if (id !== selectedCategory.id) {
-      setSelectedCategory((item: any) => ({ ...item, id: id, name: name }));
-
-      setSelectedSubCategory({ id: "", name: "" });
-      setSelectedItem({ id: "", name: "" });
-    }
-  };
-  const HandleChangeSubCategory = (value: string) => {
-    const { id, name } = getSubCategoryById(selections, value);
-
-    if (id !== selectedSubCategory.id) {
-      setSelectedSubCategory((item: any) => ({ ...item, id: id, name: name }));
-
-      setSelectedItem({ id: "", name: "" });
-    }
-  };
-  const HandleChangeItem = (value: string) => {
-    const { id, name } = getItemById(selections, value);
-
-    setSelectedItem((item: any) => ({ ...item, id: id, name: name }));
-  };
-
   useEffect(() => {
-    //@ts-ignore
-    setSelectedCategory((item) => ({
-      ...item,
-      id: product.category,
-      name: getCategoryById(selections, product.category)?.name,
-    }));
-    //@ts-ignore
-    setSelectedSubCategory((item) => ({
-      ...item,
-      id: product.sub_category,
-      name: getSubCategoryById(selections, product.sub_category)?.name,
-    }));
-    setSelectedItem((item) => ({
-      ...item,
-      id: product.item,
-      name: getItemById(selections, product.item)?.name,
-    }));
-
-    setType(product.type);
-    setSize(product.size);
-  }, [selections]);
-
-  useEffect(() => {
-    form.setFieldValue("categoryName", selectedCategory.name);
-    form.setFieldValue("categoryId", selectedCategory.id);
-    form.setFieldValue("sub_categoryName", selectedSubCategory.name);
-    form.setFieldValue("sub_categoryId", selectedSubCategory.id);
-    form.setFieldValue("itemName", selectedItem.name);
-    form.setFieldValue("itemId", selectedItem.id);
-    // console.log(() => getCategoryById(selections, product.category), "le bhai");
-  }, [selectedCategory, selectedSubCategory, selectedItem]);
-
-  const handleSizeChange = (id: string | null, value: string) => {
-    if (!id) return; // If id is null, do nothing
-
-    setSize((prevSizes) =>
-      prevSizes.map(
-        (item) => (item.id === id ? { ...item, value: value } : item) // Update only the matching item
-      )
-    );
-  };
-  const handleTypeChange = (id: string | null, value: string) => {
-    if (!id) return; // If id is null, do nothing
-
-    setType((prevSizes) =>
-      prevSizes.map(
-        (item) => (item.id === id ? { ...item, value: value } : item) // Update only the matching item
-      )
-    );
-  };
-
-  const handleUnitSizeChange = (id: string | null, value: string) => {
-    if (!id) return; // If id is null, do nothing
-
-    setSize((prevSizes) =>
-      prevSizes.map(
-        (item) => (item.id === id ? { ...item, unit: value } : item) // Update only the matching item
-      )
-    );
-  };
-
-  const handleSizeDelete = (id: string | null) => {
-    if (!id) return; // If id is null, do nothing
-
-    setSize((prevSizes) => prevSizes.filter((item) => item.id !== id));
-  };
-  const handleTypeDelete = (id: string | null) => {
-    if (!id) return; // If id is null, do nothing
-
-    setType((prevSizes) => prevSizes.filter((item) => item.id !== id));
-  };
-
-  const handleAddSize = () => {
-    setSize((prevSizes) => [
-      ...prevSizes, // Keep existing items
-      { id: Date.now().toString(), value: "", unit: "" }, // Add new item
-    ]);
-  };
-
-  const handleAddType = () => {
-    setType((prevSizes) => [
-      ...prevSizes, // Keep existing items
-      { id: Date.now().toString(), value: "", unit: "" }, // Add new item
-    ]);
-  };
+    form.setFieldValue("categoryName", selectedService.category);
+    form.setFieldValue("categoryId", selectedService._id);
+    form.setFieldValue("subCategoryName", selectedSubservice.name);
+    form.setFieldValue("subSubCategoryName", selectedProduct.name);
+  }, [selectedService, selectedSubservice, selectedProduct]);
 
   const calculateDiscountedPrice = () => {
     const basePrice = form.getFieldValue("base_price") || 0;
@@ -374,7 +248,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
 
   return (
     <Modal
-      title="Update Product"
+      title="Update Salon"
       visible={visible}
       onCancel={onClose}
       onOk={handleSave}
@@ -387,93 +261,82 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
         form={form}
         className="w-[100%] "
         initialValues={{
-          name: product.name,
-          quantity: product.quantity,
-          description: product.description,
-          image1: product.image1,
-          image2: product.image2,
-          image3: product.image3, // Display images as comma-separated string
-          base_price: product.base_price,
-          discounted_price: product.discounted_price,
-          status: product.status,
-          categoryId: selectedCategory.id,
-          categoryName: selectedCategory.name,
-          sub_categoryId: selectedSubCategory.id,
-          sub_categoryName: selectedSubCategory.name,
-          itemId: selectedItem.id,
-          itemName: selectedItem.name,
+          id: salon.id,
+          name: salon.name,
+          description: salon.description,
+          duration: salon.duration,
+          image1: salon.image1,
+          image2: salon.image2,
+          image3: salon.image3,
+          requestedPrice: salon.requestedPrice,
+          base_price: salon.base_price,
+          discounted_price: salon.discounted_price,
+          status: salon.status,
+          categoryId: selectedService._id,
+          categoryName: selectedService.category,
+          subCategoryName: selectedSubservice.name,
+          subSubCategoryName: selectedProduct.name,
         }}
       >
-        <Form.Item label="Category" name="categoryName">
-          <Select
-            placeholder="Select a category"
-            //@ts-ignore
-            onChange={HandleChangeCategory}
-          >
-            {selections?.map((item: any) => (
-              <Select.Option key={item.category_id} value={item.category_id}>
-                {" "}
-                {item.category_name}
-              </Select.Option>
+        <Form.Item label="Service" name="categoryName">
+          <select onChange={handleSelectService}>
+            <option value="" disabled selected>
+              Select a Service
+            </option>
+            {services.map((service) => (
+              <option
+                key={service._id}
+                value={service._id}
+                data-name={service.category}
+              >
+                {service.category}
+              </option>
             ))}
-          </Select>
+          </select>
         </Form.Item>
 
-        <Form.Item label="Subcategory" name="sub_categoryName">
-          <Select
-            placeholder="Select a subcategory"
-            //@ts-ignore
-            onChange={HandleChangeSubCategory}
-            disabled={!selectedCategory.id}
+        <Form.Item label="Sub Service" name="subCategoryName">
+          <select
+            onChange={handleSelectSubservice}
+            disabled={!selectedService._id}
           >
-            {selections
-              //@ts-ignore
-              .find((item) => item.category_id === selectedCategory.id)
-              ?.sub_categories.map((sub) => (
-                <Select.Option
-                  key={sub.sub_category_id}
-                  value={sub.sub_category_id}
-                >
-                  {sub.name}
-                </Select.Option>
-              ))}
-          </Select>
+            <option value="" disabled selected>
+              Select a Subservice
+            </option>
+            {Object.keys(subservices).map((category) => (
+              <option key={category} value={category} data-name={category}>
+                {category}
+              </option>
+            ))}
+          </select>
         </Form.Item>
 
-        <Form.Item label="Item" name="itemName">
-          <Select
-            placeholder="Select a Item"
-            //@ts-ignore
-            onChange={HandleChangeItem}
-            disabled={!selectedSubCategory.id}
+        <Form.Item label="Product" name="subSubCategoryName">
+          <select
+            onChange={handleSelectProduct}
+            disabled={!selectedSubservice.name}
           >
-            {selections
-              .find((item) => item.category_id === selectedCategory?.id)
-              ?.sub_categories.find(
-                (sub) => sub.sub_category_id === selectedSubCategory?.id
-              )
-              ?.items.map((product) => (
-                <Select.Option key={product.item_id} value={product.item_id}>
-                  {product.name}
-                </Select.Option>
-              ))}
-          </Select>
+            <option value="" disabled selected>
+              Select a Product
+            </option>
+            {productItems.map((product, index) => (
+              <option key={`${selectedService._id}-${index}`} value={product} data-name={product}>
+                {product}
+              </option>
+            ))}
+          </select>
         </Form.Item>
 
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: "Please enter the product name" }]}
-        >
+        <Form.Item label="Name" name="name">
           <Input />
         </Form.Item>
 
-        <Form.Item
-          label="Quantity"
-          name="quantity"
-          rules={[{ required: true, message: "Please enter the quantity" }]}
-        >
-          <InputNumber min={0} style={{ width: "100%" }} />
+        <Form.Item label="Duration" name="duration">
+          <InputNumber />
+        </Form.Item>
+
+        <Form.Item label="Requested Price" name="requestedPrice">
+          <InputNumber />
         </Form.Item>
 
         <Form.Item label="Description" name="description">

@@ -163,12 +163,6 @@ export const getMenuItems = (
               },
             ],
           },
-          {
-            key: "salon-profile",
-            icon: <OrderedListOutlined />,
-            label: "Salon Profile",
-            path: "/salon-profile",
-          },
         ]
       : []),
 ];
