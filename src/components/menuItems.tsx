@@ -152,7 +152,7 @@ export const getMenuItems = (
                 key: "manage-services",
                 icon: <FileOutlined />,
                 label: "Manage Services",
-                path: "/manage-services",
+                path: "/Manage_Services",
               },
   
               {

@@ -107,16 +107,12 @@ export const updateSalonApi = async (token: string, data: UpdateSalonApi) => {
   formData.append("address", data.address);
   formData.append("salon_image", data.salon_image);
 
-  const response = await axios.put(
-    `${BACKEND_URL}/salon/update`,
-    formData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  const response = await axios.put(`${BACKEND_URL}/salon/update`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };
 
@@ -167,6 +163,86 @@ export const addSalonApi = createAsyncThunk(
       return response.data; // Return the response data if successful
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
+export const getAllServicesForSalon = createAsyncThunk(
+  "getAllServicesForSalon",
+  async (
+    payload: {
+      page_no: number;
+      categoryId: string;
+      subCategoryName: string;
+      subSubCategoryName?: string;
+    },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      // Access token from the Redux state
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make API request with page number as a query parameter
+      const response = await axios.get(
+        `${BACKEND_URL}/salon-services/getAllServicesForSalon?page_no=${payload.page_no}&categoryId=${payload.categoryId}&subCategoryName=${payload.subCategoryName}&subSubCategoryName=${payload.subSubCategoryName}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Bearer token
+          },
+        }
+      );
+
+      return response.data; // Return the response data if successful
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
+export const updateSalonServiceApi = createAsyncThunk(
+  "updateSalonServiceApi",
+  async (
+    payload: {
+      name: string;
+      description: string;
+      duration: number;
+      images: string[];
+      requestedPrice: number;
+      base_price: number;
+      discounted_price: number;
+      status: "Active" | "Inactive";
+      id: string;
+    },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      // Access token from the Redux state
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const body = { ...payload } as any;
+      // Remove the store property
+
+      // Make API request with the payload
+      const response = await axios.put(
+        `${BACKEND_URL}/salon-services/updateServiceById?id=${body.id}`,
+        body, // Use the payload directly
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Bearer token
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return response.data; // Return the response data if successful
+    } catch (error: any) {
+      // Handle error response properly
+      if (axios.isAxiosError(error) && error.response) {
+        return rejectWithValue(error.response.data);
+      }
+      return rejectWithValue("An error occurred");
     }
   }
 );

@@ -20,7 +20,6 @@ const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   const role = useSelector((state: RootState) => state.Login.role);
-  console.log(role);
   const [profile, setProfile] = useState<boolean>(false);
   // const {
   //   token: { colorBgContainer, borderRadiusLG },

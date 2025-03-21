@@ -26,7 +26,6 @@ const ServicePage = () => {
   const selectedProduct = useSelector(
     (state: RootState) => state.AddSalon.subSubCategoryName
   );
-  console.log(selectedProduct);
   const [services, setServices] = useState<{ _id: string; category: string }[]>(
     []
   );

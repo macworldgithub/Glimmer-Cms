@@ -8,6 +8,7 @@ import loginSlice from "../slices/loginSlice";
 import orderSlice from "../slices/orderSlice";
 import allOrderSlice from "../slices/orderSlice";
 import addSalonSlice from "../slices/addSalonSlice";
+import allSalonSlice from "../slices/allSalonSlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   AllProducts: allProductsSlice.reducer,
   AddProduct: addProductSlice.reducer,
   AddSalon: addSalonSlice.reducer,
+  AllSalon: allSalonSlice.reducer,
   // Orders: orderSlice.reducer,
   AllOrders: allOrderSlice.reducer,
 });

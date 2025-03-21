@@ -202,10 +202,10 @@ const ProductTableWithHeader = () => {
     return (
       (!categoryFilter || productCategory === categoryFilter) &&
       (!nameFilter || productName.includes(nameFilter.toLowerCase())) &&
-      (!createdAtFilter || dayjs(productCreatedAt).isSame(createdAtFilter, "day"))
+      (!createdAtFilter ||
+        dayjs(productCreatedAt).isSame(createdAtFilter, "day"))
     );
   });
-
 
   const handleUpdate = (record: TableData) => {
     setSelectedProduct(null);
@@ -220,7 +220,11 @@ const ProductTableWithHeader = () => {
     setIsDeleteModalVisible(true);
   };
 
-  const handleSearch = (newFilters: { name?: string; category?: string; created_at?: string }) => {
+  const handleSearch = (newFilters: {
+    name?: string;
+    category?: string;
+    created_at?: string;
+  }) => {
     setSearchParams({
       page: "1",
       name: newFilters.name || "",
@@ -253,7 +257,7 @@ const ProductTableWithHeader = () => {
       dataIndex: "base_price",
       key: "base_price",
       render: (text: number) => {
-        return text.toFixed(2); 
+        return text.toFixed(2);
       },
     },
     {
@@ -296,8 +300,7 @@ const ProductTableWithHeader = () => {
       </div>
 
       {/* SearchBar */}
-      <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} hideName={false}
-        hideCreatedAt={false} hideCategory={false} />
+      <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} showServices={false}/>
 
       {/* Modals */}
       {selectedProduct && (
@@ -342,7 +345,13 @@ const ProductTableWithHeader = () => {
             current: currentPage,
             pageSize: pageSize,
             total: productList?.total,
-            onChange: (page) => setSearchParams({ page: page.toString(), name: nameFilter, category: categoryFilter, created_at: createdAtFilter }),
+            onChange: (page) =>
+              setSearchParams({
+                page: page.toString(),
+                name: nameFilter,
+                category: categoryFilter,
+                created_at: createdAtFilter,
+              }),
           }}
           className="border-t"
           scroll={{ x: 1000 }}
