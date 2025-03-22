@@ -8,7 +8,12 @@ import UpdateModal from "../components/UpdateProductModal";
 import SearchBar from "../components/SearchBar"; // Import SearchBar
 import { AppDispatch, RootState } from "../store/store";
 import { useSearchParams } from "react-router-dom";
-import { getAllServicesForSalon, requestPriceUpdate } from "../api/service/api";
+import {
+  getAllServicesForSalon,
+  requestPriceUpdate,
+  updateServiceDiscount,
+  updateSingleServiceDiscount,
+} from "../api/service/api";
 import UpdateServiceModal from "../components/UpdateServiceModal";
 
 interface TableData {
@@ -73,13 +78,13 @@ const ServiceList = () => {
   const handleCheckAll = () => {
     setAllChecked(!allChecked);
   };
-  const handleUpdatePrice = async () => {
+  const handleUpdateDiscount = async () => {
     const selectedProductIds = Object.keys(checkedNames).filter(
       (id) => checkedNames[id]
     );
-
+    console.log(selectedProductIds);
     if (selectedProductIds.length === 0) {
-      alert("Please select at least one product to update.");
+      alert("Please select at least one service to update.");
       return;
     }
 
@@ -89,10 +94,23 @@ const ServiceList = () => {
     }
 
     try {
-      await dispatch(
-        updateProductPrices({ discount, productIds: selectedProductIds })
-      ).unwrap();
-      alert("Product prices updated successfully!");
+      if (selectedProductIds.length === 1) {
+        await dispatch(
+          updateSingleServiceDiscount({
+            discountPercentage: discount,
+            id: selectedProductIds[0],
+          })
+        ).unwrap();
+        alert("Discount updated successfully for the selected service!");
+      } else {
+        await dispatch(
+          updateServiceDiscount({
+            discountPercentage: discount,
+            id: selectedProductIds,
+          })
+        ).unwrap();
+        alert("Services discount updated successfully!");
+      }
       window.location.reload();
     } catch (error) {
       console.error("Error updating prices:", error);
@@ -319,7 +337,7 @@ const ServiceList = () => {
           onChange={(e) => setDiscount(parseFloat(e.target.value))}
           className="w-1/3"
         />
-        <Button type="primary" onClick={handleUpdatePrice}>
+        <Button type="primary" onClick={handleUpdateDiscount}>
           Apply Discount
         </Button>
       </div>

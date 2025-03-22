@@ -165,7 +165,7 @@ const ProductTableWithHeader = () => {
   const handleCheckAll = () => {
     setAllChecked(!allChecked);
   };
-  const handleUpdatePrice = async () => {
+  const handleUpdateDiscount = async () => {
     console.log(checkedNames);
     const selectedProductIds = Object.keys(checkedNames).filter(
       (id) => checkedNames[id]
@@ -331,7 +331,7 @@ const ProductTableWithHeader = () => {
           onChange={(e) => setDiscount(parseFloat(e.target.value))}
           className="w-1/3"
         />
-        <Button type="primary" onClick={handleUpdatePrice}>
+        <Button type="primary" onClick={handleUpdateDiscount}>
           Apply Discount
         </Button>
       </div>

@@ -3,7 +3,7 @@ import { approvePriceUpdate, getAllServicesForAdmin } from "../api/service/api";
 import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { RootState, AppDispatch } from "../store/store";
-import { Checkbox, Table, Tooltip } from "antd";
+import { Table, Tooltip } from "antd";
 import DeleteProductModal from "../components/DeleteProductModal";
 import UpdateServiceModal from "../components/UpdateServiceModal";
 
@@ -26,9 +26,6 @@ const SuperAdmin_Services_List = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  // const [data, setData] = useState(null);
-  const [allChecked, setAllChecked] = useState(false);
-  const [checkedNames, setCheckedNames] = useState({});
   const [selectedSalon, setSelectedSalon] = useState<TableData | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
@@ -62,14 +59,6 @@ const SuperAdmin_Services_List = () => {
     subCategoryNameFilter,
     subSubCategoryNameFilter,
   ]);
-
-  const handleCheckAll = () => {
-    setAllChecked(!allChecked);
-  };
-
-  const handleCheck = (productId) => {
-    setCheckedNames((prev) => ({ ...prev, [productId]: !prev[productId] }));
-  };
 
   const handleUpdate = (record: TableData) => {
     setSelectedSalon(null);
@@ -125,22 +114,9 @@ const SuperAdmin_Services_List = () => {
 
   const columns = [
     {
-      title: (
-        <Checkbox onChange={handleCheckAll} checked={allChecked}>
-          Name
-        </Checkbox>
-      ),
+      title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (text, record) => (
-        <div className="flex items-center">
-          <Checkbox
-            onChange={() => handleCheck(record._id)}
-            checked={checkedNames[record._id] || false}
-          />
-          <span className="ml-2">{text}</span>
-        </div>
-      ),
     },
     { title: "Category Id", dataIndex: "categoryId", key: "categoryId" },
     {
