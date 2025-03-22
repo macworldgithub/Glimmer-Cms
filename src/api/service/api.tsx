@@ -246,3 +246,33 @@ export const updateSalonServiceApi = createAsyncThunk(
     }
   }
 );
+
+export const getAllServicesForAdmin = createAsyncThunk(
+  "getAllServicesForAdmin",
+  async (
+    payload: {
+      page_no: number;
+    },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      // Access token from the Redux state
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make API request with page number as a query parameter
+      const response = await axios.get(
+        `${BACKEND_URL}/salon-services/getAllServicesForAdmin?page_no=${payload.page_no}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Bearer token
+          },
+        }
+      );
+
+      return response.data; // Return the response data if successful
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);

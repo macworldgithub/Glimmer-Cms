@@ -281,7 +281,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
         <Form.Item label="Service" name="categoryName">
           <select onChange={handleSelectService}>
             <option value="" disabled selected>
-              Select a Service
+              Select Service
             </option>
             {services.map((service) => (
               <option
@@ -301,7 +301,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
             disabled={!selectedService._id}
           >
             <option value="" disabled selected>
-              Select a Subservice
+              Select Gender
             </option>
             {Object.keys(subservices).map((category) => (
               <option key={category} value={category} data-name={category}>
@@ -317,7 +317,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
             disabled={!selectedSubservice.name}
           >
             <option value="" disabled selected>
-              Select a Product
+              Select Sub Service
             </option>
             {productItems.map((product, index) => (
               <option key={`${selectedService._id}-${index}`} value={product} data-name={product}>

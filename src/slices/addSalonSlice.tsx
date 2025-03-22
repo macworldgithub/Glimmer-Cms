@@ -57,7 +57,7 @@ const addSalonSlice = createSlice({
   },
   extraReducers(builder) {
     builder.addCase(addSalonApi.fulfilled, () => {
-      alert("Success : Salon Added");
+      alert("Success : Service Added");
       return initialState; // Correct way to reset the state
     });
     builder.addCase(addSalonApi.rejected, (e, d) => {

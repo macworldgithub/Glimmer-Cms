@@ -208,7 +208,7 @@ const ServicePage = () => {
               </label>
               <input
                 type="text"
-                placeholder="Salon title"
+                placeholder="Service title"
                 className="w-full border-solid border border-gray-400 rounded-md shadow-sm p-3"
                 value={addSalon.name}
                 onChange={(e) => HandleChange("name", e.target.value)}
@@ -233,7 +233,7 @@ const ServicePage = () => {
               </label>
               <input
                 type="number"
-                placeholder="Duration in minutes and hours"
+                placeholder="Duration in minutes"
                 className="w-full border-solid border border-gray-400 rounded-md shadow-sm p-3"
                 value={addSalon.duration || ""}
                 onChange={(e) => HandleChange("duration", e.target.value)}
@@ -369,7 +369,7 @@ const ServicePage = () => {
               className="w-full mt-2 mb-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
             >
               <option value="" disabled selected>
-                Select a Service
+                Select a service
               </option>
               {services.map((service) => (
                 <option
@@ -384,14 +384,14 @@ const ServicePage = () => {
           </label>
 
           <label className="text-gray-700 font-medium">
-            Select Subservice:
+            Select Gender:
             <select
               onChange={handleSelectSubservice}
               className="w-full mt-2 mb-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
               value={selectedSubservice}
             >
               <option value="" disabled selected>
-                Select a Subservice
+                Select a gender
               </option>
               {Object.keys(subservices).map((category) => (
                 <option
@@ -406,14 +406,14 @@ const ServicePage = () => {
           </label>
 
           <label className="text-gray-700 font-medium">
-            Select Product:
+            Select Sub Service:
             <select
               onChange={handleSelectProduct}
               className="w-full mt-2 mb-4 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
               value={selectedProduct}
             >
               <option value="" disabled selected>
-                Select a Product
+                Select a sub service
               </option>
               {productItems.map((product, index) => (
                 <option key={`${selectedService}-${index}`} value={product} data-name={product}>

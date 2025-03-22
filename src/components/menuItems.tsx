@@ -71,6 +71,26 @@ export const getMenuItems = (
           label: "Store",
           path: "/store",
         },
+        
+        {
+          key: "salon",
+          icon: <FileOutlined />,
+          label: "Salon",
+          children: [
+            {
+              key: "super-admin-manage-services",
+              icon: <FileOutlined />,
+              label: "SuperAdmin List",
+              path: "/SuperAdmin_Services_List",
+            },
+            {
+              key: "manage-services",
+              icon: <FileOutlined />,
+              label: "Services List",
+              path: "/Manage_Services",
+            },
+          ],
+        },
       ]
     : []),
 

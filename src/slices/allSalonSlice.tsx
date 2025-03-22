@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getAllProducts, updateProductApi } from "../api/products/api";
-import { getAllServicesForSalon, updateSalonServiceApi } from "../api/service/api";
+import { getAllServicesForAdmin, getAllServicesForSalon, updateSalonServiceApi } from "../api/service/api";
 
 interface Salon {
   id: string;
@@ -37,6 +37,12 @@ const allSalonSlice = createSlice({
   },
   extraReducers(builder) {
     builder.addCase(getAllServicesForSalon.fulfilled, (state, action) => {
+      //   state.products = action.payload;
+      state.salons = action.payload;
+
+      console.log("yelly", action.payload);
+    });
+    builder.addCase(getAllServicesForAdmin.fulfilled, (state, action) => {
       //   state.products = action.payload;
       state.salons = action.payload;
 
