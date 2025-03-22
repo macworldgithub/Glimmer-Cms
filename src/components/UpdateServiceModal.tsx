@@ -177,7 +177,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
 
   const handleSave = async () => {
     const formData = new FormData();
-   
+
     formData.append("id", salon.id);
     formData.append("name", form.getFieldValue("name"));
     formData.append("description", form.getFieldValue("description"));
@@ -206,8 +206,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
     });
 
     try {
-        console.log("Form data", formData);
-      const response = await axios.put(
+      await axios.put(
         `${BACKEND_URL}/salon-services/updateServiceById`,
         formData,
         {
@@ -217,10 +216,11 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
           },
         }
       );
-      alert("Salon Updated successfully!");
       //@ts-ignore
       dispatch(getAllServicesForSalon({ page_no: page }));
-      console.log(response.data);
+      alert("Service Updated successfully!");
+      onClose(); 
+      window.location.reload(); 
     } catch (error) {
       message.error("Failed to submit product.");
       console.error(error);
@@ -248,7 +248,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
 
   return (
     <Modal
-      title="Update Salon"
+      title="Update Service"
       visible={visible}
       onCancel={onClose}
       onOk={handleSave}
@@ -320,7 +320,11 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
               Select Sub Service
             </option>
             {productItems.map((product, index) => (
-              <option key={`${selectedService._id}-${index}`} value={product} data-name={product}>
+              <option
+                key={`${selectedService._id}-${index}`}
+                value={product}
+                data-name={product}
+              >
                 {product}
               </option>
             ))}

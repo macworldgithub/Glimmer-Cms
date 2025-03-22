@@ -233,7 +233,7 @@ const SuperAdmin_Services_List = () => {
         <DeleteProductModal
           visible={isDeleteModalVisible}
           //@ts-ignore
-          product={selectedProduct}
+          product={selectedSalon}
           onClose={() => setIsDeleteModalVisible(false)}
           page={currentPage}
         />
