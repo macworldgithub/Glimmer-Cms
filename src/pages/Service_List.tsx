@@ -8,7 +8,7 @@ import UpdateModal from "../components/UpdateProductModal";
 import SearchBar from "../components/SearchBar"; // Import SearchBar
 import { AppDispatch, RootState } from "../store/store";
 import { useSearchParams } from "react-router-dom";
-import { getAllServicesForSalon } from "../api/service/api";
+import { getAllServicesForSalon, requestPriceUpdate } from "../api/service/api";
 import UpdateServiceModal from "../components/UpdateServiceModal";
 
 interface TableData {
@@ -34,6 +34,9 @@ const ServiceList = () => {
   const [checkedNames, setCheckedNames] = useState({});
   const [allChecked, setAllChecked] = useState(false);
   const [discount, setDiscount] = useState<number>(0);
+  const [editedPrices, setEditedPrices] = useState<{ [key: string]: number }>(
+    {}
+  );
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -149,6 +152,19 @@ const ServiceList = () => {
       subSubCategoryName: newFilters.subSubCategoryName || "",
     });
   };
+
+  const handlePriceChange = (id: string, value: string) => {
+    setEditedPrices((prev) => ({ ...prev, [id]: Number(value) }));
+  };
+
+  const handlePriceUpdate = (id: string) => {
+    const newPrice = editedPrices[id];
+    if (!newPrice) return;
+
+    dispatch(requestPriceUpdate({ requestedPrice: newPrice, id }));
+    alert("Price has been requested for approval");
+  };
+
   const columns = [
     {
       title: (
@@ -183,8 +199,36 @@ const ServiceList = () => {
       title: "Requested Price",
       dataIndex: "requestedPrice",
       key: "requestedPrice",
+      render: (text, record) => (
+        <div className="flex items-center space-x-2">
+          <input
+            type="number"
+            className="border p-1 w-20"
+            value={editedPrices[record._id] ?? text}
+            onChange={(e) => handlePriceChange(record._id, e.target.value)}
+          />
+          <button
+            onClick={() => handlePriceUpdate(record._id)}
+            className="bg-blue-500 text-white px-2 py-1 rounded"
+          >
+            Request
+          </button>
+        </div>
+      ),
     },
     { title: "Admin Price", dataIndex: "adminSetPrice", key: "adminSetPrice" },
+    {
+      title: "Admin Discounted Price",
+      dataIndex: "discountPercentage",
+      key: "finalPrice",
+      render: (discountPercentage, record) => {
+        const adminPrice = record.adminSetPrice || 0;
+        const discount = discountPercentage || 0;
+        const finalPrice = adminPrice - (adminPrice * discount) / 100;
+
+        return <span>{finalPrice.toFixed(2)}</span>;
+      },
+    },
     {
       title: "Description",
       dataIndex: "description",

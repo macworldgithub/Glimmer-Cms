@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { addSalonApi } from "../api/service/api";
+import { addSalonApi, approvePriceUpdate, requestPriceUpdate } from "../api/service/api";
 
 export interface Service {
+  _id?: string;
   name: string;
   description: string;
   duration: number;
   images: { name: string; url: string }[];
   requestedPrice: number;
+  adminSetPrice?: number;
   base_price: number;
   discounted_price: number;
   status: "Active" | "Inactive"; // Enum-like string literals
@@ -16,6 +18,7 @@ export interface Service {
 }
 
 const initialState: Service = {
+  _id: "",
   name: "",
   description: "",
   duration: 0,
@@ -65,6 +68,18 @@ const addSalonSlice = createSlice({
       //@ts-ignore
       alert("Error: " + (d?.payload?.message ? d?.payload?.message[0] : "!"));
       return;
+    });
+    builder.addCase(requestPriceUpdate.fulfilled, (state, action) => {
+      const { serviceId, price } = action.payload;
+      if (state._id === serviceId) {
+        state.requestedPrice = price;
+      }
+    });
+    builder.addCase(approvePriceUpdate.fulfilled, (state, action) => {
+      const { serviceId, price } = action.payload;
+      if (state._id === serviceId) {
+        state.adminSetPrice = price;
+      }
     });
   },
 });

@@ -39,14 +39,10 @@ const allSalonSlice = createSlice({
     builder.addCase(getAllServicesForSalon.fulfilled, (state, action) => {
       //   state.products = action.payload;
       state.salons = action.payload;
-
-      console.log("yelly", action.payload);
     });
     builder.addCase(getAllServicesForAdmin.fulfilled, (state, action) => {
       //   state.products = action.payload;
       state.salons = action.payload;
-
-      console.log("yelly", action.payload);
     });
 
     builder.addCase(updateSalonServiceApi.fulfilled, (state, action) => {

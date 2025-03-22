@@ -276,3 +276,59 @@ export const getAllServicesForAdmin = createAsyncThunk(
     }
   }
 );
+
+export const requestPriceUpdate = createAsyncThunk(
+  "request_price_update",
+  async (
+    { requestedPrice, id }: { requestedPrice: number, id: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make the API call to update prices
+      const response = await axios.patch(
+        `${BACKEND_URL}/salon-services/requestPriceUpdate`,
+        { requestedPrice, id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data; // Return success data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update prices");
+    }
+  }
+);
+
+export const approvePriceUpdate = createAsyncThunk(
+  "approve_price_update",
+  async (
+    { adminSetPrice, id }: { adminSetPrice: number, id: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make the API call to update prices
+      const response = await axios.patch(
+        `${BACKEND_URL}/salon-services/approvePriceUpdate`,
+        { adminSetPrice, id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data; // Return success data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update prices");
+    }
+  }
+);
