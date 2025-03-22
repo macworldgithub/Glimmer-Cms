@@ -4,8 +4,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { RootState, AppDispatch } from "../store/store";
 import { Table, Tooltip } from "antd";
-import DeleteProductModal from "../components/DeleteProductModal";
 import UpdateServiceModal from "../components/UpdateServiceModal";
+import DeleteServiceModal from "../components/DeleteServiceModal";
 
 interface TableData {
   name: string;
@@ -230,10 +230,10 @@ const SuperAdmin_Services_List = () => {
       )}
 
       {selectedSalon && role === "super_admin" && (
-        <DeleteProductModal
+        <DeleteServiceModal
           visible={isDeleteModalVisible}
           //@ts-ignore
-          product={selectedSalon}
+          service={selectedSalon}
           onClose={() => setIsDeleteModalVisible(false)}
           page={currentPage}
         />
