@@ -22,7 +22,9 @@ type DashboardData = {
 };
 
 const Dashboard = () => {
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
@@ -41,12 +43,15 @@ const Dashboard = () => {
       }
 
       try {
-        const response = await axios.get(`${BACKEND_URL}/order/get_store_revenue_sales`, {
-          params: {
-            store_id: storeId,
-            page_no: totalPages,
-          },
-        });
+        const response = await axios.get(
+          `${BACKEND_URL}/order/get_store_revenue_sales`,
+          {
+            params: {
+              store_id: storeId,
+              page_no: totalPages,
+            },
+          }
+        );
 
         const { totalRevenue, salesCount, totalCount } = response.data;
 
@@ -81,16 +86,27 @@ const Dashboard = () => {
     <div className="w-full min-h-screen bg-gray-100 p-6 space-y-6">
       <div className="flex flex-wrap xl:space-x-4 xl:flex-nowrap">
         <div className="xl:w-2/5 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Sales Card */}
-          <div className="bg-white shadow-md p-4 rounded-md relative">
-            <img src={wallet} alt="Sales" className="w-10 h-10" />
-            <p className="text-gray-600 mt-2">Bookings Summary</p>
-            <div className="grid grid-cols-3 gap-2 mt-3">
+          {/* Bookings Summary Card */}
+          <div className="bg-white shadow-md p-4 rounded-md relative w-full max-w-sm mx-auto">
+            <div className="flex items-center space-x-3">
+              <img src={wallet} alt="Bookings" className="w-10 h-10" />
+              <p className="text-gray-600 text-lg font-medium">
+                Bookings Summary
+              </p>
+            </div>
+
+            {/* Responsive Grid Layout: Column on Mobile, Row on Larger Screens */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
               {["Pending", "Approved", "Completed"].map((status, id) => (
-                <div key={id} className="p-3 bg-gray-100 rounded-md text-center">
-                  <p className="text-gray-500 text-sm">{status}</p>
-                  <h3 className="text-lg font-medium">
-                    {dashboardData?.salesCount[status as keyof SalesCount]}
+                <div
+                  key={id}
+                  className="p-3 bg-gray-100 rounded-md text-center flex flex-col items-center"
+                >
+                  <p className="text-gray-500 text-xs sm:text-sm truncate w-full">
+                    {status}
+                  </p>
+                  <h3 className="text-lg font-semibold">
+                    {dashboardData?.salesCount[status as keyof SalesCount] || 0}
                   </h3>
                 </div>
               ))}
@@ -100,19 +116,24 @@ const Dashboard = () => {
           {/* Total Bookings Card */}
           <div className="bg-white shadow-md p-4 rounded-md relative">
             <p className="text-gray-600 mt-2">Total Bookings</p>
-            <h3 className="text-2xl font-medium">{dashboardData?.totalProducts}</h3>
+            <h3 className="text-2xl font-medium">
+              {dashboardData?.totalProducts}
+            </h3>
           </div>
         </div>
       </div>
 
       {/* Earning Section */}
-      <div className="flex gap-2 max-sm:flex-col">
+      <div className="flex gap-2 max-sm:flex-col p-6">
         <div className="w-1/2 max-sm:w-full bg-white shadow-md p-4 rounded-md">
           <div>
             <img src={revenue} alt="" />
           </div>
           <h3 className="text-lg text-gray-500">Total</h3>
-          <p className="text-gray-600 text-xl font-bold">{dashboardData?.revenue} <span className="text-blue-500 text-sm">PKR</span></p>
+          <p className="text-gray-600 text-xl font-bold">
+            {dashboardData?.revenue}{" "}
+            <span className="text-blue-500 text-sm">PKR</span>
+          </p>
         </div>
       </div>
 

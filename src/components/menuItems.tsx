@@ -71,7 +71,7 @@ export const getMenuItems = (
           label: "Store",
           path: "/store",
         },
-        
+
         {
           key: "salon",
           icon: <FileOutlined />,
@@ -84,22 +84,10 @@ export const getMenuItems = (
               path: "/SuperAdmin_Services_List",
             },
             {
-              key: "manage-services",
-              icon: <FileOutlined />,
-              label: "Services List (Salon)",
-              path: "/Manage_Services",
-            },
-            {
               key: "super-admin-booking",
               icon: <FileOutlined />,
               label: "Booking List (Admin)",
               path: "/SuperAdmin_Booking_List",
-            },
-            {
-              key: "manage-booking",
-              icon: <FileOutlined />,
-              label: "Booking List (Salon)",
-              path: "/Manage_Booking",
             },
           ],
         },
@@ -160,41 +148,41 @@ export const getMenuItems = (
       ]
     : []),
 
-    ...(showSaloon
-      ? [
-          {
-            key: "salon-dashboard",
-            icon: <DashboardOutlined />,
-            label: "Dashboard",
-            path: "/S_Dashboard",
-          },
-  
-          {
-            key: "booking",
-            icon: <OrderedListOutlined />,
-            label: "Booking and Details",
-            path: "/booking",
-          },
-          {
-            key: "salon-services",
-            icon: <FileOutlined />,
-            label: "Services",
-            children: [
-              {
-                key: "manage-services",
-                icon: <FileOutlined />,
-                label: "Manage Services",
-                path: "/Manage_Services",
-              },
-  
-              {
-                key: "add-services",
-                icon: <FileOutlined />,
-                label: "Add Services",
-                path: "/Add_services",
-              },
-            ],
-          },
-        ]
-      : []),
+  ...(showSaloon
+    ? [
+        {
+          key: "salon-dashboard",
+          icon: <DashboardOutlined />,
+          label: "Dashboard",
+          path: "/S_Dashboard",
+        },
+
+        {
+          key: "booking",
+          icon: <OrderedListOutlined />,
+          label: "Booking and Details",
+          path: "/booking",
+        },
+        {
+          key: "salon-services",
+          icon: <FileOutlined />,
+          label: "Services",
+          children: [
+            {
+              key: "manage-services",
+              icon: <FileOutlined />,
+              label: "Manage Services",
+              path: "/Manage_Services",
+            },
+
+            {
+              key: "add-services",
+              icon: <FileOutlined />,
+              label: "Add Services",
+              path: "/Add_services",
+            },
+          ],
+        },
+      ]
+    : []),
 ];
