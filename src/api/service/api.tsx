@@ -408,3 +408,41 @@ export const deleteServiceApi = async (id: string, token: string) => {
     throw new Error("An error occurred"); // Generic error
   }
 };
+
+interface GetAdminBookingsParams {
+  page_no: number;
+  categoryId?: string;
+  subCategoryName?: string;
+  subSubCategoryName?: string;
+}
+
+export const getAdminBookings = createAsyncThunk(
+  "getAdminBookings",
+  async (params: GetAdminBookingsParams, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.get(
+        `${BACKEND_URL}/salon-service-bookings/getAllBookingForAdmin`,
+        {
+          params: {
+            page: params.page_no,
+            limit: 8,
+            status: "Pending",
+            ...(params.categoryId && { categoryId: params.categoryId }),
+            ...(params.subCategoryName && { subCategoryName: params.subCategoryName }),
+            ...(params.subSubCategoryName && { subSubCategoryName: params.subSubCategoryName }),
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);

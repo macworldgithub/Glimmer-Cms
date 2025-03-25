@@ -80,14 +80,26 @@ export const getMenuItems = (
             {
               key: "super-admin-manage-services",
               icon: <FileOutlined />,
-              label: "SuperAdmin List",
+              label: "Service List (Admin)",
               path: "/SuperAdmin_Services_List",
             },
             {
               key: "manage-services",
               icon: <FileOutlined />,
-              label: "Services List",
+              label: "Services List (Salon)",
               path: "/Manage_Services",
+            },
+            {
+              key: "super-admin-booking",
+              icon: <FileOutlined />,
+              label: "Booking List (Admin)",
+              path: "/SuperAdmin_Booking_List",
+            },
+            {
+              key: "manage-booking",
+              icon: <FileOutlined />,
+              label: "Booking List (Salon)",
+              path: "/Manage_Booking",
             },
           ],
         },

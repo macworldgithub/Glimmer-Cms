@@ -7,29 +7,31 @@ import { BACKEND_URL } from "../config/server";
 import axios from "axios";
 
 const SalonOrderTable = () => {
-  const [orders, setOrders] = useState([]);
-  const [totalOrders, setTotalOrders] = useState(0);
+  const bookingList = useSelector(
+    (state: RootState) => state.AllBooking.bookings
+  );
+  const totalBookings = useSelector(
+      (state: RootState) => state.AllBooking.total
+    );
   const token = useSelector((state: RootState) => state.Login.token);
-  const store_id = useSelector((state: RootState) => state.Login._id);
 
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const pageSize = 10;
   const currentPage = Number(searchParams.get("page")) || 1;
+  const categoryIdFilter = searchParams.get("categoryId") || "";
+  const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
+  const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
 
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&page_size=${pageSize}&store_id=${store_id}&status=Pending`,
+        `${BACKEND_URL}/salon-service-bookings/getAllSalonBooking?page_no=${currentPage}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
-      setOrders(response.data.orders);
-      setTotalOrders(response.data.totalCount);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -47,42 +49,48 @@ const SalonOrderTable = () => {
 
   const columns = [
     {
-      title: "BOOKING ID",
-      dataIndex: "_id",
-      key: "_id",
+      title: "Salon ID",
+      dataIndex: "salonId",
+      key: "salonId",
     },
     {
-      title: "CUSTOMER NAME",
+      title: "Customer Name",
       dataIndex: "customerName",
       key: "customerName",
     },
+    { title: "Service Name", dataIndex: "serviceName", key: "serviceName" },
     {
-      title: "SERVICE NAME",
-      dataIndex: "serviceName",
-      key: "serviceName",
+      title: "Duration",
+      dataIndex: "serviceDuration",
+      key: "serviceDuration",
     },
     {
-      title: "DATE AND TIME",
-      dataIndex: "dateAndTime",
-      key: "dateAndTime",
+      title: "Price",
+      dataIndex: "finalPrice",
+      key: "finalPrice",
     },
     {
-      title: "STATUS",
-      dataIndex: "status",
-      key: "status",
+      title: "Payment Method",
+      dataIndex: "paymentMethod",
+      key: "paymentMethod",
+    },
+    {
+      title: "Booking Status",
+      dataIndex: "bookingStatus",
+      key: "bookingStatus",
       render: (status: string) => {
         let color = "blue";
         if (status === "Pending") color = "orange";
-        if (status === "Approved") color = "green";
+        if (status === "Shipped") color = "green";
         if (status === "Confirmed") color = "blue";
         return <Tag color={color}>{status}</Tag>;
       },
     },
     {
-      title: "ACTION",
+      title: "Actions",
       key: "action",
       render: (_, record) =>
-        record.orderProductStatus === "Pending" && (
+        record.bookingStatus === "Pending" && (
           <div className="space-x-5">
             <Button
               className="bg-green-500 text-white"
@@ -105,14 +113,23 @@ const SalonOrderTable = () => {
     <div className="w-full h-full flex flex-col items-center p-2 gap-2">
       <Table
         columns={columns}
-        dataSource={orders}
+        dataSource={bookingList.map((booking) => ({
+          ...booking,
+          key: booking._id,
+        }))}
         className="shadow-lg w-full"
         scroll={{ x: 1000 }}
         pagination={{
           current: currentPage,
           pageSize: pageSize,
-          total: totalOrders,
-          onChange: (page) => setSearchParams({ page: page.toString() }),
+          total: totalBookings,
+          onChange: (page) =>
+            setSearchParams({
+              page_no: page.toString(),
+              categoryId: categoryIdFilter,
+              subCategoryName: subCategoryNameFilter,
+              subSubCategoryName: subSubCategoryNameFilter,
+            }),
           showSizeChanger: false,
         }}
       />

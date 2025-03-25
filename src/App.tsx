@@ -29,6 +29,8 @@ import Services from "./pages/Services.tsx";
 import Add_Services from "./pages/Add_Services.tsx";
 import ServiceList from "./pages/Service_List.tsx";
 import SuperAdmin_Services_List from "./pages/SuperAdmin_Services_List.tsx";
+import SuperAdmin_Booking_List from "./pages/SuperAdmin_Booking_List.tsx";
+import Booking_List from "./pages/Booking_List.tsx";
 
 function App() {
   //  const isAuthenticated = false;
@@ -93,6 +95,8 @@ function App() {
           <Route path="Add_Services" element={<Add_Services />} />
           <Route path="Manage_Services" element={<ServiceList />} />
           <Route path="SuperAdmin_Services_List" element={<SuperAdmin_Services_List />} />
+          <Route path="SuperAdmin_Booking_List" element={<SuperAdmin_Booking_List />} />
+          <Route path="Manage_Booking" element={<Booking_List />} />
           
         </Route>
       </Routes>
