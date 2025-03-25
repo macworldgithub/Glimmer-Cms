@@ -5,11 +5,10 @@ import storage from "redux-persist/lib/storage"; // Default storage (localStorag
 import addProductSlice from "../slices/addProductSlice";
 import allProductsSlice from "../slices/allProductSlice";
 import loginSlice from "../slices/loginSlice";
-import orderSlice from "../slices/orderSlice";
 import allOrderSlice from "../slices/orderSlice";
 import addSalonSlice from "../slices/addSalonSlice";
 import allSalonSlice from "../slices/allSalonSlice";
-import allBookingSlice from "../slices/allbookingSlice";
+import allBookingSlice from "../slices/allBookingSlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
