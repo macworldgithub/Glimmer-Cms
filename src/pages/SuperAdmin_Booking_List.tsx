@@ -1,11 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getAdminBookings } from "../api/service/api";
 import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { RootState, AppDispatch } from "../store/store";
 import { Table, Tag } from "antd";
+import DeleteBookingModal from "../components/DeleteBookingModal";
+
+interface Booking {
+  name: string;
+  categoryId: string;
+  subCategoryName: string;
+  subSubCategoryName: string;
+  requestedPrice: number;
+  adminPrice: number;
+  description: string;
+  duration: string;
+  status: "Active" | "Inactive";
+  created_at: string;
+}
 
 const SuperAdmin_Booking_List = () => {
+  const role = useSelector((state: RootState) => state.Login.role);
   const bookingList = useSelector(
     (state: RootState) => state.AllBooking.bookings
   );
@@ -15,6 +30,8 @@ const SuperAdmin_Booking_List = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedSalon, setSelectedSalon] = useState<Booking | null>(null);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   const pageSize = 8;
 
@@ -40,6 +57,11 @@ const SuperAdmin_Booking_List = () => {
     subCategoryNameFilter,
     subSubCategoryNameFilter,
   ]);
+
+  const handleDelete = (record) => {
+    setSelectedSalon(record);
+    setIsDeleteModalVisible(true);
+  };
 
   const columns = [
     {
@@ -80,9 +102,34 @@ const SuperAdmin_Booking_List = () => {
         return <Tag color={color}>{status}</Tag>;
       },
     },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_: any, record) => (
+        <div className="flex space-x-2">
+          {role === "super_admin" && (
+            <button
+              onClick={() => handleDelete(record)}
+              className="text-red-500 hover:underline"
+            >
+              Delete
+            </button>
+          )}
+        </div>
+      ),
+    },
   ];
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+      {selectedSalon && role === "super_admin" && (
+        <DeleteBookingModal
+          visible={isDeleteModalVisible}
+          //@ts-ignore
+          booking={selectedSalon}
+          onClose={() => setIsDeleteModalVisible(false)}
+          page={currentPage}
+        />
+      )}
       <div className="overflow-x-auto shadow-lg">
         <Table
           columns={columns}
@@ -97,7 +144,7 @@ const SuperAdmin_Booking_List = () => {
             total: totalBookings,
             onChange: (page) =>
               setSearchParams({
-                page_no: page.toString(),
+                page: page.toString(),
                 categoryId: categoryIdFilter,
                 subCategoryName: subCategoryNameFilter,
                 subSubCategoryName: subSubCategoryNameFilter,

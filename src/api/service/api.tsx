@@ -425,8 +425,6 @@ export const getAdminBookings = createAsyncThunk(
         {
           params: {
             page: params.page_no,
-            limit: 8,
-            status: "Pending",
             ...(params.categoryId && { categoryId: params.categoryId }),
             ...(params.subCategoryName && {
               subCategoryName: params.subCategoryName,
@@ -610,3 +608,20 @@ export const updateApprovedBookingStatus = createAsyncThunk(
     }
   }
 );
+
+export const deleteBookingApi = async (bookingId: string, token: string) => {
+  try {
+    const response = await axios.delete(`${BACKEND_URL}/salon-service-bookings/${bookingId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add Bearer token
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data; // Return the response data if successful
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data); // Throw error with response data
+    }
+    throw new Error("An error occurred"); // Generic error
+  }
+};
