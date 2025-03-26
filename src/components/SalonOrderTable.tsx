@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Button, Table, Tag, Space } from "antd";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { RootState } from "../store/store";
-import { BACKEND_URL } from "../config/server";
-import axios from "axios";
+import { useSearchParams } from "react-router-dom";
+import { AppDispatch, RootState } from "../store/store";
+import { approveBooking, getSalonBookings, rejectBooking } from "../api/service/api";
 
 const SalonOrderTable = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const token = useSelector((state: RootState) => state.Login.token);
   const bookingList = useSelector(
     (state: RootState) => state.AllBooking.bookings
   );
   const totalBookings = useSelector(
-      (state: RootState) => state.AllBooking.total
-    );
-  const token = useSelector((state: RootState) => state.Login.token);
+    (state: RootState) => state.AllBooking.total
+  );
 
   const [searchParams, setSearchParams] = useSearchParams();
   const pageSize = 10;
@@ -22,30 +22,34 @@ const SalonOrderTable = () => {
   const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
   const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        `${BACKEND_URL}/salon-service-bookings/getAllSalonBooking?page_no=${currentPage}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    }
-  };
+  useEffect(() => {
+    //@ts-ignore
+    dispatch(
+      getSalonBookings({
+        page_no: currentPage,
+        status: "Pending",
+        categoryId: categoryIdFilter,
+        subCategoryName: subCategoryNameFilter,
+        subSubCategoryName: subSubCategoryNameFilter,
+      })
+    );
+  }, [
+    dispatch,
+    currentPage,
+    categoryIdFilter,
+    subCategoryNameFilter,
+    subSubCategoryNameFilter,
+  ]);
+
   const handleAccept = async (bookingId) => {
-    console.log(bookingId);
+    const resultAction = await dispatch(approveBooking({ bookingId }));
+    console.log(resultAction);
   };
 
   const handleReject = async (bookingId) => {
-    console.log(bookingId);
+    const resultAction = await dispatch(rejectBooking({ bookingId }));
+    console.log(resultAction);
   };
-  useEffect(() => {
-    fetchData();
-  }, [currentPage]);
 
   const columns = [
     {

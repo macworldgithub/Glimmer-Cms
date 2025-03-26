@@ -446,3 +446,95 @@ export const getAdminBookings = createAsyncThunk(
     }
   }
 );
+
+interface GetSalonBookingsParams {
+  page_no: number;
+  status?: string;
+  categoryId?: string;
+  subCategoryName?: string;
+  subSubCategoryName?: string;
+}
+export const getSalonBookings = createAsyncThunk(
+  "getSalonBookings",
+  async (params: GetSalonBookingsParams, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.get(
+        `${BACKEND_URL}/salon-service-bookings/getAllSalonBooking`,
+        {
+          params: {
+            page: params.page_no,
+            limit: 8,
+            status: "Pending",
+            ...(params.categoryId && { categoryId: params.categoryId }),
+            ...(params.subCategoryName && { subCategoryName: params.subCategoryName }),
+            ...(params.subSubCategoryName && { subSubCategoryName: params.subSubCategoryName }),
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
+export const approveBooking = createAsyncThunk(
+  "approve_booking",
+  async (
+    { bookingId }: { bookingId: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make the API call to update booking
+      const response = await axios.put(
+        `${BACKEND_URL}/salon-service-bookings/approveBooking?bookingId=${bookingId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data; // Return success data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to approve booking");
+    }
+  }
+);
+
+export const rejectBooking = createAsyncThunk(
+  "reject_booking",
+  async (
+    { bookingId }: { bookingId: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make the API call to update booking
+      const response = await axios.put(
+        `${BACKEND_URL}/salon-service-bookings/rejectBooking?bookingId=${bookingId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data; // Return success data
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to reject booking");
+    }
+  }
+);

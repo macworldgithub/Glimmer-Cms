@@ -12,7 +12,6 @@ const SuperAdmin_Booking_List = () => {
   const totalBookings = useSelector(
     (state: RootState) => state.AllBooking.total
   );
-  console.log(bookingList);
   const dispatch = useDispatch<AppDispatch>();
 
   const [searchParams, setSearchParams] = useSearchParams();

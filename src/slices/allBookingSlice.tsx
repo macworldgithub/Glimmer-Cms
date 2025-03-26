@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getAdminBookings } from "../api/service/api";
+import { approveBooking, getAdminBookings, getSalonBookings, rejectBooking } from "../api/service/api";
 
 interface Booking {
   _id: string;
@@ -50,6 +50,29 @@ const allBookingSlice = createSlice({
       const { bookings, totalPages } = action.payload;
       state.bookings = bookings;
       state.totalPages = totalPages;
+    });
+    builder.addCase(getSalonBookings.fulfilled, (state, action) => {
+      const { bookings, totalPages } = action.payload;
+      state.bookings = bookings;
+      state.totalPages = totalPages;
+    });
+    builder.addCase(approveBooking.fulfilled, (state, action) => {
+      const approvedBooking = action.payload;
+      const updatedBookings = state.bookings.map((booking) =>
+        booking._id === approvedBooking._id
+          ? { ...booking, bookingStatus: "Approved" }
+          : booking
+      );
+      state.bookings = updatedBookings;
+    });
+    builder.addCase(rejectBooking.fulfilled, (state, action) => {
+      const rejectBooking = action.payload;
+      const updatedBookings = state.bookings.map((booking) =>
+        booking._id === rejectBooking._id
+          ? { ...booking, bookingStatus: "Rejected" }
+          : booking
+      );
+      state.bookings = updatedBookings;
     });
   },
 });
