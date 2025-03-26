@@ -3,11 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, Table, Tag, Space } from "antd";
 import { useSearchParams } from "react-router-dom";
 import { AppDispatch, RootState } from "../store/store";
-import { approveBooking, getSalonBookings, rejectBooking } from "../api/service/api";
+import {
+  approveBooking,
+  getSalonBookings,
+  rejectBooking,
+} from "../api/service/api";
 
 const SalonOrderTable = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const token = useSelector((state: RootState) => state.Login.token);
   const bookingList = useSelector(
     (state: RootState) => state.AllBooking.bookings
   );
@@ -42,13 +45,13 @@ const SalonOrderTable = () => {
   ]);
 
   const handleAccept = async (bookingId) => {
-    const resultAction = await dispatch(approveBooking({ bookingId }));
-    console.log(resultAction);
+    await dispatch(approveBooking({ bookingId }));
+    alert("Order has been approved.");
   };
 
   const handleReject = async (bookingId) => {
-    const resultAction = await dispatch(rejectBooking({ bookingId }));
-    console.log(resultAction);
+    await dispatch(rejectBooking({ bookingId }));
+    alert("Order has been rejected.");
   };
 
   const columns = [

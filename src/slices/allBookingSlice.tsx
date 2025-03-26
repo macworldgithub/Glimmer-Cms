@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { approveBooking, getAdminBookings, getSalonBookings, rejectBooking } from "../api/service/api";
+import { 
+  approveBooking, 
+  getAdminBookings, 
+  getSalonBookings, 
+  rejectBooking, 
+  getBookingDetailsById, 
+  updateApprovedBookingStatus
+} from "../api/service/api";
 
 interface Booking {
   _id: string;
@@ -32,6 +39,7 @@ interface BookingResponse {
   total: number;
   currentPage: number;
   totalPages: number;
+  details: Booking | null;  // Store booking details when fetched
 }
 
 const initialState: BookingResponse = {
@@ -39,6 +47,18 @@ const initialState: BookingResponse = {
   total: 0,
   currentPage: 1,
   totalPages: 0,
+  details: null,
+};
+
+// Function to remove a booking from the list
+const removeBookingFromList = (bookings: Booking[], bookingId: string): Booking[] => {
+  return bookings.filter((booking) => booking._id !== bookingId);
+};
+
+const updateBookingStatusInList = (bookings: Booking[], bookingId: string, newStatus: string): Booking[] => {
+  return bookings.map((booking) =>
+    booking._id === bookingId ? { ...booking, bookingStatus: newStatus } : booking
+  );
 };
 
 const allBookingSlice = createSlice({
@@ -58,21 +78,21 @@ const allBookingSlice = createSlice({
     });
     builder.addCase(approveBooking.fulfilled, (state, action) => {
       const approvedBooking = action.payload;
-      const updatedBookings = state.bookings.map((booking) =>
-        booking._id === approvedBooking._id
-          ? { ...booking, bookingStatus: "Approved" }
-          : booking
-      );
-      state.bookings = updatedBookings;
+      state.bookings = removeBookingFromList(state.bookings, approvedBooking._id);
     });
     builder.addCase(rejectBooking.fulfilled, (state, action) => {
-      const rejectBooking = action.payload;
-      const updatedBookings = state.bookings.map((booking) =>
-        booking._id === rejectBooking._id
-          ? { ...booking, bookingStatus: "Rejected" }
-          : booking
-      );
-      state.bookings = updatedBookings;
+      const rejectedBooking = action.payload;
+      state.bookings = removeBookingFromList(state.bookings, rejectedBooking._id);
+    });
+    builder.addCase(getBookingDetailsById.fulfilled, (state, action) => {
+      state.details = action.payload; 
+    });
+    builder.addCase(updateApprovedBookingStatus.fulfilled, (state, action) => {
+      const { bookingId, bookingStatus } = action.payload;
+      state.bookings = updateBookingStatusInList(state.bookings, bookingId, bookingStatus);
+      if (state.details && state.details._id === bookingId) {
+        state.details.bookingStatus = bookingStatus;
+      }
     });
   },
 });

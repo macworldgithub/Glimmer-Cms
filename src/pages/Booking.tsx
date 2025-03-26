@@ -1,281 +1,290 @@
-// import React, { useEffect, useState } from "react";
-// import { Button, Card, message, Table, Tag } from "antd";
-// import { useLocation } from "react-router-dom";
-// import axios from "axios";
-// import { BACKEND_URL } from "../config/server";
-// import { useSelector } from "react-redux";
-// import { RootState } from "../store/store";
-
-// const BookingDetailPage = () => {
-//   const location = useLocation();
-//   //   const order = location.state?.data;
-//   const [order, setOrders] = useState(location.state?.data);
-//   const token = useSelector((state: RootState) => state.Login.token);
-//   const store_id = useSelector((state: RootState) => state.Login._id);
-//   const showActionColumn = order.productList.some(
-//     (item) => item.orderProductStatus === "Pending"
-//   );
-//   const fetchData = async () => {
-//     const response = await axios.get(
-//       `${BACKEND_URL}/order/get_store_order_by_id?order_id=${location.state?.data._id}&store_id=${store_id}`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     // console.log(response.data);
-//     setOrders(response.data);
-//   };
-//   useEffect(() => {
-//     fetchData();
-//   }, [location]);
-//   if (!order) {
-//     return <p className="text-center text-lg">No order details available.</p>;
-//   }
-//   const columns = [
-//     {
-//       title: "Product Image",
-//       dataIndex: "image",
-//       key: "image",
-//       render: (text) => (
-//         <img src={text} alt="Product" className="w-16 h-16 rounded" />
-//       ),
-//     },
-//     {
-//       title: "Product Name",
-//       dataIndex: "name",
-//       key: "name",
-//     },
-//     {
-//       title: "Product Id",
-//       dataIndex: "key",
-//       key: "key",
-//     },
-//     {
-//       title: "Quantity",
-//       dataIndex: "quantity",
-//       key: "quantity",
-//     },
-//     {
-//       title: "Type",
-//       dataIndex: "type",
-//       key: "type",
-//       render: (type, record) => {
-//         return <p>{type?.value}</p>;
-//       },
-//     },
-//     {
-//       title: "Size",
-//       dataIndex: "size",
-//       key: "size",
-//       render: (size, record) => {
-//         return (
-//           <p>
-//             {size?.value} {size?.unit}
-//           </p>
-//         );
-//       },
-//     },
-//     {
-//       title: "Base Price",
-//       dataIndex: "base_price",
-//       key: "base_price",
-//       render: (price) => `${price} PKR`,
-//     },
-//     {
-//       title: "Discounted Price",
-//       dataIndex: "discounted_price",
-//       key: "discounted_price",
-//       render: (price) => <Tag color="green">{price} PKR</Tag>,
-//     },
-//     {
-//       title: "Total Price",
-//       dataIndex: "total_price",
-//       key: "total_price",
-//       render: (price) => `${price} PKR`,
-//     },
-//     {
-//       title: "Status",
-//       dataIndex: "orderProductStatus",
-//       key: "orderProductStatus",
-//       render: (status) => (
-//         <Tag color={status === "Accepted" ? "blue" : "red"}>{status}</Tag>
-//       ),
-//     },
-//     ...(showActionColumn
-//       ? [
-//           {
-//             title: "Action",
-//             key: "action",
-//             render: (_, record) =>
-//               record.orderProductStatus === "Pending" && (
-//                 <div className="space-x-5">
-//                   <Button
-//                     className="bg-green-500 text-white"
-//                     onClick={() => handleAccept(record.key)}
-//                   >
-//                     Accept
-//                   </Button>
-//                   <Button
-//                     className="bg-red-500 text-white"
-//                     onClick={() => handleReject(record.key)}
-//                   >
-//                     Reject
-//                   </Button>
-//                 </div>
-//               ),
-//           },
-//         ]
-//       : []),
-//   ];
-//   const handleAccept = async (prodId) => {
-//     const response = await axios.put(
-//       `${BACKEND_URL}/order/updateProductStatus`,
-//       {
-//         order_id: order?._id,
-//         product_id: prodId,
-//         store_id: store_id,
-//         order_product_status: "Accepted",
-//       },
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     message.success(`Product ${prodId} has been accepted.`);
-//     setTimeout(() => {
-//       fetchData();
-//     }, 2000);
-//   };
-
-//   const handleReject = async (prodId) => {
-//     const response = await axios.put(
-//       `${BACKEND_URL}/order/updateProductStatus`,
-//       {
-//         order_id: order?._id,
-//         product_id: prodId,
-//         store_id: store_id,
-//         order_product_status: "Rejected",
-//       },
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//         },
-//       }
-//     );
-//     message.success(`Product ${prodId} has been rejected.`);
-//     setTimeout(() => {
-//       fetchData();
-//     }, 2000);
-//   };
-//   return (
-//     <div className="container mx-auto p-6">
-//       <Card
-//         key={order._id}
-//         title={`Order #${order._id}`}
-//         className="mb-6 shadow-lg"
-//       >
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//           <div>
-//             <h2 className="text-lg font-semibold">Customer Details</h2>
-//             <p>
-//               <strong>Name:</strong> {order.customerName}
-//             </p>
-//             <p>
-//               <strong>Email:</strong> {order.customerEmail}
-//             </p>
-//           </div>
-//           <div>
-//             <h2 className="text-lg font-semibold">Shipping Information</h2>
-//             <p>
-//               <strong>Full Name:</strong> {order?.ShippingInfo?.fullName}
-//             </p>
-//             <p>
-//               <strong>Email:</strong> {order?.ShippingInfo?.email}
-//             </p>
-//             <p>
-//               <strong>Phone:</strong> {order?.ShippingInfo?.phone}
-//             </p>
-//             <div className="flex gap-6 flex-wrap">
-//               <p>
-//                 <strong>Country:</strong> {order?.ShippingInfo?.country}
-//               </p>
-//               <p>
-//                 <strong>City:</strong> {order?.ShippingInfo?.city}
-//               </p>
-//               <p>
-//                 <strong>State:</strong> {order?.ShippingInfo?.state}
-//               </p>
-//               <p>
-//                 <strong>Zip Code:</strong> {order?.ShippingInfo?.zip}
-//               </p>
-//             </div>
-//             <p>
-//               <strong>Address:</strong> {order?.ShippingInfo?.address},{" "}
-//               {order?.ShippingInfo?.city}, {order?.ShippingInfo?.country}
-//             </p>
-//             <p>
-//               <strong>Shipping Method:</strong>{" "}
-//               {order?.ShippingInfo?.shippingMethod}
-//             </p>
-//           </div>
-//         </div>
-
-//         <div className="w-full overflow-hidden">
-//           <h2 className="text-lg font-semibold mt-4">Order Summary</h2>
-//           <div className="max-h-96 overflow-y-auto border rounded-lg">
-//             <Table
-//               columns={columns}
-//               dataSource={order.productList.map((item) => ({
-//                 key: item.product._id,
-//                 image: item.product.image1,
-//                 name: item.product.name,
-//                 quantity: item.quantity,
-//                 type: item.product.type[0],
-//                 size: item.product.size[0],
-//                 base_price: item.product.base_price,
-//                 discounted_price: item.product.discounted_price,
-//                 total_price: item.total_price,
-//                 orderProductStatus: item.orderProductStatus,
-//               }))}
-//               pagination={false}
-//             />
-//           </div>
-//         </div>
-
-//         <div className="flex justify-between mt-4">
-//           <p>
-//             <strong>Total Price:</strong> {order.total} PKR
-//           </p>
-//           <p>
-//             <strong>Discounted Total:</strong>{" "}
-//             <Tag color="green">{order.discountedTotal} PKR</Tag>
-//           </p>
-//           <p>
-//             <strong>Payment Method:</strong> {order.paymentMethod}
-//           </p>
-//           <p>
-//             <strong>Order Status:</strong>{" "}
-//             <Tag color={order.status === "Confirmed" ? "blue" : "orange"}>
-//               {order.status}
-//             </Tag>
-//           </p>
-//         </div>
-//       </Card>
-//     </div>
-//   );
-// };
-
-// export default BookingDetailPage;
-
-import React from 'react'
-
+"use client";
+import {
+  Modal,
+  Button,
+  Divider,
+  Typography,
+  Row,
+  Col,
+  Tag,
+  Space,
+  Table,
+  message,
+  Dropdown,
+  Menu,
+} from "antd";
+import "antd/dist/reset.css";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import SearchBar from "../components/SearchBar";
+import { AppDispatch, RootState } from "../store/store";
+import { useSearchParams } from "react-router-dom";
+import {
+  getBookingDetailsById,
+  getSalonBookings,
+  updateApprovedBookingStatus,
+} from "../api/service/api";
+const { Text } = Typography;
 const booking = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+
+  const bookingList = useSelector(
+    (state: RootState) => state.AllBooking.bookings
+  );
+  const totalBookings = useSelector(
+    (state: RootState) => state.AllBooking.total
+  );
+  const bookingDetails = useSelector(
+    (state: RootState) => state.AllBooking.details
+  );
+
+  const pageSize = 8;
+
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const categoryIdFilter = searchParams.get("categoryId") || "";
+  const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
+  const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
+
+  useEffect(() => {
+    //@ts-ignore
+    dispatch(
+      getSalonBookings({
+        page_no: currentPage,
+        categoryId: categoryIdFilter,
+        subCategoryName: subCategoryNameFilter,
+        subSubCategoryName: subSubCategoryNameFilter,
+      })
+    );
+  }, [
+    dispatch,
+    currentPage,
+    categoryIdFilter,
+    subCategoryNameFilter,
+    subSubCategoryNameFilter,
+  ]);
+
+  const handleSearch = (newFilters: {
+    categoryId?: string;
+    subCategoryName?: string;
+    subSubCategoryName?: string;
+  }) => {
+    setSearchParams({
+      page: "1",
+      categoryId: newFilters.categoryId || "",
+      subCategoryName: newFilters.subCategoryName || "",
+      subSubCategoryName: newFilters.subSubCategoryName || "",
+    });
+  };
+
+  const handleViewDetails = async (bookingId: string) => {
+    setIsModalOpen(true);
+    await dispatch(getBookingDetailsById({ bookingId }));
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedBooking(null);
+  };
+
+  const handleUpdateStatus = async (bookingId: string, newStatus: string) => {
+    const resultAction = await dispatch(
+      updateApprovedBookingStatus({ bookingId, bookingStatus: newStatus })
+    );
+
+    if (updateApprovedBookingStatus.fulfilled.match(resultAction)) {
+      message.success(`Booking status updated to ${newStatus}`);
+    } else {
+      alert(
+        "A booking can only be marked as 'Completed' if the payment was made via 'Prepaid (Card)'. This booking uses 'Pay at Counter'."
+      );
+    }
+  };
+
+  const columns = [
+    {
+      title: "Salon ID",
+      dataIndex: "salonId",
+      key: "salonId",
+    },
+    {
+      title: "Customer Name",
+      dataIndex: "customerName",
+      key: "customerName",
+    },
+    { title: "Service Name", dataIndex: "serviceName", key: "serviceName" },
+    {
+      title: "Duration",
+      dataIndex: "serviceDuration",
+      key: "serviceDuration",
+    },
+    {
+      title: "Price",
+      dataIndex: "finalPrice",
+      key: "finalPrice",
+    },
+    {
+      title: "Payment Method",
+      dataIndex: "paymentMethod",
+      key: "paymentMethod",
+    },
+    {
+      title: "Booking Status",
+      dataIndex: "bookingStatus",
+      key: "bookingStatus",
+      render: (status: string, record: any) => {
+        let color = "blue";
+        if (status === "Approved") color = "green";
+        if (status === "Rejected") color = "red";
+        if (status === "Confirmed") color = "blue";
+
+        return (
+          <>
+            <Tag color={color}>{status}</Tag>
+            {status === "Approved" && (
+              <Dropdown
+                overlay={
+                  <Menu onClick={(e) => handleUpdateStatus(record._id, e.key)}>
+                    <Menu.Item key="Completed">Completed</Menu.Item>
+                    <Menu.Item key="Completed And Paid">
+                      Completed and Paid
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <Button size="small" style={{ marginTop: 10 }}>
+                  Change Status
+                </Button>
+              </Dropdown>
+            )}
+          </>
+        );
+      },
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Space>
+          <Button type="primary" onClick={() => handleViewDetails(record._id)}>
+            View Details
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
   return (
-    <div>booking</div>
-  )
-}
+    <div>
+      {/* Header Section */}
+      <div className="p-4 text-lg font-semibold text-gray-800 border-b">
+        Booking List and Details
+      </div>
+
+      {/* SearchBar */}
+      <SearchBar onSearch={handleSearch} showCategories={false} />
+
+      {/* Table Section */}
+      <div className="overflow-x-auto shadow-lg">
+        <Table
+          columns={columns}
+          //@ts-ignore
+          dataSource={bookingList.map((booking) => ({
+            ...booking,
+            key: booking._id,
+          }))}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalBookings,
+            onChange: (page) =>
+              setSearchParams({
+                page: page.toString(),
+                categoryId: categoryIdFilter,
+                subCategoryName: subCategoryNameFilter,
+                subSubCategoryName: subSubCategoryNameFilter,
+              }),
+          }}
+          className="border-t"
+          scroll={{ x: 1000 }}
+        />
+      </div>
+      {/* Booking Details Modal */}
+      <Modal
+        title="Booking Details"
+        open={isModalOpen}
+        onCancel={handleCloseModal}
+        footer={[
+          <Button key="close" onClick={handleCloseModal} type="primary">
+            Close
+          </Button>,
+        ]}
+        width={600} // You can adjust this based on your needs
+        bodyStyle={{
+          padding: "20px",
+          fontFamily: "Arial, sans-serif",
+        }}
+        style={{ top: 20 }}
+      >
+        {bookingDetails ? (
+          <div>
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Text strong>Salon ID:</Text>
+                <p>{bookingDetails.salonId}</p>
+              </Col>
+              <Col span={12}>
+                <Text strong>Customer Name:</Text>
+                <p>{bookingDetails.customerName}</p>
+              </Col>
+              <Col span={12}>
+                <Text strong>Service Name:</Text>
+                <p>{bookingDetails.serviceName}</p>
+              </Col>
+              <Col span={12}>
+                <Text strong>Duration:</Text>
+                <p>{bookingDetails.serviceDuration} mins</p>
+              </Col>
+              <Col span={12}>
+                <Text strong>Price:</Text>
+                <p>{bookingDetails.finalPrice} PKR</p>
+              </Col>
+              <Col span={12}>
+                <Text strong>Payment Method:</Text>
+                <p>{bookingDetails.paymentMethod}</p>
+              </Col>
+              <Col span={12}>
+                <Text strong>Booking Date:</Text>
+                <p>
+                  {new Date(bookingDetails.bookingDate).toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
+                </p>
+              </Col>
+            </Row>
+
+            <Divider />
+
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <Text strong>Status:</Text>
+                <p>{bookingDetails.bookingStatus}</p>
+              </Col>
+            </Row>
+          </div>
+        ) : (
+          <Text>Loading...</Text>
+        )}
+      </Modal>
+    </div>
+  );
+};
 
 export default booking;
