@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createSalon } from "../api/auth/api";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { addImages, removeImage, resetImage } from "../slices/loginSlice";
 
 const Salon = () => {
-  const [storeImageFile, setStoreImageFile] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const images = useSelector((state: RootState) => state.Login.images);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   const [formData, setFormData] = useState({
-    salonImage: "",
     salonName: "",
     ownerName: "",
     about: "",
@@ -16,9 +20,10 @@ const Salon = () => {
     password: "",
     address: "",
     openingHour: "",
-    closingHour: ""
+    closingHour: "",
   });
 
+  console.log(formData);
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -27,23 +32,45 @@ const Salon = () => {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setStoreImageFile(file);
+    if (e.target.files) {
+      const files = Array.from(e.target.files || []).slice(0, 4 - (images?.length || 0)); // Allow max 4 images
 
-      // Generate image preview
-      const reader = new FileReader();
-      reader.onload = () => setPreviewImage(reader.result as string);
-      reader.readAsDataURL(file);
+      if (files.length + (images?.length || 0) > 4) {
+        alert("You can only upload up to 4 images.");
+        return;
+      }
+
+      const imageUrls = files.map((file) => URL.createObjectURL(file));
+
+      setPreviewUrls([...previewUrls, ...imageUrls]); // Update preview URLs
+      setImageFiles([...imageFiles, ...files]); // Store actual files
+      dispatch(addImages(imageUrls)); // Dispatch action to store in Redux
     }
   };
+  const handleRemoveImage = (index: number) => {
+    if (images.length === 1) {
+      dispatch(resetImage());
+      setPreviewUrls([]);
+      setImageFiles([]);
+    } else {
+      dispatch(removeImage(index));
+      setPreviewUrls((prevUrls) => prevUrls.filter((_, i) => i !== index));
+      setImageFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    }
+  };
+
+  useEffect(() => {
+    if (images?.length > 0) {
+      setPreviewUrls(images.map((img) => img));
+    }
+  }, [images]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate required fields
-    if (!storeImageFile) {
-      alert("Please upload a profile image.");
+    if (imageFiles.length === 0) {
+      alert("Please upload at least one profile image.");
       return;
     }
     if (!formData.salonName.trim()) {
@@ -73,7 +100,12 @@ const Salon = () => {
 
     // Prepare FormData object
     const formDataToSubmit = new FormData();
-    formDataToSubmit.append("salon_image", storeImageFile);
+    imageFiles.forEach((file, index) => {
+      formDataToSubmit.append(`image${index + 1}`, file);
+    });
+    // Object.entries(formData).forEach(([key, value]) => {
+    //   formDataToSubmit.append(key, value);
+    // });
     formDataToSubmit.append("salon_name", formData.salonName);
     formDataToSubmit.append("owner_name", formData.ownerName);
     formDataToSubmit.append("about", formData.about);
@@ -103,8 +135,9 @@ const Salon = () => {
         openingHour: "",
         closingHour: "",
       });
-      setStoreImageFile(null);
-      setPreviewImage(null); // Reset preview image
+      setImageFiles([]);
+      setPreviewUrls([]);
+      dispatch(resetImage());
     } catch (error) {
       console.error("Error creating salon:", error);
       alert("An error occurred while creating the salon. Please try again.");
@@ -112,9 +145,10 @@ const Salon = () => {
   };
 
   return (
-    
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">Salon</h1>
+      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+        Salon
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col">
           <label className="font-medium text-gray-700">Profile</label>
@@ -124,14 +158,32 @@ const Salon = () => {
             onChange={handleFileChange}
             className="border border-gray-300 rounded-md p-2 mt-1 focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
-          {previewImage && (
-            <img src={previewImage} alt="Preview" className="mt-2 w-24 h-24 object-cover rounded-lg shadow-md" />
-          )}
+          <div className="flex space-x-2 mt-2">
+            {previewUrls.map((src, index) => (
+              <div key={index} className="relative">
+                <img
+                  src={src}
+                  alt={`Preview ${index + 1}`}
+                  className="w-24 h-24 object-cover rounded-lg shadow-md"
+                />
+                <button
+                  onClick={() => handleRemoveImage(index)}
+                  className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full text-xs"
+                >
+                  X
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
         {[
           { label: "Salon Name", name: "salonName", type: "text" },
           { label: "Owner Name", name: "ownerName", type: "text" },
-          { label: "Owner Contact Email", name: "ownerContactEmail", type: "email" },
+          {
+            label: "Owner Contact Email",
+            name: "ownerContactEmail",
+            type: "email",
+          },
           { label: "Email", name: "email", type: "email" },
           { label: "Password", name: "password", type: "password" },
           { label: "Contact Number", name: "contactNumber", type: "number" },

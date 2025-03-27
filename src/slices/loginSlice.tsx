@@ -21,7 +21,7 @@ interface Authentication {
   country?: string;
   address: string;
   store_image?: string;
-  salon_image?: string;
+  images?: string[];
   token: string;
   role: string;
 }
@@ -56,7 +56,7 @@ const initialSalonState: Authentication = {
   email: "",
   password: "",
   address: "",
-  salon_image: "",
+  images: [],
   token: "",
   role: "",
   name: "",
@@ -96,6 +96,23 @@ const loginSlice = createSlice({
       state.store_name = store_name;
       state.vendor_name = vendor_name;
     },
+    addImages: (state, action) => {
+      if (!state.images) {
+        state.images = []; 
+      }
+      
+      if (Array.isArray(action.payload) && (state.images.length + action.payload.length <= 4)) {
+        state.images = [...state.images, ...action.payload];
+      } else {
+        alert("You can only upload up to 4 images.");
+      }
+    },
+    removeImage: (state, action: PayloadAction<number>) => {
+      state.images = state.images.filter((_, index) => index !== action.payload);
+    },
+    resetImage: (state) => {
+      state.images = [];
+    },
     updateSalon: (state, action) => {
       const {
         salon_name,
@@ -107,7 +124,7 @@ const loginSlice = createSlice({
         address,
         openingHour,
         closingHour,
-        salon_image,
+        images,
       } = action.payload;
 
       state.address = address;
@@ -115,7 +132,7 @@ const loginSlice = createSlice({
       state.email = email;
       state.owner_contact_email = owner_contact_email;
       state.contact_number = contact_number;
-      state.salon_image = salon_image;
+      state.images = images.slice(0, 4);
       state.salon_name = salon_name;
       state.owner_name = owner_name;
       state.openingHour = openingHour;
@@ -163,7 +180,12 @@ const loginSlice = createSlice({
       state.closingHour = salon.closingHour;
       state.email = salon.email;
       state.address = salon.address;
-      state.salon_image = `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.salon_image}`;
+      state.images = [
+        salon.image1 ? `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.image1}` : null,
+        salon.image2 ? `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.image2}` : null,
+        salon.image3 ? `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.image3}` : null,
+        salon.image4 ? `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.image4}` : null,
+      ].filter(Boolean);
       state.token = token;
       state.isAuthenticated = true; // Mark as authenticated
       state.role = role;
@@ -183,5 +205,5 @@ const loginSlice = createSlice({
   },
 });
 
-export const { changeAuthentication, logout, updateStore, updateSalon } = loginSlice.actions;
+export const { changeAuthentication, logout, updateStore, updateSalon, addImages, removeImage, resetImage } = loginSlice.actions;
 export default loginSlice;
