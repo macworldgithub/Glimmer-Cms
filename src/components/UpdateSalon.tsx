@@ -33,7 +33,7 @@ const UpdateSalonModal: React.FC<PropsUpdateSalonModal> = ({
     address: salon.address,
     openingHour: salon.openingHour,
     closingHour: salon.closingHour,
-    salon_image: salon.salon_image,
+    salon_image: salon.images[0],
   });
   // Handle image upload
   const handleImageChange = (info: any) => {

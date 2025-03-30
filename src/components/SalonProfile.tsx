@@ -34,7 +34,7 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
       <div className="flex items-center w-full p-2">
         <Avatar
           size={"large"}
-          src={data.role === "salon" ? data.salon_image : Profilepic}
+          src={data.role === "salon" ? data.images[0] : Profilepic}
           icon="user"
         />
         <div className="ml-2">
