@@ -8,66 +8,82 @@ import revenue from "../assets/Profile/revenue.png";
 import SalonOrderTable from "../components/SalonOrderTable";
 
 type SalesCount = {
-  Accepted: number;
-  Rejected: number;
-  Pending: number;
+  accumulatedApprovedStatus: number;
+  accumulatedRejectedStatus: number;
+  accumulatedPendingStatus: number;
+  accumulatedCompletedStatus: number;
+  accumulatedCompleteAndPaidStatus: number;
 };
 
 type DashboardData = {
-  revenue: string;
-  totalProducts: string;
+  total: string;
+  totalFinalPrice: string;
   salesCount: SalesCount;
-  recentSales: string;
-  expenses: { title: string; value: string };
 };
 
 const Dashboard = () => {
+  const token = useSelector((state: RootState) => state.Login.token);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(
     null
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const storeData = useSelector((state: RootState) => state.Login);
-
-  const storeId = storeData?._id || "";
-  const itemsPerPage = 10;
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!storeId) {
-        setError("Store ID not found");
-        setLoading(false);
-        return;
-      }
-
       try {
-        const response = await axios.get(
-          `${BACKEND_URL}/order/get_store_revenue_sales`,
-          {
-            params: {
-              store_id: storeId,
-              page_no: totalPages,
-            },
+        let currentPage = 1;
+        let totalPages = 1; // Will be updated dynamically
+        let accumulatedSalesCount = {
+          accumulatedApprovedStatus: 0,
+          accumulatedRejectedStatus: 0,
+          accumulatedPendingStatus: 0,
+          accumulatedCompletedStatus: 0,
+          accumulatedCompleteAndPaidStatus: 0,
+        };
+  
+        let firstResponseData = null; // Store first page data separately
+  
+        while (currentPage <= totalPages) {
+          const response = await axios.get(
+            `${BACKEND_URL}/salon-service-bookings/getAllSalonBookingStatus`,
+            {
+              params: { page_no: currentPage },
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+  
+          const {
+            total,
+            totalFinalPrice,
+            accumulatedApprovedStatus,
+            accumulatedRejectedStatus,
+            accumulatedPendingStatus,
+            accumulatedCompletedStatus,
+            accumulatedCompleteAndPaidStatus,
+            totalPages: fetchedTotalPages,
+          } = response.data;
+  
+          if (currentPage === 1) {
+            firstResponseData = { total, totalFinalPrice };
+            totalPages = fetchedTotalPages || 1; 
           }
-        );
-
-        const { totalRevenue, salesCount, totalCount } = response.data;
-
-        setTotalPages(Math.ceil(totalCount / itemsPerPage));
-
+  
+          accumulatedSalesCount.accumulatedApprovedStatus += accumulatedApprovedStatus || 0;
+          accumulatedSalesCount.accumulatedRejectedStatus += accumulatedRejectedStatus || 0;
+          accumulatedSalesCount.accumulatedPendingStatus += accumulatedPendingStatus || 0;
+          accumulatedSalesCount.accumulatedCompletedStatus += accumulatedCompletedStatus || 0;
+          accumulatedSalesCount.accumulatedCompleteAndPaidStatus += accumulatedCompleteAndPaidStatus || 0;
+  
+          currentPage++; 
+        }
+  
         setDashboardData({
-          revenue: totalRevenue,
-          totalProducts: totalCount.toString(),
-          salesCount: {
-            Accepted: salesCount?.Accepted ?? 0,
-            Rejected: salesCount?.Rejected ?? 0,
-            Pending: salesCount?.Pending ?? 0,
-          },
-          recentSales: "482k",
-          expenses: { title: "4,234", value: "2023" },
+          total: firstResponseData?.total || 0,
+          totalFinalPrice: firstResponseData?.totalFinalPrice || 0,
+          salesCount: accumulatedSalesCount,
         });
+  
       } catch (err) {
         setError("Failed to load dashboard data");
         console.error("Error fetching data:", err);
@@ -75,9 +91,17 @@ const Dashboard = () => {
         setLoading(false);
       }
     };
-
+  
     fetchData();
-  }, [storeId, totalPages]);
+  }, [token]);
+
+  const statusMapping: Record<string, keyof SalesCount> = {
+    Approved: "accumulatedApprovedStatus",
+    Rejected: "accumulatedRejectedStatus",
+    Pending: "accumulatedPendingStatus",
+    Completed: "accumulatedCompletedStatus",
+    Paid: "accumulatedCompleteAndPaidStatus",
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
@@ -97,7 +121,7 @@ const Dashboard = () => {
 
             {/* Responsive Grid Layout: Column on Mobile, Row on Larger Screens */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
-              {["Pending", "Approved", "Completed"].map((status, id) => (
+              {["Approved", "Rejected", "Pending", "Completed", "Paid"].map((status, id) => (
                 <div
                   key={id}
                   className="p-3 bg-gray-100 rounded-md text-center flex flex-col items-center"
@@ -106,7 +130,7 @@ const Dashboard = () => {
                     {status}
                   </p>
                   <h3 className="text-lg font-semibold">
-                    {dashboardData?.salesCount[status as keyof SalesCount] || 0}
+                    {dashboardData?.salesCount[statusMapping[status]] || 0}
                   </h3>
                 </div>
               ))}
@@ -117,7 +141,7 @@ const Dashboard = () => {
           <div className="bg-white shadow-md p-4 rounded-md relative">
             <p className="text-gray-600 mt-2">Total Bookings</p>
             <h3 className="text-2xl font-medium">
-              {dashboardData?.totalProducts}
+              {dashboardData?.total}
             </h3>
           </div>
         </div>
@@ -131,7 +155,7 @@ const Dashboard = () => {
           </div>
           <h3 className="text-lg text-gray-500">Total</h3>
           <p className="text-gray-600 text-xl font-bold">
-            {dashboardData?.revenue}{" "}
+            {dashboardData?.totalFinalPrice}{" "}
             <span className="text-blue-500 text-sm">PKR</span>
           </p>
         </div>
