@@ -96,6 +96,9 @@ const booking = () => {
 
     if (updateApprovedBookingStatus.fulfilled.match(resultAction)) {
       message.success(`Booking status updated to ${newStatus}`);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000); 
     } else {
       alert(
         "A booking can only be marked as 'Completed' if the payment was made via 'Prepaid (Card)'. This booking uses 'Pay at Counter'."
@@ -154,9 +157,10 @@ const booking = () => {
                   </Menu>
                 }
               >
-                <Button size="small" style={{ marginTop: 10 }}>
-                  Change Status
-                </Button>
+                <Tag color="orange">
+                  <button >
+                    Change Status
+                  </button></Tag>
               </Dropdown>
             )}
           </>

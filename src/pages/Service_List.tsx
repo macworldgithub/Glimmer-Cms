@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input, Table, Tooltip } from "antd";
+import { Button, Checkbox, Input, message, Modal, Table, Tooltip } from "antd";
 import "antd/dist/reset.css";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,6 +9,7 @@ import SearchBar from "../components/SearchBar"; // Import SearchBar
 import { AppDispatch, RootState } from "../store/store";
 import { useSearchParams } from "react-router-dom";
 import {
+  changeActivationStatus,
   getAllServicesForSalon,
   requestPriceUpdate,
   updateServiceDiscount,
@@ -17,6 +18,7 @@ import {
 import UpdateServiceModal from "../components/UpdateServiceModal";
 
 interface TableData {
+  _id: string;
   name: string;
   categoryId: string;
   subCategoryName: string;
@@ -34,6 +36,7 @@ const ServiceList = () => {
   const role = useSelector((state: RootState) => state.Login.role);
 
   const [selectedSalon, setSelectedSalon] = useState<TableData | null>(null);
+  console.log(selectedSalon);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [checkedNames, setCheckedNames] = useState({});
@@ -42,6 +45,9 @@ const ServiceList = () => {
   const [editedPrices, setEditedPrices] = useState<{ [key: string]: number }>(
     {}
   );
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [selectedStatusRecord, setSelectedStatusRecord] = useState<TableData | null>(null);
+  console.log(selectedStatusRecord)
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -121,9 +127,9 @@ const ServiceList = () => {
   const salonServiceList = useMemo(() => {
     return Array.isArray(serviceList)
       ? {
-          services: serviceList,
-          total: serviceList.length,
-        }
+        services: serviceList,
+        total: serviceList.length,
+      }
       : serviceList || { services: [], total: 0 };
   }, [serviceList]);
 
@@ -183,6 +189,32 @@ const ServiceList = () => {
     alert("Price has been requested for approval");
   };
 
+  const handleStatusToggle = async () => {
+    if (!selectedStatusRecord) return;
+  
+    try {
+      const resultAction = await dispatch(
+        changeActivationStatus({ id: selectedStatusRecord._id })
+      );
+  
+      if (changeActivationStatus.fulfilled.match(resultAction)) {
+        message.success(
+          `Service marked as ${
+            selectedStatusRecord.status ? "Inactive" : "Active"
+          }`
+        );
+        setConfirmVisible(false);
+        setSelectedStatusRecord(null);
+        alert("Status has been updated")
+        window.location.reload(); // or trigger a refetch instead
+      } else {
+        message.error("Failed to change status.");
+      }
+    } catch (error) {
+      message.error("Something went wrong.");
+    }
+  };
+  
   const columns = [
     {
       title: (
@@ -269,8 +301,16 @@ const ServiceList = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status: boolean) => (
-        <span>{status ? "Active" : "Inactive"}</span>
+      render: (status: boolean, record: TableData) => (
+        <span
+          className={`cursor-pointer font-medium ${status ? "text-green-600" : "text-red-600"}`}
+          onClick={() => {
+            setSelectedStatusRecord(record);
+            setConfirmVisible(true);
+          }}
+        >
+          {status ? "Active" : "Inactive"}
+        </span>
       ),
     },
     {
@@ -329,6 +369,24 @@ const ServiceList = () => {
         />
       )}
 
+      <Modal
+        visible={confirmVisible}
+        title="Confirm Status Change"
+        onOk={handleStatusToggle}
+        onCancel={() => {
+          setConfirmVisible(false);
+          setSelectedStatusRecord(null);
+        }}
+        okText="Yes"
+        cancelText="No"
+        closable
+      >
+        <p>
+          Are you sure you want to{" "}
+          <strong>{selectedStatusRecord?.status ? "deactivate" : "activate"}</strong>{" "}
+          this service?
+        </p>
+      </Modal>
       <div className="flex flex-wrap gap-4 py-4">
         <Input
           id="discount"

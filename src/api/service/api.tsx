@@ -657,3 +657,32 @@ export const getAllSalons = createAsyncThunk<GetAllSalonsResponse, number>(
     }
   }
 );
+
+export const changeActivationStatus = createAsyncThunk(
+  "changeActivationStatus",
+  async (
+    { id }: { id: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make the API call to update booking
+      const response = await axios.get(
+        `${BACKEND_URL}/salon-services/changeActivationStatus?id=${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data; // Return success data
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data || "Failed to approve booking"
+      );
+    }
+  }
+);
