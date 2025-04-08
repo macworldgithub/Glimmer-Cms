@@ -252,6 +252,7 @@ export const getAllServicesForAdmin = createAsyncThunk(
   async (
     payload: {
       page_no: number;
+      salonId: string;
     },
     { rejectWithValue, getState }
   ) => {
@@ -262,7 +263,7 @@ export const getAllServicesForAdmin = createAsyncThunk(
 
       // Make API request with page number as a query parameter
       const response = await axios.get(
-        `${BACKEND_URL}/salon-services/getAllServicesForAdmin?page_no=${payload.page_no}`,
+        `${BACKEND_URL}/salon-services/getAllServicesForAdmin?page_no=${payload.page_no}&salonId=${payload.salonId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Add Bearer token
@@ -408,6 +409,7 @@ export const deleteServiceApi = async (id: string, token: string) => {
 
 interface GetAdminBookingsParams {
   page_no: number;
+  salonId?: string; 
   categoryId?: string;
   subCategoryName?: string;
   subSubCategoryName?: string;
@@ -425,6 +427,7 @@ export const getAdminBookings = createAsyncThunk(
         {
           params: {
             page: params.page_no,
+            ...(params.salonId && { salonId: params.salonId }),
             ...(params.categoryId && { categoryId: params.categoryId }),
             ...(params.subCategoryName && {
               subCategoryName: params.subCategoryName,
@@ -625,3 +628,32 @@ export const deleteBookingApi = async (bookingId: string, token: string) => {
     throw new Error("An error occurred"); // Generic error
   }
 };
+
+interface Salon {
+  _id: number;
+  salon_name: string;
+  rating: number;
+  reviews: number;
+  address: string;
+  openingHour: string;
+  closingHour: string;
+  image1: string;
+  about: string;
+}
+interface GetAllSalonsResponse {
+  salons: Salon[];
+  total: number;
+}
+export const getAllSalons = createAsyncThunk<GetAllSalonsResponse, number>(
+  "salons/getAllSalons",
+  async (page_no: number, { rejectWithValue }) => {
+    console.log(page_no);
+    try {
+      const response = await axios.get(`${BACKEND_URL}/salon/get-all-salon?page_no=${page_no}`);
+      console.log(response.data);
+      return response.data; 
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch salons");
+    }
+  }
+);

@@ -39,12 +39,14 @@ const SuperAdmin_Booking_List = () => {
   const categoryIdFilter = searchParams.get("categoryId") || "";
   const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
   const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
+  const salonId = searchParams.get("salonId") || "";
 
   useEffect(() => {
     //@ts-ignore
     dispatch(
       getAdminBookings({
         page_no: currentPage,
+        salonId,
         categoryId: categoryIdFilter,
         subCategoryName: subCategoryNameFilter,
         subSubCategoryName: subSubCategoryNameFilter,
@@ -53,6 +55,7 @@ const SuperAdmin_Booking_List = () => {
   }, [
     dispatch,
     currentPage,
+    salonId,
     categoryIdFilter,
     subCategoryNameFilter,
     subSubCategoryNameFilter,

@@ -30,6 +30,8 @@ import Add_Services from "./pages/Add_Services.tsx";
 import ServiceList from "./pages/Service_List.tsx";
 import SuperAdmin_Services_List from "./pages/SuperAdmin_Services_List.tsx";
 import SuperAdmin_Booking_List from "./pages/SuperAdmin_Booking_List.tsx";
+import All_Salons_Services from "./pages/All_Salons_Services.tsx";
+import All_Salons_Bookings from "./pages/All_Salons_Bookings.tsx";
 
 function App() {
   //  const isAuthenticated = false;
@@ -95,6 +97,8 @@ function App() {
           <Route path="Manage_Services" element={<ServiceList />} />
           <Route path="SuperAdmin_Services_List" element={<SuperAdmin_Services_List />} />
           <Route path="SuperAdmin_Booking_List" element={<SuperAdmin_Booking_List />} />
+          <Route path="All_Salons_Services" element={<All_Salons_Services />} />
+          <Route path="All_Salons_Bookings" element={<All_Salons_Bookings />} />
           
         </Route>
       </Routes>

@@ -41,12 +41,14 @@ const SuperAdmin_Services_List = () => {
   const categoryIdFilter = searchParams.get("categoryId") || "";
   const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
   const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
+  const salonId = searchParams.get("salonId") || "";
 
   useEffect(() => {
     //@ts-ignore
     dispatch(
       getAllServicesForAdmin({
         page_no: currentPage,
+        salonId,
         // categoryId: categoryIdFilter,
         // subCategoryName: subCategoryNameFilter,
         // subSubCategoryName: subSubCategoryNameFilter,
@@ -55,6 +57,7 @@ const SuperAdmin_Services_List = () => {
   }, [
     dispatch,
     currentPage,
+    salonId,
     categoryIdFilter,
     subCategoryNameFilter,
     subSubCategoryNameFilter,
