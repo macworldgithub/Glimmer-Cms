@@ -6,7 +6,7 @@ export interface Service {
   name: string;
   description: string;
   duration: number;
-  images: { name: string; url: string }[];
+  images: string[];
   requestedPrice: number;
   adminSetPrice?: number;
   base_price: number;
@@ -36,10 +36,7 @@ const addSalonSlice = createSlice({
   name: "addSalon",
   initialState,
   reducers: {
-    addImages: (
-      state,
-      action: PayloadAction<{ name: string; url: string }[]>
-    ) => {
+    addImages: (state, action) => {
       if (state.images.length + action.payload.length <= 3) {
         state.images.push(...action.payload); // Add new images
       } else {

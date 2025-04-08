@@ -144,7 +144,7 @@ export const addSalonApi = createAsyncThunk(
 
       // @ts-ignore
       salon.images.forEach((file: File, index: number) => {
-        formData.append(`salon_image${index + 1}`, file);
+        formData.append(`image${index + 1}`, file);
       });
 
       // Make API request

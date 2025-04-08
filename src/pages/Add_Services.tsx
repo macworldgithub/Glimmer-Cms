@@ -120,23 +120,21 @@ const ServicePage = () => {
 
   const images = useSelector((state: RootState) => state.AddSalon.images);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []) as File[];
+  const handleFileChange = (e: any) => {
+    const files = Array.from(e.target.files) as File[]; // Get selected files
 
+    // Check if the total number of files exceeds 5
     if (files.length + images.length > 3) {
       alert("You can only upload up to 3 images.");
       return;
     }
 
-    const fileData = files.map((file) => ({
-      name: file.name,
-      url: URL.createObjectURL(file),
-    }));
-
-    dispatch(addImages(fileData));
+    // Dispatch action to store files in Redux
+    dispatch(addImages(files));
   };
 
   const handleRemoveImage = (index: number) => {
+    // setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     if (images.length === 1) {
       dispatch(resetImage());
       setPreviewUrls([]);
@@ -158,12 +156,17 @@ const ServicePage = () => {
 
   useEffect(() => {
     console.log(images, previewUrls, "problemo");
-    const urls = images.map((image) => image.url);
-    setPreviewUrls(urls);
+    // Generate preview URLs for each file
+    if (images.length > 0) {
+      //@ts-ignore
+      const urls = images.map((file) => URL?.createObjectURL(file));
+      setPreviewUrls(urls);
 
-    return () => {
-      urls.forEach((url) => URL.revokeObjectURL(url));
-    };
+      // Cleanup: Revoke URLs to prevent memory leaks
+      return () => {
+        urls.forEach((url) => URL.revokeObjectURL(url));
+      };
+    }
   }, [images]);
 
   const handleDiscountChange = (value) => {
@@ -254,47 +257,49 @@ const ServicePage = () => {
           </div>
 
           <div className="border-gray-200 rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
-            <div className="mt-4 flex flex-row justify-between max-sm:flex-col max-sm:mt-1">
-              <div>
-                <h2 className="text-lg text-gray-700 mb-4">Service Image</h2>
-              </div>
-              <div>
-                <button className="text-sm text-[#5F61E6] hover:underline">
-                  Add media from URL
-                </button>
-              </div>
-            </div>
-            <div className="mb-6 border-gray-300 rounded-md">
-              <p className="text-gray-500 text-xsm">Browse image</p>
-
-              <div className="mt-4">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="max-sm:text-[10px] text-sm text-gray-700"
-                />
-              </div>
-            </div>
-
-            {/* Display Uploaded Images */}
-            <div className="flex flex-wrap gap-4">
-              {images.map((image, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={image.url} // Use stored URL
-                    alt={image.name}
-                    className="w-32 h-32 object-cover rounded-md"
-                  />
-                  <button
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full text-xs"
-                  >
-                    X
+            <div className="border-gray-200 rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
+              <div className="mt-4 flex flex-row justify-between max-sm:flex-col max-sm:mt-1">
+                <div>
+                  <h2 className="text-lg text-gray-700 mb-4">Product Image</h2>
+                </div>
+                <div>
+                  <button className="text-sm text-[#5F61E6] hover:underline">
+                    Add media from URL
                   </button>
                 </div>
-              ))}
+              </div>
+              <div className="mb-6 border-gray-300 rounded-md">
+                <p className="text-gray-500 text-xsm">Browse image</p>
+
+                <div className="mt-4">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="max-sm:text-[10px] text-sm text-gray-700"
+                  />
+                </div>
+              </div>
+
+              {/* Display Uploaded Images */}
+              <div className="flex flex-wrap gap-4">
+                {previewUrls.map((url, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={url}
+                      alt={`Uploaded ${index + 1}`}
+                      className="w-32 h-32 object-cover rounded-md"
+                    />
+                    <button
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full text-xs"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -347,9 +352,9 @@ const ServicePage = () => {
                 value={
                   addSalon.base_price && addSalon.discounted_price
                     ? (
-                        addSalon.base_price -
-                        (addSalon.base_price * addSalon.discounted_price) / 100
-                      ).toFixed(2)
+                      addSalon.base_price -
+                      (addSalon.base_price * addSalon.discounted_price) / 100
+                    ).toFixed(2)
                     : addSalon.base_price || ""
                 }
                 readOnly
