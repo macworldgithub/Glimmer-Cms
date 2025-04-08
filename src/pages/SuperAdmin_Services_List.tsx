@@ -113,6 +113,9 @@ const SuperAdmin_Services_List = () => {
 
     dispatch(approvePriceUpdate({ adminSetPrice: newPrice, id }));
     alert("Requested Price is set by Admin successfully");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000); 
   };
 
   const columns = [
@@ -146,7 +149,7 @@ const SuperAdmin_Services_List = () => {
           <input
             type="number"
             className="border p-1 w-20"
-            value={editedPrices[record._id] ?? text}
+            value={editedPrices[record._id] !== undefined ? editedPrices[record._id] : (text || "")}
             onChange={(e) => handlePriceChange(record._id, e.target.value)}
           />
           <button
