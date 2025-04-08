@@ -219,7 +219,7 @@ const ServicePage = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">
-                About (Optional)
+                Description (Optional)
               </label>
               <textarea
                 placeholder=""
@@ -232,7 +232,7 @@ const ServicePage = () => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-500 mb-1">
-                Duration
+                Duration (mins)
               </label>
               <input
                 type="number"
