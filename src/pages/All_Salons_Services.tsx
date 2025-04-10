@@ -58,6 +58,17 @@ const All_Salons_Services = () => {
   //   setIsDeleteModalVisible(true);
   // };
 
+  const formatTime = (timeStr) => {
+    if (!timeStr) return '-';
+  
+    const [hourStr, minute = "00"] = timeStr.split(':');
+    let hour = parseInt(hourStr, 10);
+    const isPM = hour >= 12;
+    const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+    const suffix = isPM ? 'pm' : 'am';
+    return `${formattedHour}:${minute} ${suffix}`;
+  };
+
   const columns = useMemo(() => [
     {
       title: 'Salon Name',
@@ -81,11 +92,13 @@ const All_Salons_Services = () => {
       title: 'Opening Hours',
       dataIndex: 'openingHour',
       key: 'openingHour',
+      render: (time) => formatTime(time),
     },
     {
       title: 'Closing Hours',
       dataIndex: 'closingHour',
       key: 'closingHour',
+      render: (time) => formatTime(time),
     },
     {
       title: 'Address',
