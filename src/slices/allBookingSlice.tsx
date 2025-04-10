@@ -29,7 +29,6 @@ interface Booking {
   paymentMethod: string;
   bookingStatus: string;
   isPaid: boolean;
-  notes?: string;
   createdAt: string;
   updatedAt: string;
 }
