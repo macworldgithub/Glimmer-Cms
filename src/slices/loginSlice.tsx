@@ -10,9 +10,7 @@ interface Authentication {
   description?: string;
   store_contact_email?: string;
   salon_name?: string;
-  owner_name?: string;
   about?: string;
-  owner_contact_email?: string;
   contact_number?: string;
   openingHour?: string;
   closingHour?: string;
@@ -47,9 +45,7 @@ const initialSalonState: Authentication = {
   _id: "",
   isAuthenticated: false,
   salon_name: "",
-  owner_name: "",
   about: "",
-  owner_contact_email: "",
   contact_number: "",
   openingHour: "",
   closingHour: "",
@@ -116,9 +112,7 @@ const loginSlice = createSlice({
     updateSalon: (state, action) => {
       const {
         salon_name,
-        owner_name,
         about,
-        owner_contact_email,
         contact_number,
         email,
         address,
@@ -130,11 +124,9 @@ const loginSlice = createSlice({
       state.address = address;
       state.about = about;
       state.email = email;
-      state.owner_contact_email = owner_contact_email;
       state.contact_number = contact_number;
       state.images = images.slice(0, 4);
       state.salon_name = salon_name;
-      state.owner_name = owner_name;
       state.openingHour = openingHour;
       state.closingHour = closingHour;
     },
@@ -172,9 +164,7 @@ const loginSlice = createSlice({
       const { salon, token, role } = action.payload;
       state._id = salon._id;
       state.salon_name = salon.salon_name;
-      state.owner_name = salon.owner_name;
       state.about = salon.about;
-      state.owner_contact_email = salon.owner_contact_email;
       state.contact_number = salon.contact_number;
       state.openingHour = salon.openingHour;
       state.closingHour = salon.closingHour;

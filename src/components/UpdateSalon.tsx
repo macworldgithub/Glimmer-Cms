@@ -24,9 +24,7 @@ const UpdateSalonModal: React.FC<PropsUpdateSalonModal> = ({
 
   const [formData, setFormData] = useState({
     salon_name: salon.salon_name,
-    owner_name: salon.owner_name,
     about: salon.about,
-    owner_contact_email: salon.owner_contact_email,
     contact_number: salon.contact_number,
     email: salon.email,
     password: salon.password,
@@ -96,24 +94,10 @@ const UpdateSalonModal: React.FC<PropsUpdateSalonModal> = ({
         />
       </p>
       <p>
-        <strong>Owner Name:</strong>
-        <Input
-          value={formData.owner_name}
-          onChange={(e) => handleChange("owner_name", e.target.value)}
-        />
-      </p>
-      <p>
         <strong>About:</strong>
         <Input
           value={formData.about}
           onChange={(e) => handleChange("about", e.target.value)}
-        />
-      </p>
-      <p>
-        <strong>Contact Email:</strong>
-        <Input
-          value={formData.owner_contact_email}
-          onChange={(e) => handleChange("owner_contact_email", e.target.value)}
         />
       </p>
       <p>

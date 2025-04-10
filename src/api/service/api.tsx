@@ -5,9 +5,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export interface UpdateSalonApi {
   salon_name: string;
-  owner_name: string;
   about: string;
-  owner_contact_email: string;
   contact_number: string;
   openingHour: string;
   closingHour: string;
@@ -96,9 +94,7 @@ export const updateSalonApi = async (token: string, data: UpdateSalonApi) => {
   const formData = new FormData();
 
   formData.append("salon_name", data.salon_name);
-  formData.append("owner_name", data.owner_name);
   formData.append("about", data.about);
-  formData.append("owner_contact_email", data.owner_contact_email);
   formData.append("contact_number", data.contact_number);
   formData.append("opeingHour", data.openingHour);
   formData.append("closingHour", data.closingHour);

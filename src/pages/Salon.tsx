@@ -12,9 +12,7 @@ const Salon = () => {
 
   const [formData, setFormData] = useState({
     salonName: "",
-    ownerName: "",
     about: "",
-    ownerContactEmail: "",
     contactNumber: "",
     email: "",
     password: "",
@@ -77,14 +75,6 @@ const Salon = () => {
       alert("Salon Name is required.");
       return;
     }
-    if (!formData.ownerName.trim()) {
-      alert("Owner Name is required.");
-      return;
-    }
-    if (!formData.ownerContactEmail.trim()) {
-      alert("Owner Contact Email is required.");
-      return;
-    }
     if (!formData.contactNumber.trim()) {
       alert("Owner Contact Number is required.");
       return;
@@ -107,9 +97,7 @@ const Salon = () => {
     //   formDataToSubmit.append(key, value);
     // });
     formDataToSubmit.append("salon_name", formData.salonName);
-    formDataToSubmit.append("owner_name", formData.ownerName);
     formDataToSubmit.append("about", formData.about);
-    formDataToSubmit.append("owner_contact_email", formData.ownerContactEmail);
     formDataToSubmit.append("contact_number", formData.contactNumber);
     formDataToSubmit.append("email", formData.email);
     formDataToSubmit.append("password", formData.password);
@@ -125,9 +113,7 @@ const Salon = () => {
       //@ts-ignore
       setFormData({
         salonName: "",
-        ownerName: "",
         about: "",
-        ownerContactEmail: "",
         contactNumber: "",
         email: "",
         password: "",
@@ -178,12 +164,6 @@ const Salon = () => {
         </div>
         {[
           { label: "Salon Name", name: "salonName", type: "text" },
-          { label: "Owner Name", name: "ownerName", type: "text" },
-          {
-            label: "Owner Contact Email",
-            name: "ownerContactEmail",
-            type: "email",
-          },
           { label: "Email", name: "email", type: "email" },
           { label: "Password", name: "password", type: "password" },
           { label: "Contact Number", name: "contactNumber", type: "number" },
