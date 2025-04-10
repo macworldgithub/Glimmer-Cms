@@ -168,8 +168,8 @@ const Salon = () => {
           { label: "Password", name: "password", type: "password" },
           { label: "Contact Number", name: "contactNumber", type: "number" },
           { label: "Address", name: "address", type: "text" },
-          { label: "Opeing Hour", name: "openingHour", type: "number" },
-          { label: "Closing Hour", name: "closingHour", type: "number" },
+          { label: "Opening Hour", name: "openingHour", type: "time" },
+          { label: "Closing Hour", name: "closingHour", type: "time" },
         ].map(({ label, name, type }) => (
           <div key={name} className="flex flex-col">
             <label className="font-medium text-gray-700">{label}</label>

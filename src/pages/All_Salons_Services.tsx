@@ -12,8 +12,8 @@ interface TableData {
   address: string;
   about: string;
   contact_number: number;
-  openingHour: number;
-  closingHour: number;
+  openingHour: string;
+  closingHour: string;
 }
 
 const pageSize = 8;
