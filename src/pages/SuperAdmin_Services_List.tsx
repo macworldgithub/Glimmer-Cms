@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { approvePriceUpdate, getAllServicesForAdmin } from "../api/service/api";
+import { approvePriceUpdate, getAllServicesForAdmin, updateServiceDiscount, updateSingleServiceDiscount } from "../api/service/api";
 import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { RootState, AppDispatch } from "../store/store";
-import { Table, Tooltip } from "antd";
+import { Button, Checkbox, Input, Table, Tooltip } from "antd";
 import UpdateServiceModal from "../components/UpdateServiceModal";
 import DeleteServiceModal from "../components/DeleteServiceModal";
+import SearchBar from "../components/SearchBar";
 
 interface TableData {
   name: string;
@@ -32,6 +33,10 @@ const SuperAdmin_Services_List = () => {
   const [editedPrices, setEditedPrices] = useState<{ [key: string]: number }>(
     {}
   );
+
+  const [checkedNames, setCheckedNames] = useState({});
+  const [allChecked, setAllChecked] = useState(false);
+  const [discount, setDiscount] = useState<number>(0);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -76,14 +81,86 @@ const SuperAdmin_Services_List = () => {
     setIsDeleteModalVisible(true);
   };
 
+  const handleUpdateDiscount = async () => {
+    const selectedProductIds = Object.keys(checkedNames).filter(
+      (id) => checkedNames[id]
+    );
+    if (selectedProductIds.length === 0) {
+      alert("Please select at least one service to update.");
+      return;
+    }
+
+    if (discount <= 0) {
+      alert("Please enter a valid discount greater than 0.");
+      return;
+    }
+
+    try {
+      if (selectedProductIds.length === 1) {
+        await dispatch(
+          updateSingleServiceDiscount({
+            discountPercentage: discount,
+            id: selectedProductIds[0],
+          })
+        ).unwrap();
+        alert("Discount updated successfully for the selected service!");
+      } else {
+        await dispatch(
+          updateServiceDiscount({
+            discountPercentage: discount,
+            id: selectedProductIds,
+          })
+        ).unwrap();
+        alert("Services discount updated successfully!");
+      }
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating prices:", error);
+      alert("Failed to update product prices.");
+    }
+  };
+
   const salonServiceList = useMemo(() => {
     return Array.isArray(serviceList)
       ? {
-          services: serviceList,
-          total: serviceList.length,
-        }
+        services: serviceList,
+        total: serviceList.length,
+      }
       : serviceList || { services: [], total: 0 };
   }, [serviceList]);
+
+  useEffect(() => {
+    if (!Array.isArray(serviceList)) return;
+
+    setCheckedNames((prev) => {
+      const newCheckedState = { ...prev };
+      serviceList.forEach((salon) => {
+        if (!(salon._id in newCheckedState)) {
+          newCheckedState[salon._id] = false;
+        }
+      });
+      return newCheckedState;
+    });
+  }, [serviceList]);
+
+  const handleCheck = (serviceId) => {
+    setCheckedNames((prev) => ({ ...prev, [serviceId]: !prev[serviceId] }));
+  };
+
+  const handleCheckAll = () => {
+    const newChecked = !allChecked;
+    setAllChecked(newChecked);
+
+    const services = salonServiceList.services || [];
+
+    setCheckedNames((prev) => {
+      const updatedChecked = { ...prev };
+      services.forEach((salon) => {
+        updatedChecked[salon._id] = newChecked;
+      });
+      return updatedChecked;
+    });
+  };
 
   const filteredServices = salonServiceList.services.filter((salon) => {
     const categoryId = salon.categoryId ? salon.categoryId.trim() : "";
@@ -103,6 +180,19 @@ const SuperAdmin_Services_List = () => {
     );
   });
 
+  const handleSearch = (newFilters: {
+    categoryId?: string;
+    subCategoryName?: string;
+    subSubCategoryName?: string;
+  }) => {
+    setSearchParams({
+      page: "1",
+      categoryId: newFilters.categoryId || "",
+      subCategoryName: newFilters.subCategoryName || "",
+      subSubCategoryName: newFilters.subSubCategoryName || "",
+    });
+  };
+
   const handlePriceChange = (id: string, value: string) => {
     setEditedPrices((prev) => ({ ...prev, [id]: Number(value) }));
   };
@@ -115,14 +205,28 @@ const SuperAdmin_Services_List = () => {
     alert("Requested Price is set by Admin successfully");
     setTimeout(() => {
       window.location.reload();
-    }, 1000); 
+    }, 1000);
   };
 
   const columns = [
     {
-      title: "Name",
+      title: (
+        <Checkbox onChange={handleCheckAll} checked={allChecked}>
+          Name
+        </Checkbox>
+      ),
       dataIndex: "name",
       key: "name",
+      render: (_: any, record: any) => {
+        return (
+          <Checkbox
+            onChange={() => handleCheck(record._id)}
+            checked={checkedNames[record._id] || false}
+          >
+            {record.name}
+          </Checkbox>
+        );
+      },
     },
     { title: "Category Id", dataIndex: "categoryId", key: "categoryId" },
     {
@@ -225,6 +329,25 @@ const SuperAdmin_Services_List = () => {
   ];
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+      {/* Header Section */}
+      <div className="p-4 text-lg font-semibold text-gray-800 border-b">
+        Salon Service List
+      </div>
+
+      {/* SearchBar */}
+      <SearchBar onSearch={handleSearch} showCategories={false} />
+      <div className="flex flex-wrap gap-4 py-4">
+        <Input
+          id="discount"
+          type="number"
+          placeholder="Flat Discount"
+          onChange={(e) => setDiscount(parseFloat(e.target.value))}
+          className="w-1/3"
+        />
+        <Button type="primary" onClick={handleUpdateDiscount}>
+          Apply Discount
+        </Button>
+      </div>
       {selectedSalon && (
         <UpdateServiceModal
           visible={isModalVisible}
