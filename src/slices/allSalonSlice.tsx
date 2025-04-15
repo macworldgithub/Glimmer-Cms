@@ -3,7 +3,7 @@ import { getAllProducts, updateProductApi } from "../api/products/api";
 import { getAllServicesForAdmin, getAllServicesForSalon, updateSalonServiceApi } from "../api/service/api";
 
 interface Salon {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   duration: number;
@@ -48,7 +48,7 @@ const allSalonSlice = createSlice({
     builder.addCase(updateSalonServiceApi.fulfilled, (state, action) => {
       const updatedSalon = action.payload; // Assuming API returns the updated product
       state.salons = state.salons.map((salon) =>
-        salon.id === updatedSalon.id ? updatedSalon : salon
+        salon._id === updatedSalon.id ? updatedSalon : salon
       );
       alert("Record Updated");
     });
