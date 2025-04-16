@@ -94,6 +94,33 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
     }
   }, [selectedSubservice.name, subservices]);
 
+  useEffect(() => {
+    if (visible && salon) {
+      const matchedService = services.find(s => s._id === salon.categoryId);
+      setSelectedService({
+        _id: salon.categoryId,
+        category: matchedService ? matchedService.category : "",
+      });
+
+      setSelectedSubservice({
+        _id: "",
+        name: salon.subCategoryName,
+      });
+
+      setSelectedProduct({
+        _id: "",
+        name: salon.subSubCategoryName,
+      });
+
+      form.setFieldsValue({
+        categoryId: salon.categoryId,
+        categoryName: matchedService ? matchedService.category : "",
+        subCategoryName: salon.subCategoryName,
+        subSubCategoryName: salon.subSubCategoryName,
+      });
+    }
+  }, [visible, salon, services]);
+
   const fetchServices = async () => {
     try {
       const data = await getAllServices();
@@ -160,18 +187,17 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
   }, []);
 
   const handleUpload = (file, key) => {
-    console.log("lelee", key);
     setPictures((prev) => ({
       ...prev,
       [key]: file,
     }));
-    return false; // Prevent default upload behavior
+    return false;
   };
 
   const handleDelete = (key) => {
     setPictures((prev) => ({
       ...prev,
-      [key]: "", // Set to null or remove the key
+      [key]: "",
     }));
   };
 
@@ -194,13 +220,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
       form.getFieldValue("subSubCategoryName")
     );
 
-    // Append images (check if file or URL)
     Object.entries(pictures).forEach(([key, value]) => {
-      // if (value instanceof File) {
-      //   formData.append(key, value);
-      // } else if (typeof value === "string") {
-      //   formData.append(key, value); // Send image URL directly
-      // }
       //@ts-ignore
       formData.append(key, value);
     });
@@ -211,7 +231,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Add Bearer token
+            Authorization: `Bearer ${token}`,
             "Content-Type": "multipart/form-data",
           },
         }
@@ -219,8 +239,8 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
       //@ts-ignore
       dispatch(getAllServicesForSalon({ page_no: page }));
       alert("Service Updated successfully!");
-      onClose(); 
-      window.location.reload(); 
+      onClose();
+      window.location.reload();
     } catch (error) {
       message.error("Failed to submit product.");
       console.error(error);
@@ -254,8 +274,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
       onOk={handleSave}
       okText="Save"
       cancelText="Cancel"
-      //   style={{ width: "1000px", maxWidth: "100%", height: "80vh", top: "10px" }} // Customize modal size and positioning
-      bodyStyle={{ width: "480px" }} //
+      bodyStyle={{ width: "480px" }}
     >
       <Form
         form={form}
@@ -279,8 +298,8 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
         }}
       >
         <Form.Item label="Service" name="categoryName">
-          <select onChange={handleSelectService}>
-            <option value="" disabled selected>
+          <select value={selectedService._id} onChange={handleSelectService}>
+            <option value="" disabled>
               Select Service
             </option>
             {services.map((service) => (
@@ -297,10 +316,11 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
 
         <Form.Item label="Sub Service" name="subCategoryName">
           <select
+            value={selectedSubservice.name}
             onChange={handleSelectSubservice}
             disabled={!selectedService._id}
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               Select Gender
             </option>
             {Object.keys(subservices).map((category) => (
@@ -313,10 +333,11 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
 
         <Form.Item label="Product" name="subSubCategoryName">
           <select
+            value={selectedProduct.name}
             onChange={handleSelectProduct}
             disabled={!selectedSubservice.name}
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               Select Sub Service
             </option>
             {productItems.map((product, index) => (
@@ -386,12 +407,12 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
             Final Price:{" "}
             <span className="font-semibold text-black">${finalPrice}</span>
           </p>
-          {/* Tooltip for restriction */}
 
           <div className="absolute top-2 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded-md shadow-md">
             Managed by Super Admin
           </div>
         </div>
+
         <Form.Item
           label="Status"
           name="status"
