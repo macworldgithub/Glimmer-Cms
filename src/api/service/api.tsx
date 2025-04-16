@@ -686,3 +686,28 @@ export const changeActivationStatus = createAsyncThunk(
     }
   }
 );
+
+export const getAllProducts = async (
+  category?: string,
+  subcategory?: string,
+  item?: string,
+  page?: number
+) => {
+  try {
+    // Start building the URL with the base endpoint
+    let url = `${BACKEND_URL}/product/get_all_products?page_no=${page || 1}`;
+
+    // Add filters to the URL only if they are provided
+    if (category) url += `&category=${category}`;
+    if (subcategory) url += `&sub_category=${subcategory}`;
+    if (item) url += `&item=${item}`;
+
+    // Make the API request with the dynamically constructed URL
+    const res = await axios.get(url);
+
+    return res.data; // Return the response data
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw error; // Throw error to handle it in the calling function
+  }
+};
