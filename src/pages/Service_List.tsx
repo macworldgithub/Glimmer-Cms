@@ -36,7 +36,6 @@ const ServiceList = () => {
   const role = useSelector((state: RootState) => state.Login.role);
 
   const [selectedSalon, setSelectedSalon] = useState<TableData | null>(null);
-  console.log(selectedSalon);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [checkedNames, setCheckedNames] = useState({});
@@ -47,7 +46,6 @@ const ServiceList = () => {
   );
   const [confirmVisible, setConfirmVisible] = useState(false);
   const [selectedStatusRecord, setSelectedStatusRecord] = useState<TableData | null>(null);
-  console.log(selectedStatusRecord)
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -77,18 +75,11 @@ const ServiceList = () => {
   ]);
 
   const serviceList = useSelector((state: RootState) => state.AllSalon.salons);
-  const handleCheck = (productId) => {
-    setCheckedNames((prev) => ({ ...prev, [productId]: !prev[productId] }));
-  };
 
-  const handleCheckAll = () => {
-    setAllChecked(!allChecked);
-  };
   const handleUpdateDiscount = async () => {
     const selectedProductIds = Object.keys(checkedNames).filter(
       (id) => checkedNames[id]
     );
-    console.log(selectedProductIds);
     if (selectedProductIds.length === 0) {
       alert("Please select at least one service to update.");
       return;
@@ -132,6 +123,39 @@ const ServiceList = () => {
       }
       : serviceList || { services: [], total: 0 };
   }, [serviceList]);
+
+  useEffect(() => {
+    if (!Array.isArray(serviceList)) return;
+
+    setCheckedNames((prev) => {
+      const newCheckedState = { ...prev };
+      serviceList.forEach((salon) => {
+        if (!(salon._id in newCheckedState)) {
+          newCheckedState[salon._id] = false;
+        }
+      });
+      return newCheckedState;
+    });
+  }, [serviceList]);
+
+  const handleCheck = (serviceId) => {
+    setCheckedNames((prev) => ({ ...prev, [serviceId]: !prev[serviceId] }));
+  };
+
+  const handleCheckAll = () => {
+    const newChecked = !allChecked;
+    setAllChecked(newChecked);
+  
+    const services = salonServiceList.services || [];
+  
+    setCheckedNames((prev) => {
+      const updatedChecked = { ...prev };
+      services.forEach((salon) => {
+        updatedChecked[salon._id] = newChecked;
+      });
+      return updatedChecked;
+    });
+  };
 
   const filteredServices = salonServiceList.services.filter((salon) => {
     const categoryId = salon.categoryId ? salon.categoryId.trim() : "";
@@ -191,16 +215,15 @@ const ServiceList = () => {
 
   const handleStatusToggle = async () => {
     if (!selectedStatusRecord) return;
-  
+
     try {
       const resultAction = await dispatch(
         changeActivationStatus({ id: selectedStatusRecord._id })
       );
-  
+
       if (changeActivationStatus.fulfilled.match(resultAction)) {
         message.success(
-          `Service marked as ${
-            selectedStatusRecord.status ? "Inactive" : "Active"
+          `Service marked as ${selectedStatusRecord.status ? "Inactive" : "Active"
           }`
         );
         setConfirmVisible(false);
@@ -224,15 +247,16 @@ const ServiceList = () => {
       ),
       dataIndex: "name",
       key: "name",
-      render: (text, record) => (
-        <div className="flex items-center">
+      render: (_: any, record: any) => {
+        return (
           <Checkbox
             onChange={() => handleCheck(record._id)}
             checked={checkedNames[record._id] || false}
-          />
-          <span className="ml-2">{text}</span>
-        </div>
-      ),
+          >
+            {record.name}
+          </Checkbox>
+        );
+      },
     },
     { title: "Category Id", dataIndex: "categoryId", key: "categoryId" },
     {

@@ -165,15 +165,7 @@ export const addSalonApi = createAsyncThunk(
 
 export const getAllServicesForSalon = createAsyncThunk(
   "getAllServicesForSalon",
-  async (
-    payload: {
-      page_no: number;
-      categoryId: string;
-      subCategoryName: string;
-      subSubCategoryName?: string;
-    },
-    { rejectWithValue, getState }
-  ) => {
+  async (params: GetSalonBookingsParams, { rejectWithValue, getState }) => {
     try {
       // Access token from the Redux state
       const state = getState() as RootState;
@@ -181,10 +173,22 @@ export const getAllServicesForSalon = createAsyncThunk(
 
       // Make API request with page number as a query parameter
       const response = await axios.get(
-        `${BACKEND_URL}/salon-services/getAllServicesForSalon?page_no=${payload.page_no}&categoryId=${payload.categoryId}&subCategoryName=${payload.subCategoryName}&subSubCategoryName=${payload.subSubCategoryName}`,
+        `${BACKEND_URL}/salon-services/getAllServicesForSalon`,
         {
+          params: {
+            page: params.page_no,
+            limit: 8,
+            ...(params.status && { status: params.status }),
+            ...(params.categoryId && { categoryId: params.categoryId }),
+            ...(params.subCategoryName && {
+              subCategoryName: params.subCategoryName,
+            }),
+            ...(params.subSubCategoryName && {
+              subSubCategoryName: params.subSubCategoryName,
+            }),
+          },
           headers: {
-            Authorization: `Bearer ${token}`, // Add Bearer token
+            Authorization: `Bearer ${token}`,
           },
         }
       );

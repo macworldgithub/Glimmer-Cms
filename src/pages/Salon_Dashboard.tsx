@@ -109,7 +109,7 @@ const Dashboard = () => {
   return (
     <div className="w-full min-h-screen bg-gray-100 p-6 space-y-6">
       <div className="flex flex-wrap xl:space-x-4 xl:flex-nowrap">
-        <div className="xl:w-2/5 w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="xl:w-[790px] w-full grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Bookings Summary Card */}
           <div className="bg-white shadow-md p-4 rounded-md relative w-full max-w-sm mx-auto">
             <div className="flex items-center space-x-3">
@@ -126,7 +126,7 @@ const Dashboard = () => {
                   key={id}
                   className="p-3 bg-gray-100 rounded-md text-center flex flex-col items-center"
                 >
-                  <p className="text-gray-500 text-xs sm:text-sm truncate w-full">
+                  <p className="text-gray-500 text-xs sm:text-sm truncate w-[99vw]">
                     {status}
                   </p>
                   <h3 className="text-lg font-semibold">
@@ -148,7 +148,7 @@ const Dashboard = () => {
       </div>
 
       {/* Earning Section */}
-      <div className="flex gap-2 max-sm:flex-col p-6">
+      <div className="flex gap-2 max-sm:flex-col">
         <div className="w-1/2 max-sm:w-full bg-white shadow-md p-4 rounded-md">
           <div>
             <img src={revenue} alt="" />
