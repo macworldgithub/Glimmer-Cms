@@ -711,3 +711,19 @@ export const getAllProducts = async (
     throw error; // Throw error to handle it in the calling function
   }
 };
+
+export const addRecommendedProduct = async (
+  salonId: string,
+  productId: string
+) => {
+  try {
+    const url = `${BACKEND_URL}/admin/add-recommended-products/${salonId}`;
+
+    const res = await axios.post(url, { productId });
+
+    return res.data; // Return the response data
+  } catch (error) {
+    console.error("Error adding recommended product:", error);
+    throw error; // Propagate error for handling in the calling function
+  }
+};

@@ -1,13 +1,14 @@
 import { Button, Input, Modal, Table, message } from 'antd';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getAllProducts, getAllSalons } from '../api/service/api';
+import { addRecommendedProduct, getAllProducts, getAllSalons } from '../api/service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { getAllCategories, getAllProductItem, getAllSubcategories } from '../api/category/api';
 
 
 interface TableData {
+  _id: string;
   salon_name: string;
   email: string;
   address: string;
@@ -54,6 +55,7 @@ const All_Salons_Services = () => {
     name: "",
   });
   const [selectedProducts, setSelectedProducts] = useState({ _id: "", name: "" });
+  const [selectedSalonId, setSelectedSalonId] = useState<string | null>(null);
 
   const [relatedProducts, setRelatedProducts] = useState<ProductOption[]>([]);
   const [selectedRelatedProducts, setSelectedRelatedProducts] = useState<ProductOption[]>([]);
@@ -224,19 +226,9 @@ const All_Salons_Services = () => {
 
   const handleUpdate = (record: TableData) => {
     console.log(record);
-    setRecommendedProducts([{ _id: '', name: '', image1: '' }]);
+    setSelectedSalonId(record._id); 
+    setRecommendedProducts([]); 
     setIsModalVisible(true);
-  };
-
-  const handleAddProduct = () => {
-    if (recommendedProducts.length < 10) {
-      setRecommendedProducts([...recommendedProducts, { _id: '', name: '', image1: '' }]);
-    }
-  };
-
-  const handleRemoveProduct = (index: number) => {
-    const updated = recommendedProducts.filter((_, i) => i !== index);
-    setRecommendedProducts(updated.length ? updated : [{ _id: '', name: '', image1: '' }]);
   };
 
   const handleDropdownClick = (index: number) => {
@@ -251,6 +243,49 @@ const All_Salons_Services = () => {
     setIsDropdownModalVisible(true);
   };
 
+  const handleAddProduct = () => {
+    if (recommendedProducts.length < 10) {
+      setRecommendedProducts([...recommendedProducts, { _id: '', name: '', image1: '' }]);
+    }
+  };
+
+  const handleRemoveProduct = (index: number) => {
+    const updated = recommendedProducts.filter((_, i) => i !== index);
+    setRecommendedProducts(updated.length ? updated : [{ _id: '', name: '', image1: '' }]);
+  };
+
+  const handleAddProductForSalon = async () => {
+    const validProducts = recommendedProducts.filter(
+      (product) => product._id && product.name
+    );
+  
+    if (!selectedSalonId) {
+      message.error("Salon ID not found.");
+      return;
+    }
+  
+    if (validProducts.length === 0) {
+      message.warning("Please select at least one product.");
+      return;
+    }
+  
+    try {
+      await Promise.all(
+        validProducts.map((product) =>
+          addRecommendedProduct(selectedSalonId, product._id)
+        )
+      );
+  
+      message.success("Products successfully added to the salon!");
+      setIsModalVisible(false);
+      setRecommendedProducts([]); // Optionally reset
+      setSelectedSalonId(null);   // Reset for safety
+    } catch (error) {
+      message.error("Failed to add recommended products. Please try again.");
+    }
+  };
+  
+  
   // const handleDelete = (record: TableData) => {
   //   setSelectedSalon(record);
   //   setIsDeleteModalVisible(true);
@@ -386,7 +421,7 @@ const All_Salons_Services = () => {
                 )}
               </div>
                 <div className='flex justify-center'>
-                  <Button>Add to Salon</Button>
+                  <Button onClick={handleAddProductForSalon}>Add to Salon</Button>
                 </div>
               </>
             );
