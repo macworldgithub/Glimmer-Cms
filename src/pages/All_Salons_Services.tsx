@@ -17,6 +17,12 @@ interface TableData {
   closingHour: string;
 }
 
+interface ProductOption {
+  _id: string;
+  name: string;
+  image1: string;
+}
+
 const pageSize = 8;
 
 const All_Salons_Services = () => {
@@ -29,9 +35,8 @@ const All_Salons_Services = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDropdownModalVisible, setIsDropdownModalVisible] = useState(false);
-  const [recommendedProducts, setRecommendedProducts] = useState<string[]>(['']);
+  const [recommendedProducts, setRecommendedProducts] = useState<ProductOption[]>([]);
   const [activeProductIndex, setActiveProductIndex] = useState<number | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<string | undefined>();
 
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -50,8 +55,8 @@ const All_Salons_Services = () => {
   });
   const [selectedProducts, setSelectedProducts] = useState({ _id: "", name: "" });
 
-  const [relatedProducts, setRelatedProducts] = useState<string[]>([]);
-  const [selectedRelatedProducts, setSelectedRelatedProducts] = useState<string[]>([]);
+  const [relatedProducts, setRelatedProducts] = useState<ProductOption[]>([]);
+  const [selectedRelatedProducts, setSelectedRelatedProducts] = useState<ProductOption[]>([]);
   console.log(selectedRelatedProducts)
 
   // const role = useSelector((state: RootState) => state.Login.role);
@@ -137,8 +142,13 @@ const All_Salons_Services = () => {
         selectedSubcategory._id,
         id
       );
+      console.log(response);
+      const products = response?.products?.map((p) => ({
+        _id: p._id,
+        name: p.name,
+        image1: p.image1,
+      })) || [];
 
-      const products = response?.products?.map((p) => p.name) || [];
       setRelatedProducts(products);
       setSelectedRelatedProducts([]);
     } catch (err) {
@@ -152,7 +162,6 @@ const All_Salons_Services = () => {
     );
     setFilterSubcategory(filteredSubCategories);
 
-    console.log("checkk", selectedCategory);
   }, [selectedCategory._id]);
 
   useEffect(() => {
@@ -183,17 +192,23 @@ const All_Salons_Services = () => {
   const handleConfirmProductSelection = () => {
     if (selectedRelatedProducts.length === 0) return;
 
-    // Calculate how many we can add
-    const availableSlots = 10 - recommendedProducts.length;
+    // Remove placeholder entries (like Select Product)
+    const cleanedExisting = recommendedProducts.filter(
+      (prod) => prod._id && prod.name
+    );
+
+    // Determine how many new products can be added
+    const availableSlots = 10 - cleanedExisting.length;
+
     const productsToAdd = selectedRelatedProducts.slice(0, availableSlots);
 
-    const updated = [...recommendedProducts, ...productsToAdd];
+    const updated = [...cleanedExisting, ...productsToAdd];
 
     setRecommendedProducts(updated);
     setIsDropdownModalVisible(false);
     setActiveProductIndex(null);
 
-    // Clear state
+    // Clear modal state
     setSelectedCategory({ _id: "", name: "" });
     setSelectedSubcategory({ _id: "", name: "" });
     setSelectedProducts({ _id: "", name: "" });
@@ -202,30 +217,37 @@ const All_Salons_Services = () => {
   };
 
 
+
   const handlePageChange = (page: number) => {
     navigate(`?page_no=${page}`);
   };
 
   const handleUpdate = (record: TableData) => {
     console.log(record);
-    setRecommendedProducts(['']); // Reset
+    setRecommendedProducts([{ _id: '', name: '', image1: '' }]);
     setIsModalVisible(true);
   };
 
   const handleAddProduct = () => {
     if (recommendedProducts.length < 10) {
-      setRecommendedProducts([...recommendedProducts, '']);
+      setRecommendedProducts([...recommendedProducts, { _id: '', name: '', image1: '' }]);
     }
   };
 
   const handleRemoveProduct = (index: number) => {
     const updated = recommendedProducts.filter((_, i) => i !== index);
-    setRecommendedProducts(updated.length ? updated : ['']);
+    setRecommendedProducts(updated.length ? updated : [{ _id: '', name: '', image1: '' }]);
+  };
+
+  const handleDropdownClick = (index: number) => {
+    if (!recommendedProducts[index]?.name) {
+      openDropdownModal(index);
+    }
   };
 
   const openDropdownModal = (index: number) => {
     setActiveProductIndex(index);
-    setSelectedProduct(recommendedProducts[index] || undefined);
+    setSelectedProducts(recommendedProducts[index] || undefined);
     setIsDropdownModalVisible(true);
   };
 
@@ -331,20 +353,6 @@ const All_Salons_Services = () => {
         footer={null}
       >
         <div className="space-y-3">
-          {recommendedProducts.map((product, index) => (
-            <div key={index} className="flex items-center gap-4">
-              <Button
-                onClick={() => openDropdownModal(index)}
-                className="flex-1 text-left border border-gray-300"
-              >
-                {product ? product : 'Select Product'}
-              </Button>
-              <Button danger onClick={() => handleRemoveProduct(index)}>
-                Remove
-              </Button>
-            </div>
-          ))}
-
           <Button
             onClick={handleAddProduct}
             disabled={recommendedProducts.length >= 10}
@@ -352,6 +360,37 @@ const All_Salons_Services = () => {
           >
             Add Recommended Product
           </Button>
+          {recommendedProducts.map((product, index) => {
+            console.log('Rendering product:', product);
+            return (
+              <><div key={index} className="flex items-center gap-4">
+                <Button
+                  onClick={() => handleDropdownClick(index)}
+                  className="flex-1 text-left border border-gray-300 cursor-default"
+                >
+
+                  <div className="flex items-center gap-2">
+                    {product.image1 && (
+                      <img
+                        src={product.image1}
+                        alt={product.name}
+                        className="w-6 h-6 object-cover rounded" />
+                    )}
+                    {product?.name || 'Select Product'}
+                  </div>
+                </Button>
+                {product.name && (
+                  <Button danger onClick={() => handleRemoveProduct(index)}>
+                    Remove
+                  </Button>
+                )}
+              </div>
+                <div className='flex justify-center'>
+                  <Button>Add to Salon</Button>
+                </div>
+              </>
+            );
+          })}
         </div>
       </Modal>
 
@@ -420,30 +459,27 @@ const All_Salons_Services = () => {
             </select>
           </label>
 
-          {relatedProducts.length > 0 && (
-            <div>
-              <h4 className="font-semibold">Select Related Products:</h4>
-              <div className="flex flex-col gap-2">
-                {relatedProducts.map((prod, i) => (
-                  <label key={i} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedRelatedProducts.includes(prod)}
-                      onChange={() => {
-                        const isSelected = selectedRelatedProducts.includes(prod);
-                        if (isSelected) {
-                          setSelectedRelatedProducts(prev => prev.filter(p => p !== prod));
-                        } else {
-                          setSelectedRelatedProducts(prev => [...prev, prod]);
-                        }
-                      }}
-                    />
-                    {prod}
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
+          {relatedProducts.map((prod, i) => {
+            const isSelected = selectedRelatedProducts.some(p => p._id === prod._id);
+            return (
+              <label key={prod._id} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => {
+                    const isSelected = selectedRelatedProducts.some(p => p._id === prod._id);
+                    if (isSelected) {
+                      setSelectedRelatedProducts(prev => prev.filter(p => p._id !== prod._id));
+                    } else {
+                      setSelectedRelatedProducts(prev => [...prev, prod]);
+                    }
+                  }}
+                />
+                {prod.name}
+              </label>
+            );
+          })}
+
         </div>
       </Modal>
 
