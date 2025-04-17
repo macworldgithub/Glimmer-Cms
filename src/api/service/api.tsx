@@ -727,11 +727,23 @@ export const addRecommendedProduct = async (
   }
 };
 
-export const getAllRecommendedProducts = createAsyncThunk(
+export const getAllRecommendedProductsForSalon = createAsyncThunk(
   "admin/recommended-products",
   async (salonId: string, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch salons");
+    }
+  }
+);
+
+export const getAllRecommendedProducts = createAsyncThunk(
+  "admin/recommended-products",
+  async (salonId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/admin/recommended-products?salonId=${salonId}`);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Failed to fetch salons");
@@ -761,3 +773,54 @@ export const createSaleRecordForSalonCut = async (
     throw error; // Propagate error for handling in the calling function
   }
 };
+
+export const updateRateOfSalon = createAsyncThunk(
+  "update_rate_of_salon",
+  async (
+    { salonId, newRate }: { salonId: string; newRate: number },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/admin/update-rate-of-salon/${salonId}`,
+        { newRate },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update rate");
+    }
+  }
+);
+
+export const deleteRecommendedProductOfSalon = async (
+  salonId: string,
+  productId: string
+) => {
+  try {
+    const response = await axios.delete(
+      `${BACKEND_URL}/admin/delete-recommended-products-of-salon/${salonId}/${productId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data; 
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data);
+    }
+    throw new Error("An error occurred");
+  }
+};
+
+

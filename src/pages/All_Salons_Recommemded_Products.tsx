@@ -1,20 +1,9 @@
 import { Table, message } from 'antd';
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getAllSalons } from '../api/service/api';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store/store';
-
-
-interface TableData {
-  salon_name: string;
-  email: string;
-  address: string;
-  about: string;
-  contact_number: number;
-  openingHour: string;
-  closingHour: string;
-}
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/store';
 
 const pageSize = 8;
 

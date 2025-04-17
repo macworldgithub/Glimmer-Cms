@@ -1,7 +1,7 @@
 import { Button, Input, Modal, Table, message } from 'antd';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { addRecommendedProduct, getAllProducts, getAllRecommendedProducts, getAllSalons } from '../api/service/api';
+import { addRecommendedProduct, getAllProducts, getAllRecommendedProductsForSalon, getAllSalons } from '../api/service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { getAllCategories, getAllProductItem, getAllSubcategories } from '../api/category/api';
@@ -235,7 +235,7 @@ const All_Salons_Services = () => {
       // Now load new salon's data
       setSelectedSalonId(record._id);
   
-      const res: any = await dispatch(getAllRecommendedProducts(record._id));
+      const res: any = await dispatch(getAllRecommendedProductsForSalon(record._id));
       if (res.payload && Array.isArray(res.payload)) {
         const mapped = res.payload.map((product: any) => ({
           _id: product._id,
