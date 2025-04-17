@@ -1,4 +1,4 @@
-import { Table, Modal, InputNumber, message } from 'antd';
+import { Table, Modal, InputNumber, message, Space, Button, Row, Col } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +14,7 @@ interface TableData {
   quantity: number | string;
   price: number | string;
   salonCut: number | string;
+  saleRecords: { soldAt: string, quantity: number, price: number, salonCut: number }[]; // Add saleRecords to store sales data
 }
 
 const pageSize = 10;
@@ -30,13 +31,14 @@ const Recommemded_Products = () => {
   const [data, setData] = useState<TableData[]>([]);
   const [total, setTotal] = useState(0);
 
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSalonId, setSelectedSalonId] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
-
   const [newRate, setNewRate] = useState<number | null>(null);
+
+  const [isDetailsModalVisible, setIsDetailsModalVisible] = useState(false);
+  const [selectedSaleRecords, setSelectedSaleRecords] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,6 +54,7 @@ const Recommemded_Products = () => {
               quantity: firstSale.quantity || '-',
               price: firstSale.price || '-',
               salonCut: firstSale.salonCut || '-',
+              saleRecords: product.saleRecords || []  // Store the saleRecords for later use
             };
           })
         );
@@ -72,17 +75,13 @@ const Recommemded_Products = () => {
   };
 
   const handleDelete = (productId: string) => {
-    console.log(salonId);
-    console.log(productId)
     setSelectedSalonId(salonId);
     setSelectedProductId(productId);
     setIsModalVisible(true); // Open the modal
   };
 
   const handleModalOk = async () => {
-    console.log("111")
     if (selectedSalonId && selectedProductId) {
-      console.log("222")
       try {
         await deleteRecommendedProductOfSalon(selectedSalonId, selectedProductId);
         message.success('Product deleted successfully!');
@@ -115,6 +114,15 @@ const Recommemded_Products = () => {
     }
   };
 
+  const handleViewDetails = (record: TableData) => {
+    setSelectedSaleRecords(record.saleRecords);
+    setIsDetailsModalVisible(true);
+  };
+
+  const handleDetailsModalCancel = () => {
+    setIsDetailsModalVisible(false);
+  };
+
   const columns = useMemo(() => [
     {
       title: 'Product Id',
@@ -132,11 +140,6 @@ const Recommemded_Products = () => {
       key: 'quantity',
     },
     {
-      title: 'Total Revenue',
-      dataIndex: 'price',
-      key: 'price',
-    },
-    {
       title: 'Rate',
       dataIndex: 'rate',
       key: 'rate',
@@ -150,23 +153,23 @@ const Recommemded_Products = () => {
       title: "Actions",
       key: "actions",
       render: (_: any, record: TableData) => (
-        <div className="flex space-x-2">
-          <button onClick={() => handleUpdate(record)} className="text-blue-500 hover:underline">
+        <Space>
+          <Button type="primary" onClick={() => handleViewDetails(record)}>
+            View Details
+          </Button>
+          <Button onClick={() => handleUpdate(record)} className="text-blue-500 hover:underline">
             Update
-          </button>
+          </Button>
           {role === "super_admin" && (
-            <button
-              onClick={() => {
-                console.log('Delete button clicked for record:', record); 
-                handleDelete(record.productId); 
-              }}
+            <Button
+              onClick={() => handleDelete(record.productId)}
               className="text-red-500 hover:underline"
             >
               Delete
-            </button>
+            </Button>
           )}
-        </div>
-      ),      
+        </Space>
+      ),
     },
   ], [role]);
 
@@ -204,15 +207,62 @@ const Recommemded_Products = () => {
           onChange={(value) => setNewRate(value)}
         />
       </Modal>
-       <Modal
+
+      <Modal
         title="Confirm Deletion"
         visible={isModalVisible}
-        onOk={handleModalOk} 
-        onCancel={handleModalCancel} 
+        onOk={handleModalOk}
+        onCancel={handleModalCancel}
         okText="Yes"
         cancelText="No"
       >
         <p>Are you sure you want to delete this recommended product for this salon?</p>
+      </Modal>
+
+      {/* Modal for Viewing Sale Records */}
+      <Modal
+        title="Sale Records"
+        visible={isDetailsModalVisible}
+        onCancel={handleDetailsModalCancel}
+        footer={null}
+        width={800}
+      >
+        <div className="space-y-4">
+          <Row gutter={[16, 16]} className="border-b pb-2 mb-2">
+            <Col span={6}><strong>Sold At</strong></Col>
+            <Col span={6}><strong>Quantity</strong></Col>
+            <Col span={6}><strong>Price</strong></Col>
+            <Col span={6}><strong>Salon Cut</strong></Col>
+          </Row>
+
+          {selectedSaleRecords.length > 0 ? (
+            selectedSaleRecords.map((record, index) => (
+              <div
+                key={index}
+                className="p-4 rounded-lg border border-gray-200 hover:shadow transition duration-200"
+                style={{ backgroundColor: "#fafafa" }}
+              >
+                <Row gutter={[16, 16]}>
+                  <Col span={6}>
+                    <div className="text-gray-700">{new Date(record.soldAt).toLocaleString()}</div>
+                  </Col>
+                  <Col span={6}>
+                    <div className="text-gray-700">{record.quantity}</div>
+                  </Col>
+                  <Col span={6}>
+                    <div className="text-gray-700">{record.price}</div>
+                  </Col>
+                  <Col span={6}>
+                    <div className="text-gray-700">{record.salonCut}%</div>
+                  </Col>
+                </Row>
+              </div>
+            ))
+          ) : (
+            <div className="text-gray-500 italic">No records found for this product.</div>
+          )}
+        </div>
+
       </Modal>
     </div>
   );
