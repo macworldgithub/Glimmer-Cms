@@ -647,10 +647,8 @@ interface GetAllSalonsResponse {
 export const getAllSalons = createAsyncThunk<GetAllSalonsResponse, number>(
   "salons/getAllSalons",
   async (page_no: number, { rejectWithValue }) => {
-    console.log(page_no);
     try {
       const response = await axios.get(`${BACKEND_URL}/salon/get-all-salon?page_no=${page_no}`);
-      console.log(response.data);
       return response.data; 
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Failed to fetch salons");
@@ -714,16 +712,52 @@ export const getAllProducts = async (
 
 export const addRecommendedProduct = async (
   salonId: string,
-  productId: string
+  productId: string,
+  productName: string,
 ) => {
   try {
     const url = `${BACKEND_URL}/admin/add-recommended-products/${salonId}`;
 
-    const res = await axios.post(url, { productId });
+    const res = await axios.post(url, { productId, productName });
 
     return res.data; // Return the response data
   } catch (error) {
     console.error("Error adding recommended product:", error);
+    throw error; // Propagate error for handling in the calling function
+  }
+};
+
+export const getAllRecommendedProducts = createAsyncThunk(
+  "admin/recommended-products",
+  async (salonId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch salons");
+    }
+  }
+);
+
+export const createSaleRecordForSalonCut = async (
+  salonId: string,
+  productId: string,
+  quantity: number,
+  price: number,
+  salonCut: number
+) => {
+  try {
+    const url = `${BACKEND_URL}/admin/create-sale-record-for-salon-cut/${salonId}/${productId}`;
+
+    const res = await axios.post(url, {
+      quantity,
+      price,
+      salonCut
+    });
+
+    return res.data; // Return the response data
+  } catch (error) {
+    console.error("Error creating sale record for salon cut:", error);
     throw error; // Propagate error for handling in the calling function
   }
 };

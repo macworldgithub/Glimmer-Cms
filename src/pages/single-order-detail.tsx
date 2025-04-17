@@ -5,6 +5,7 @@ import axios from "axios";
 import { BACKEND_URL } from "../config/server";
 import { useSelector } from "react-redux";
 import { RootState } from "../store/store";
+import { createSaleRecordForSalonCut } from "../api/service/api";
 
 const OrderDetailPage = () => {
   const location = useLocation();
@@ -105,32 +106,32 @@ const OrderDetailPage = () => {
     },
     ...(showActionColumn
       ? [
-          {
-            title: "Action",
-            key: "action",
-            render: (_, record) =>
-              record.orderProductStatus === "Pending" && (
-                <div className="space-x-5">
-                  <Button
-                    className="bg-green-500 text-white"
-                    onClick={() => handleAccept(record.key)}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    className="bg-red-500 text-white"
-                    onClick={() => handleReject(record.key)}
-                  >
-                    Reject
-                  </Button>
-                </div>
-              ),
-          },
-        ]
+        {
+          title: "Action",
+          key: "action",
+          render: (_, record) =>
+            record.orderProductStatus === "Pending" && (
+              <div className="space-x-5">
+                <Button
+                  className="bg-green-500 text-white"
+                  onClick={() => handleAccept(record.key)}
+                >
+                  Accept
+                </Button>
+                <Button
+                  className="bg-red-500 text-white"
+                  onClick={() => handleReject(record.key)}
+                >
+                  Reject
+                </Button>
+              </div>
+            ),
+        },
+      ]
       : []),
   ];
   const handleAccept = async (prodId) => {
-    const response = await axios.put(
+    await axios.put(
       `${BACKEND_URL}/order/updateProductStatus`,
       {
         order_id: order?._id,
@@ -145,13 +146,37 @@ const OrderDetailPage = () => {
       }
     );
     message.success(`Product ${prodId} has been accepted.`);
+
+    const productDetails = order.productList.find(
+      (item) => item.product._id === prodId
+    );
+
+    const salonId = productDetails.product.ref_of_salon;
+    const quantity = productDetails.quantity;
+    const price = productDetails.total_price;
+    const salonCut = productDetails.product.rate_of_salon;
+
+    console.log(productDetails);
+
+    if (salonId && salonCut !== undefined && salonCut !== null) {
+
+      try {
+        await createSaleRecordForSalonCut(salonId, prodId, quantity, price, salonCut);
+        message.success(`Sale record created for product ${prodId}.`);
+      } catch (err) {
+        message.error("Failed to create sale record.");
+      }
+    } else {
+      message.warning("Rate and Ref of Salon is missing for this product or no recommeded products found for this salon");
+    }
+
     setTimeout(() => {
       fetchData();
     }, 2000);
   };
 
   const handleReject = async (prodId) => {
-    const response = await axios.put(
+    await axios.put(
       `${BACKEND_URL}/order/updateProductStatus`,
       {
         order_id: order?._id,

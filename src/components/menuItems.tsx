@@ -91,6 +91,12 @@ export const getMenuItems = (
             },
           ],
         },
+        {
+          key: "super-admin-recommended-products",
+          icon: <DashboardOutlined />,
+          label: "Recommended Products",
+          path: "/All_Salons_Recommemded_Products",
+        },
       ]
     : []),
 

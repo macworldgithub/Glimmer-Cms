@@ -1,7 +1,7 @@
 import { Button, Input, Modal, Table, message } from 'antd';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { addRecommendedProduct, getAllProducts, getAllSalons } from '../api/service/api';
+import { addRecommendedProduct, getAllProducts, getAllRecommendedProducts, getAllSalons } from '../api/service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { getAllCategories, getAllProductItem, getAllSubcategories } from '../api/category/api';
@@ -59,7 +59,8 @@ const All_Salons_Services = () => {
 
   const [relatedProducts, setRelatedProducts] = useState<ProductOption[]>([]);
   const [selectedRelatedProducts, setSelectedRelatedProducts] = useState<ProductOption[]>([]);
-  console.log(selectedRelatedProducts)
+
+  const [fetchedRecommendedProducts, setFetchedRecommendedProducts] = useState<ProductOption[]>([]);
 
   // const role = useSelector((state: RootState) => state.Login.role);
   // console.log(role);
@@ -224,12 +225,32 @@ const All_Salons_Services = () => {
     navigate(`?page_no=${page}`);
   };
 
-  const handleUpdate = (record: TableData) => {
-    console.log(record);
-    setSelectedSalonId(record._id); 
-    setRecommendedProducts([]); 
-    setIsModalVisible(true);
-  };
+  const handleUpdate = async (record: TableData) => {
+    try {
+      setSelectedSalonId(null);
+      setFetchedRecommendedProducts([]);
+      setRecommendedProducts([]);
+      setIsModalVisible(true); // Open modal early if you want loading UX
+  
+      // Now load new salon's data
+      setSelectedSalonId(record._id);
+  
+      const res: any = await dispatch(getAllRecommendedProducts(record._id));
+      if (res.payload && Array.isArray(res.payload)) {
+        const mapped = res.payload.map((product: any) => ({
+          _id: product._id,
+          name: product.name,
+          image1: product.image1,
+        }));
+  
+        setFetchedRecommendedProducts(mapped);
+        setRecommendedProducts(mapped);
+      }
+    } catch (error) {
+      console.error("Failed to fetch saved products", error);
+      message.error("Could not load saved recommended products.");
+    }
+  };  
 
   const handleDropdownClick = (index: number) => {
     if (!recommendedProducts[index]?.name) {
@@ -255,37 +276,36 @@ const All_Salons_Services = () => {
   };
 
   const handleAddProductForSalon = async () => {
-    const validProducts = recommendedProducts.filter(
-      (product) => product._id && product.name
-    );
-  
+    const validProducts = recommendedProducts.filter((p) => p._id && p.name);
+
     if (!selectedSalonId) {
-      message.error("Salon ID not found.");
-      return;
+      return message.error("Salon ID not found.");
     }
-  
-    if (validProducts.length === 0) {
-      message.warning("Please select at least one product.");
-      return;
+
+    const newProducts = validProducts.filter(
+      (product) => !fetchedRecommendedProducts.some((fetched) => fetched._id === product._id)
+    );
+
+    if (newProducts.length === 0) {
+      return message.info("No new products to add.");
     }
-  
+
     try {
-      await Promise.all(
-        validProducts.map((product) =>
-          addRecommendedProduct(selectedSalonId, product._id)
-        )
-      );
-  
+      for (const product of newProducts) {
+        await addRecommendedProduct(selectedSalonId, product._id, product.name);
+      }
+
       message.success("Products successfully added to the salon!");
       setIsModalVisible(false);
-      setRecommendedProducts([]); // Optionally reset
-      setSelectedSalonId(null);   // Reset for safety
+      setRecommendedProducts([]);
+      setFetchedRecommendedProducts([]);
+      setSelectedSalonId(null);
     } catch (error) {
-      message.error("Failed to add recommended products. Please try again.");
+      message.error("Failed to add recommended products.");
     }
   };
-  
-  
+
+
   // const handleDelete = (record: TableData) => {
   //   setSelectedSalon(record);
   //   setIsDeleteModalVisible(true);
