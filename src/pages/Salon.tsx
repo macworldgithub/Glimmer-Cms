@@ -67,8 +67,8 @@ const Salon = () => {
     e.preventDefault();
 
     // Validate required fields
-    if (imageFiles.length === 0) {
-      alert("Please upload at least one profile image.");
+    if(imageFiles.length < 2) {
+      alert("Please upload at least two profile image.");
       return;
     }
     if (!formData.salonName.trim()) {
