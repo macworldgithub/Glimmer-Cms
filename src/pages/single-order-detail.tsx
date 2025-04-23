@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, message, Table, Tag } from "antd";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { BACKEND_URL } from "../config/server";
 import { useSelector } from "react-redux";
@@ -9,16 +9,19 @@ import { createSaleRecordForSalonCut } from "../api/service/api";
 
 const OrderDetailPage = () => {
   const location = useLocation();
+  const [searchParams] = useSearchParams(); 
   //   const order = location.state?.data;
   const [order, setOrders] = useState(location.state?.data);
   const token = useSelector((state: RootState) => state.Login.token);
   const store_id = useSelector((state: RootState) => state.Login._id);
+
+  const storeId = searchParams.get('store');
   const showActionColumn = order.productList.some(
     (item) => item.orderProductStatus === "Pending"
   );
   const fetchData = async () => {
     const response = await axios.get(
-      `${BACKEND_URL}/order/get_store_order_by_id?order_id=${location.state?.data._id}&store_id=${store_id}`,
+      `${BACKEND_URL}/order/get_store_order_by_id?order_id=${location.state?.data._id}&store_id=${store_id || storeId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -136,7 +139,7 @@ const OrderDetailPage = () => {
       {
         order_id: order?._id,
         product_id: prodId,
-        store_id: store_id,
+        store_id: store_id || storeId,
         order_product_status: "Accepted",
       },
       {
@@ -181,7 +184,7 @@ const OrderDetailPage = () => {
       {
         order_id: order?._id,
         product_id: prodId,
-        store_id: store_id,
+        store_id: store_id || storeId,
         order_product_status: "Rejected",
       },
       {

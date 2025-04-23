@@ -59,6 +59,8 @@ const ProductTableWithHeader = () => {
   const nameFilter = searchParams.get("name") || "";
   const categoryFilter = searchParams.get("category") || "";
   const createdAtFilter = searchParams.get("created_at") || "";
+  const storeId = searchParams.get("store") || "";
+  console.log(storeId);
 
   useEffect(() => {
     const fetchSelections = async () => {
@@ -103,9 +105,10 @@ const ProductTableWithHeader = () => {
         name: nameFilter,
         category: categoryFilter,
         created_at: createdAtFilter,
+        storeId,
       })
     );
-  }, [dispatch, currentPage, nameFilter, categoryFilter, createdAtFilter]);
+  }, [dispatch, currentPage, nameFilter, categoryFilter, createdAtFilter, storeId]);
 
   const rawProductList = useSelector(
     (state: RootState) => state.AllProducts.products

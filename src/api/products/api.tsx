@@ -17,23 +17,33 @@ export interface UpdateStoreApi {
 // Async thunk for signup
 export const getAllProducts = createAsyncThunk(
   "getAllProducts",
-  async (payload: { page_no: number, name: string, category: string, created_at?: string }, { rejectWithValue, getState }) => {
+  async (
+    payload: { page_no: number; name?: string; category?: string; created_at?: string; storeId: string },
+    { rejectWithValue, getState }
+  ) => {
     try {
-      // Access token from the Redux state
       const state = getState() as RootState;
       const token = state.Login.token;
 
-      // Make API request with page number as a query parameter
+      // Build query parameters dynamically
+      const params = new URLSearchParams();
+      params.append("page_no", payload.page_no.toString());
+
+      if (payload.name) params.append("name", payload.name);
+      if (payload.category) params.append("category", payload.category);
+      if (payload.created_at) params.append("created_at", payload.created_at);
+      if (payload.storeId) params.append("store", payload.storeId);
+
       const response = await axios.get(
-        `${BACKEND_URL}/product/get_all_store_products?page_no=${payload.page_no}&name=${payload.name}&category=${payload.category}&created_at=${payload.created_at}`,
+        `${BACKEND_URL}/product/get_all_store_products?${params.toString()}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Add Bearer token
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      return response.data; // Return the response data if successful
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");
     }

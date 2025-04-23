@@ -823,4 +823,41 @@ export const deleteRecommendedProductOfSalon = async (
   }
 };
 
+interface Store {
+  _id: string; 
+  store_name: string;
+  vendor_name: string;
+  description: string;
+  store_contact_email: string;
+  email: string;
+  country: string;
+  address: string;
+  store_image: string | null;
+  created_at: string; 
+}
 
+interface GetAllStoresResponse {
+  stores: Store[];
+  total: number;
+}
+export const getAllStores = createAsyncThunk<GetAllStoresResponse, number>(
+  "salons/getAllStores",
+  async (page_no: number, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.get(
+        `${BACKEND_URL}/store/get_all_stores?page_no=${page_no}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add Bearer token
+          },
+        }
+      );
+      return response.data; 
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch salons");
+    }
+  }
+);

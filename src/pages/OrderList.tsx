@@ -16,12 +16,13 @@ const OrderList = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const pageSize = 10;
   const currentPage = Number(searchParams.get("page")) || 1;
+  const storeId = searchParams.get("store") || "";
 
   const fetchData = async () => {
     try {
       console.log(`Fetching orders for page ${currentPage}`)
       const response = await axios.get(
-        `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&page_size=${pageSize}&store_id=${store_id}`,
+        `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&page_size=${pageSize}&store_id=${store_id || storeId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -87,7 +88,7 @@ const OrderList = () => {
         <Button
           type="primary"
           onClick={() =>
-            navigate(`/order-details/${record._id}`, {
+            navigate(`/order-details/${record._id}?store=${storeId}`, {
               state: { data: record },
             })
           }

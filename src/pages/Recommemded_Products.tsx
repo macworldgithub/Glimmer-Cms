@@ -50,6 +50,7 @@ const Recommemded_Products = () => {
             return {
               rate: entry.rate,
               productId: product.productId,
+              productName: product.productName,
               soldUnits: product.soldUnits,
               quantity: firstSale.quantity || '-',
               price: firstSale.price || '-',
@@ -128,6 +129,16 @@ const Recommemded_Products = () => {
       title: 'Product Id',
       dataIndex: 'productId',
       key: 'productId',
+    },
+    {
+      title: 'Product Name',
+      dataIndex: 'productName',
+      key: 'productName',
+    },
+    {
+      title: 'Price',
+      dataIndex: 'price',
+      key: 'price',
     },
     {
       title: 'Sold Units',

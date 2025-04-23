@@ -24,8 +24,8 @@ export const getMenuItems = (
   showSaloon: boolean,
   showSuperAdmin: boolean
 ): MenuItem[] => [
-  ...(showSuperAdmin
-    ? [
+    ...(showSuperAdmin
+      ? [
         {
           key: "dashboard",
           icon: <DashboardOutlined />,
@@ -67,9 +67,22 @@ export const getMenuItems = (
         },
         {
           key: "store",
-          icon: <DashboardOutlined />,
+          icon: <FileOutlined />,
           label: "Store",
-          path: "/store",
+          children: [
+            {
+              key: "products",
+              icon: <FileOutlined />,
+              label: "Product List",
+              path: "/All_Stores_Product",
+            },
+            {
+              key: "ecommerce-order",
+              icon: <FileOutlined />,
+              label: "Order List and Details",
+              path: "/All_Store_Orders",
+            },
+          ],
         },
 
         {
@@ -98,10 +111,10 @@ export const getMenuItems = (
           path: "/All_Salons_Recommemded_Products",
         },
       ]
-    : []),
+      : []),
 
-  ...(showEcommerce
-    ? [
+    ...(showEcommerce
+      ? [
         {
           key: "ecommerce-dashboard",
           icon: <DashboardOutlined />,
@@ -152,10 +165,10 @@ export const getMenuItems = (
           label: "Managing Reviews",
         },
       ]
-    : []),
+      : []),
 
-  ...(showSaloon
-    ? [
+    ...(showSaloon
+      ? [
         {
           key: "salon-dashboard",
           icon: <DashboardOutlined />,
@@ -190,5 +203,5 @@ export const getMenuItems = (
           ],
         },
       ]
-    : []),
-];
+      : []),
+  ];
