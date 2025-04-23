@@ -18,7 +18,7 @@ export interface UpdateStoreApi {
 export const getAllProducts = createAsyncThunk(
   "getAllProducts",
   async (
-    payload: { page_no: number; name?: string; category?: string; created_at?: string; storeId: string },
+    payload: { page_no: number; name?: string; category?: string; created_at?: string; storeId?: string },
     { rejectWithValue, getState }
   ) => {
     try {
