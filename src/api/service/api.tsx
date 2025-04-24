@@ -777,7 +777,7 @@ export const createSaleRecordForSalonCut = async (
 export const updateRateOfSalon = createAsyncThunk(
   "update_rate_of_salon",
   async (
-    { salonId, newRate }: { salonId: string; newRate: number },
+    { salonId, productId, newRate }: { salonId: string; productId: string; newRate: number },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -785,7 +785,7 @@ export const updateRateOfSalon = createAsyncThunk(
       const token = state.Login.token;
 
       const response = await axios.patch(
-        `${BACKEND_URL}/admin/update-rate-of-salon/${salonId}`,
+        `${BACKEND_URL}/admin/update-rate-of-salon/${salonId}/${productId}`,
         { newRate },
         {
           headers: {

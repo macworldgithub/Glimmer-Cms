@@ -48,9 +48,9 @@ const Recommemded_Products = () => {
           entry.productList.map((product: any) => {
             const firstSale = product.saleRecords[0] || {};
             return {
-              rate: entry.rate,
               productId: product.productId,
               productName: product.productName,
+              rate: product.rate,
               soldUnits: product.soldUnits,
               quantity: firstSale.quantity || '-',
               price: firstSale.price || '-',
@@ -105,7 +105,7 @@ const Recommemded_Products = () => {
       return;
     }
 
-    const res = await dispatch(updateRateOfSalon({ salonId: selectedSalonId, newRate }));
+    const res = await dispatch(updateRateOfSalon({ salonId: selectedSalonId, productId: selectedProductId, newRate }));
     if (res.meta.requestStatus === 'fulfilled') {
       message.success("Rate updated successfully.");
       setIsModalOpen(false);
@@ -141,24 +141,29 @@ const Recommemded_Products = () => {
       key: 'price',
     },
     {
-      title: 'Sold Units',
-      dataIndex: 'soldUnits',
-      key: 'soldUnits',
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-    {
-      title: 'Rate',
+      title: 'Commission Rate',
       dataIndex: 'rate',
       key: 'rate',
     },
     {
-      title: 'Salon Commission (%)',
+      title: 'Salon Commission in PKR',
       dataIndex: 'salonCut',
       key: 'salonCut',
+    },
+    {
+      title: 'Unit Sold',
+      dataIndex: 'soldUnits',
+      key: 'soldUnits',
+    },
+    {
+      title: 'Total Earning',
+      key: 'totalEarning',
+      render: (_: any, record: any) => {
+        const salonCut = parseFloat(record.salonCut);
+        const soldUnits = parseFloat(record.soldUnits);
+        const total = isNaN(salonCut) || isNaN(soldUnits) ? '-' : (salonCut * soldUnits).toFixed(2);
+        return `${total}`;
+      }
     },
     {
       title: "Actions",

@@ -9,7 +9,7 @@ import { createSaleRecordForSalonCut } from "../api/service/api";
 
 const OrderDetailPage = () => {
   const location = useLocation();
-  const [searchParams] = useSearchParams(); 
+  const [searchParams] = useSearchParams();
   //   const order = location.state?.data;
   const [order, setOrders] = useState(location.state?.data);
   const token = useSelector((state: RootState) => state.Login.token);
@@ -153,11 +153,11 @@ const OrderDetailPage = () => {
     const productDetails = order.productList.find(
       (item) => item.product._id === prodId
     );
-
+    console.log(productDetails)
     const salonId = productDetails.product.ref_of_salon;
     const quantity = productDetails.quantity;
     const price = productDetails.total_price;
-    const salonCut = productDetails.product.rate_of_salon;
+    const salonCut = productDetails.product.rate_of_salon * (productDetails.product.discounted_price ? productDetails.product.discounted_price : productDetails.product.base_price) / 100;
 
     console.log(productDetails);
 
