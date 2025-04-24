@@ -173,16 +173,15 @@ const Recommemded_Products = () => {
           <Button type="primary" onClick={() => handleViewDetails(record)}>
             View Details
           </Button>
-          <Button onClick={() => handleUpdate(record)} className="text-blue-500 hover:underline">
-            Update
-          </Button>
           {role === "super_admin" && (
-            <Button
+            <><Button onClick={() => handleUpdate(record)} className="text-blue-500 hover:underline">
+              Update
+            </Button><Button
               onClick={() => handleDelete(record.productId)}
               className="text-red-500 hover:underline"
             >
-              Delete
-            </Button>
+                Delete
+              </Button></>
           )}
         </Space>
       ),

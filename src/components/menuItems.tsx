@@ -105,10 +105,17 @@ export const getMenuItems = (
           ],
         },
         {
-          key: "super-admin-recommended-products",
-          icon: <DashboardOutlined />,
+          key: "recommended-products",
+          icon: <FileOutlined />,
           label: "Recommended Products",
-          path: "/All_Salons_Recommemded_Products",
+          children: [
+            {
+              key: "super-admin-recommended-products",
+              icon: <FileOutlined />,
+              label: "Salon List",
+              path: "/All_Salons_Recommemded_Products",
+            },
+          ],
         },
       ]
       : []),
@@ -199,6 +206,19 @@ export const getMenuItems = (
               icon: <FileOutlined />,
               label: "Add Services",
               path: "/Add_services",
+            },
+          ],
+        },
+        {
+          key: "salon",
+          icon: <FileOutlined />,
+          label: "Recommended Products",
+          children: [
+            {
+              key: "salon-recommended-products",
+              icon: <FileOutlined />,
+              label: "Salon List",
+              path: "/All_Salons_Recommemded_Products",
             },
           ],
         },
