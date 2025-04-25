@@ -1,7 +1,7 @@
-import { Button, Input, Modal, Table, message } from 'antd';
+import { Button, Dropdown, Input, Menu, Modal, Table, Tag, message } from 'antd';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { addRecommendedProduct, getAllProducts, getAllRecommendedProductsForSalon, getAllSalons } from '../api/service/api';
+import { addRecommendedProduct, getAllProducts, getAllRecommendedProductsForSalon, getAllSalons, updateNewToGlimmer, updateRecommendedSalon, updateTrendingSalon } from '../api/service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { getAllCategories, getAllProductItem, getAllSubcategories } from '../api/category/api';
@@ -61,6 +61,8 @@ const All_Salons_Services = () => {
   const [selectedRelatedProducts, setSelectedRelatedProducts] = useState<ProductOption[]>([]);
 
   const [fetchedRecommendedProducts, setFetchedRecommendedProducts] = useState<ProductOption[]>([]);
+
+  const [salonActions, setSalonActions] = useState<Record<string, string[]>>({});
 
   // const role = useSelector((state: RootState) => state.Login.role);
   // console.log(role);
@@ -322,66 +324,165 @@ const All_Salons_Services = () => {
     return `${formattedHour}:${minute} ${suffix}`;
   };
 
-  const columns = useMemo(() => [
+  const loadSalonActionsFromLocalStorage = () => {
+    const storedSalonActions = localStorage.getItem("salonActions");
+    if (storedSalonActions) {
+      setSalonActions(JSON.parse(storedSalonActions));
+    }
+  };
+
+  const saveSalonActionsToLocalStorage = (updatedActions: Record<string, string[]>) => {
+    localStorage.setItem("salonActions", JSON.stringify(updatedActions));
+  };
+
+  // Load salon actions from localStorage on mount
+  useEffect(() => {
+    loadSalonActionsFromLocalStorage();
+  }, []);
+
+  // Save salon actions to localStorage when updated
+  useEffect(() => {
+    if (Object.keys(salonActions).length > 0) {
+      saveSalonActionsToLocalStorage(salonActions);
+    }
+  }, [salonActions]);
+
+  // Helper function to get action details
+  const getActionDetails = (key: string, salonId: string) => {
+    const actionMapping: Record<string, string> = {
+      "new-to-glimmer": "New To Glimmer",
+      "recommended-salon": "Recommended Salons",
+      "trending-salon": "Trending Salons",
+    };
+
+    const actionText = actionMapping[key];
+    const status = salonActions[salonId]?.includes(actionText) ? false : true;
+
+    return { actionText, status };
+  };
+
+  // Handle menu click to update salon actions
+  const handleMenuClick = async (key: string, salonId: string) => {
+    const { actionText, status } = getActionDetails(key, salonId);
+    if (!actionText) return; // Prevent errors if actionText is invalid
+
+    try {
+      // Dispatch the appropriate action based on the key
+      switch (key) {
+        case "new-to-glimmer":
+          await dispatch(updateNewToGlimmer({ salonId, status }));
+          break;
+        case "recommended-salon":
+          await dispatch(updateRecommendedSalon({ salonId, status }));
+          break;
+        case "trending-salon":
+          await dispatch(updateTrendingSalon({ salonId, status }));
+          break;
+        default:
+          console.error("Unknown action key:", key);
+          return;
+      }
+
+      // Update salonActions state
+      setSalonActions((prev) => {
+        const updatedActions = { ...prev };
+        if (!Array.isArray(updatedActions[salonId])) {
+          updatedActions[salonId] = [];
+        }
+
+        if (status) {
+          if (!updatedActions[salonId].includes(actionText)) {
+            updatedActions[salonId].push(actionText);
+          }
+        } else {
+          updatedActions[salonId] = updatedActions[salonId].filter((action) => action !== actionText);
+        }
+
+        // Save updated actions to localStorage
+        saveSalonActionsToLocalStorage(updatedActions);
+        return updatedActions;
+      });
+
+      alert(`Successfully ${status ? "added to" : "removed from"} ${actionText}!`);
+    } catch (error) {
+      console.error("Error performing action:", error);
+      alert("There was an error performing the action.");
+    }
+  };
+
+// Column definition for the table
+const columns = useMemo(
+  () => [
     {
-      title: 'Salon Name',
-      dataIndex: 'salon_name',
-      key: 'salon_name',
+      title: "Salon Name",
+      dataIndex: "salon_name",
+      key: "salon_name",
       render: (_: any, record: any) => (
-        <button
-          onClick={() => navigate(`/SuperAdmin_Services_List?salonId=${record._id}`)}
-          className="text-orange-500 hover:underline"
-        >
+        <button onClick={() => navigate(`/SuperAdmin_Services_List?salonId=${record._id}`)} className="text-orange-500 hover:underline">
           {record.salon_name}
         </button>
       ),
     },
     {
-      title: 'Email',
-      dataIndex: 'email',
-      key: 'email',
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
     },
     {
-      title: 'Opening Hours',
-      dataIndex: 'openingHour',
-      key: 'openingHour',
+      title: "Opening Hours",
+      dataIndex: "openingHour",
+      key: "openingHour",
       render: (time) => formatTime(time),
     },
     {
-      title: 'Closing Hours',
-      dataIndex: 'closingHour',
-      key: 'closingHour',
+      title: "Closing Hours",
+      dataIndex: "closingHour",
+      key: "closingHour",
       render: (time) => formatTime(time),
     },
     {
-      title: 'Address',
-      dataIndex: 'address',
-      key: 'address',
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
     },
     {
       title: "Actions",
       key: "actions",
-      render: (_: any, record: TableData) => (
-        <div className="flex space-x-2">
-          <button
-            onClick={() => handleUpdate(record)}
-            className="text-blue-500 hover:underline"
-          >
-            Update
-          </button>
-          {/* {role === "super_admin" && (
-            <button
-              onClick={() => handleDelete(record)}
-              className="text-red-500 hover:underline"
-            >
-              Delete
-            </button>
-          )} */}
-        </div>
-      ),
-    },
-  ], []);
+      render: (_: any, record: any) => {
+        const salonActionNames = salonActions[record._id] || [];
+        const displayText = salonActionNames.length > 0 ? salonActionNames.join(", ") : "More Option";
 
+        return (
+          <div className="flex space-x-2">
+            <button onClick={() => handleUpdate(record)} className="text-blue-500 hover:underline">
+              Update
+            </button>
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item key="new-to-glimmer" onClick={() => handleMenuClick("new-to-glimmer", record._id)}>
+                    New To Glimmer
+                  </Menu.Item>
+                  <Menu.Item key="recommended-salon" onClick={() => handleMenuClick("recommended-salon", record._id)}>
+                    Recommended Salons
+                  </Menu.Item>
+                  <Menu.Item key="trending-salon" onClick={() => handleMenuClick("trending-salon", record._id)}>
+                    Trending Salons
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Tag color="blue">
+                <button>{displayText}</button>
+              </Tag>
+            </Dropdown>
+          </div>
+        );
+      },
+    },
+  ],
+  [salonActions]
+);
   return (
     <div className="p-6 bg-white min-h-screen">
       <h1 className="text-2xl font-bold mb-4">All Salons Services</h1>

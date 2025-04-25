@@ -117,6 +117,12 @@ export const getMenuItems = (
             },
           ],
         },
+        {
+          key: "highlights",
+          icon: <FileOutlined />,
+          label: "Salon Highlights",
+          path: "/All_Salons_Highlights",
+        },
       ]
       : []),
 

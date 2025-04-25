@@ -409,7 +409,7 @@ export const deleteServiceApi = async (id: string, token: string) => {
 
 interface GetAdminBookingsParams {
   page_no: number;
-  salonId?: string; 
+  salonId?: string;
   categoryId?: string;
   subCategoryName?: string;
   subSubCategoryName?: string;
@@ -592,8 +592,8 @@ export const updateApprovedBookingStatus = createAsyncThunk(
       // Make the API call to update booking
       const response = await axios.put(
         `${BACKEND_URL}/salon-service-bookings/updateApprovedBookingStatus`,
-        { 
-          bookingId,  
+        {
+          bookingId,
           bookingStatus,
         },
         {
@@ -649,7 +649,7 @@ export const getAllSalons = createAsyncThunk<GetAllSalonsResponse, number>(
   async (page_no: number, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${BACKEND_URL}/salon/get-all-salon?page_no=${page_no}`);
-      return response.data; 
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Failed to fetch salons");
     }
@@ -814,7 +814,7 @@ export const deleteRecommendedProductOfSalon = async (
         },
       }
     );
-    return response.data; 
+    return response.data;
   } catch (error: any) {
     if (axios.isAxiosError(error) && error.response) {
       throw new Error(error.response.data);
@@ -824,7 +824,7 @@ export const deleteRecommendedProductOfSalon = async (
 };
 
 interface Store {
-  _id: string; 
+  _id: string;
   store_name: string;
   vendor_name: string;
   description: string;
@@ -833,7 +833,7 @@ interface Store {
   country: string;
   address: string;
   store_image: string | null;
-  created_at: string; 
+  created_at: string;
 }
 
 interface GetAllStoresResponse {
@@ -855,7 +855,101 @@ export const getAllStores = createAsyncThunk<GetAllStoresResponse, number>(
           },
         }
       );
-      return response.data; 
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch salons");
+    }
+  }
+);
+
+export const updateNewToGlimmer = createAsyncThunk(
+  "update-new-to-glimmer",
+  async (
+    { salonId, status }: { salonId: string; status: boolean },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/admin/${salonId}/new-to-glimmer`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update rate");
+    }
+  }
+);
+
+export const updateTrendingSalon = createAsyncThunk(
+  "update-trending-salon",
+  async (
+    { salonId, status }: { salonId: string; status: boolean },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/admin/${salonId}/trending-salon`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update rate");
+    }
+  }
+);
+
+export const updateRecommendedSalon = createAsyncThunk(
+  "update-recommended-salon",
+  async (
+    { salonId, status }: { salonId: string; status: boolean },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/admin/${salonId}/recommended-salon`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update rate");
+    }
+  }
+);
+
+export const getAllSalonsHighlights = createAsyncThunk<any, { filter?: string }>(
+  "salons/getAllSalonsHighlights",
+  async ({ filter }, { rejectWithValue }) => {
+    try {
+      const query = filter ? `?filter=${filter}` : "";
+      const response = await axios.get(`${BACKEND_URL}/admin/salon-highlights${query}`);
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Failed to fetch salons");
     }

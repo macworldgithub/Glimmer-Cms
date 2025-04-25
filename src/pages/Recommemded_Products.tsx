@@ -72,6 +72,7 @@ const Recommemded_Products = () => {
 
   const handleUpdate = (record: TableData) => {
     setSelectedSalonId(salonId);
+    setSelectedProductId(record.productId);
     setIsModalOpen(true);
   };
 
