@@ -257,3 +257,97 @@ export const updateStoreApi = async (token: string, data: UpdateStoreApi) => {
   );
   return response.data;
 };
+
+export const updateTrendingProduct = createAsyncThunk(
+  "updateTrendingProduct",
+  async (
+    { productId, status }: { productId: string; status: boolean },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/admin/${productId}/trending-product`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update trending product");
+    }
+  }
+);
+
+export const updateBestSellerProduct = createAsyncThunk(
+  "updateBestSellerProduct",
+  async (
+    { productId, status }: { productId: string; status: boolean },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/admin/${productId}/best-seller-product`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update best seller product");
+    }
+  }
+);
+
+export const updateYouMusthaveThisProduct = createAsyncThunk(
+  "updateYouMusthaveThisProduct",
+  async (
+    { productId, status }: { productId: string; status: boolean },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/admin/${productId}/you-must-have-product`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update rate");
+    }
+  }
+);
+
+export const getAllProductHighlights = createAsyncThunk<any, { filter?: string }>(
+  "salons/getAllProductHighlights",
+  async ({ filter }, { rejectWithValue }) => {
+    try {
+      const query = filter ? `?filter=${filter}` : "";
+      const response = await axios.get(`${BACKEND_URL}/admin/product-highlights${query}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch salons");
+    }
+  }
+);

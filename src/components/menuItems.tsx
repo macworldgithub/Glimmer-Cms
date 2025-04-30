@@ -118,10 +118,16 @@ export const getMenuItems = (
           ],
         },
         {
-          key: "highlights",
+          key: "salon_highlights",
           icon: <FileOutlined />,
           label: "Salon Highlights",
           path: "/All_Salons_Highlights",
+        },
+        {
+          key: "product_highlights",
+          icon: <FileOutlined />,
+          label: "Product Highlights",
+          path: "/All_Products_Highlights",
         },
       ]
       : []),
