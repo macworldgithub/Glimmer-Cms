@@ -74,14 +74,6 @@ const All_Salons_Highlights = () => {
       title: 'Salon Name',
       dataIndex: 'salon_name',
       key: 'salon_name',
-      render: (_: any, record: any) => (
-        <button
-          onClick={() => navigate(`/Recommemded_Products?salonId=${record._id}`)}
-          className="text-orange-500 hover:underline"
-        >
-          {record.salon_name}
-        </button>
-      ),
     },
     {
       title: 'Email',
