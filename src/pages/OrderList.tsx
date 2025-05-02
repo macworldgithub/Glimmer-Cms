@@ -5,10 +5,12 @@ import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { RootState } from "../store/store";
 import { BACKEND_URL } from "../config/server";
+import OrderSearchBar from "../components/OrderSearchBar";
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [totalOrders, setTotalOrders] = useState(0);
+  const [filters, setFilters] = useState<{ order_id?: string; customerEmail?: string }>({});
   const token = useSelector((state: RootState) => state.Login.token);
   const store_id = useSelector((state: RootState) => state.Login._id);
 
@@ -18,11 +20,19 @@ const OrderList = () => {
   const currentPage = Number(searchParams.get("page")) || 1;
   const storeId = searchParams.get("store") || "";
 
-  const fetchData = async () => {
+  const fetchData = async (customFilters = filters) => {
     try {
-      console.log(`Fetching orders for page ${currentPage}`)
+      const queryParams = new URLSearchParams({
+        page_no: currentPage.toString(),
+        page_size: pageSize.toString(),
+        store_id: store_id || storeId,
+      });
+
+      if (customFilters.order_id) queryParams.append("order_id", customFilters.order_id);
+      if (customFilters.customerEmail) queryParams.append("customerEmail", customFilters.customerEmail);
+
       const response = await axios.get(
-        `${BACKEND_URL}/order/get_all_store_orders?page_no=${currentPage}&page_size=${pageSize}&store_id=${store_id || storeId}`,
+        `${BACKEND_URL}/order/get_all_store_orders?${queryParams.toString()}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -30,9 +40,8 @@ const OrderList = () => {
         }
       );
 
-      console.log("API Response:", response.data); // Debugging API Response
       setOrders(response.data.orders);
-      setTotalOrders(response.data.totalCount); // FIX: Use totalCount instead of totalOrders
+      setTotalOrders(response.data.totalCount);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -41,6 +50,11 @@ const OrderList = () => {
   useEffect(() => {
     fetchData();
   }, [currentPage]);
+
+  const handleSearch = (newFilters: { order_id?: string; customerEmail?: string }) => {
+    setFilters(newFilters);
+    fetchData(newFilters);
+  };
 
   const columns = [
     {
@@ -100,21 +114,32 @@ const OrderList = () => {
   ];
 
   return (
-    <div className="w-full h-full flex flex-col items-center p-2 gap-2">
-      <Table
-        columns={columns}
-        dataSource={orders}
-        className="shadow-lg w-full"
-        scroll={{ x: 1000 }}
-        pagination={{
-          current: currentPage,
-          pageSize: pageSize,
-          total: totalOrders, // Now correctly using totalCount
-          onChange: (page) => setSearchParams({ page: page.toString() }),
-          showSizeChanger: false,
-          // showTotal: (total) => `Total ${total} Orders`,
-        }}
-      />
+    <div>
+
+
+      <div className="p-4 text-lg font-semibold text-gray-800 border-b">
+        Order List
+        <OrderSearchBar onSearch={handleSearch} />
+      </div>
+      <div className="w-full h-full flex flex-col items-center p-2 gap-2">
+
+        {/* SearchBar */}
+
+        <Table
+          columns={columns}
+          dataSource={orders}
+          className="shadow-lg w-full"
+          scroll={{ x: 1000 }}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalOrders, // Now correctly using totalCount
+            onChange: (page) => setSearchParams({ page: page.toString() }),
+            showSizeChanger: false,
+            // showTotal: (total) => `Total ${total} Orders`,
+          }}
+        />
+      </div>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { Button, Checkbox, Input, Table, Tooltip } from "antd";
 import UpdateServiceModal from "../components/UpdateServiceModal";
 import DeleteServiceModal from "../components/DeleteServiceModal";
 import SearchBar from "../components/SearchBar";
+import ServiceSearchBar from "../components/ServiceSearchBar";
 
 interface TableData {
   name: string;
@@ -44,8 +45,7 @@ const SuperAdmin_Services_List = () => {
 
   const currentPage = Number(searchParams.get("page")) || 1;
   const categoryIdFilter = searchParams.get("categoryId") || "";
-  const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
-  const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
+  const nameFilter = searchParams.get("name") || "";
   const salonId = searchParams.get("salonId") || "";
 
   useEffect(() => {
@@ -53,19 +53,17 @@ const SuperAdmin_Services_List = () => {
     dispatch(
       getAllServicesForAdmin({
         page_no: currentPage,
+        categoryId: categoryIdFilter,
+        name: nameFilter,
         salonId,
-        // categoryId: categoryIdFilter,
-        // subCategoryName: subCategoryNameFilter,
-        // subSubCategoryName: subSubCategoryNameFilter,
       })
     );
   }, [
     dispatch,
     currentPage,
-    salonId,
     categoryIdFilter,
-    subCategoryNameFilter,
-    subSubCategoryNameFilter,
+    nameFilter,
+    salonId,
   ]);
 
   const handleUpdate = (record: TableData) => {
@@ -164,32 +162,23 @@ const SuperAdmin_Services_List = () => {
 
   const filteredServices = salonServiceList.services.filter((salon) => {
     const categoryId = salon.categoryId ? salon.categoryId.trim() : "";
-    const subCategoryName = salon.subCategoryName
-      ? salon.subCategoryName.toLowerCase().trim()
-      : "";
-    const subSubCategoryName = salon.subSubCategoryName
-      ? salon.subSubCategoryName.toLowerCase().trim()
+    const name = salon.name
+      ? salon.name.toLowerCase().trim()
       : "";
 
     return (
       (!categoryIdFilter || categoryId === categoryIdFilter) &&
-      (!subCategoryNameFilter ||
-        subCategoryName.includes(subCategoryNameFilter.toLowerCase())) &&
-      (!subSubCategoryNameFilter ||
-        subSubCategoryName.includes(subSubCategoryNameFilter.toLowerCase()))
-    );
+      (!nameFilter || name.includes(nameFilter.toLowerCase())));
   });
 
   const handleSearch = (newFilters: {
     categoryId?: string;
-    subCategoryName?: string;
-    subSubCategoryName?: string;
+    name?: string;
   }) => {
     setSearchParams({
       page: "1",
       categoryId: newFilters.categoryId || "",
-      subCategoryName: newFilters.subCategoryName || "",
-      subSubCategoryName: newFilters.subSubCategoryName || "",
+      name: newFilters.name || "",
     });
   };
 
@@ -335,7 +324,7 @@ const SuperAdmin_Services_List = () => {
       </div>
 
       {/* SearchBar */}
-      <SearchBar onSearch={handleSearch} showCategories={false} />
+      <ServiceSearchBar onSearch={handleSearch} />
       <div className="flex flex-wrap gap-4 py-4">
         <Input
           id="discount"
@@ -380,8 +369,7 @@ const SuperAdmin_Services_List = () => {
               setSearchParams({
                 page: page.toString(),
                 categoryId: categoryIdFilter,
-                subCategoryName: subCategoryNameFilter,
-                subSubCategoryName: subSubCategoryNameFilter,
+                name: nameFilter,
               }),
           }}
           className="border-t"

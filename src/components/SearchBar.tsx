@@ -10,6 +10,8 @@ interface SearchBarProps {
     categoryId?: string;
     subCategoryName?: string;
     subSubCategoryName?: string;
+    customerName?: string;
+    serviceName?: string;
   }) => void;
   categories?: { name: string; id: string }[];
   showCategories?: boolean;
@@ -26,24 +28,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
     name?: string;
     category?: string;
     created_at?: string;
+    customerName?: string;
+    categoryId?: string;
+    serviceName?: string;
   }>({});
 
-  const [services, setServices] = useState<{ _id: string; category: string }[]>(
-    []
-  );
-
-  // Fetch Categories
-  const fetchServices = async () => {
-    try {
-      const data = await getAllServices();
-      setServices(data);
-    } catch (error) {
-      message.error("Failed to fetch services");
-    }
-  };
-  useEffect(() => {
-    fetchServices();
-  }, []);
 
   const handleInputChange = (key: string, value: string) => {
     const newFilters = { ...filters, [key]: value || undefined };
@@ -51,20 +40,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
     onSearch(newFilters);
   };
 
-  const handleDateChange = (date: any, dateString: string) => {
-    const newFilters = { ...filters, created_at: dateString || undefined };
-    setFilters(newFilters);
-    onSearch(newFilters);
-  };
-
   return (
     <div className="flex flex-wrap gap-4 p-4 bg-white shadow-md rounded-lg">
-      <Input
-        placeholder="Search by Name"
-        onChange={(e) => handleInputChange("name", e.target.value)}
-        allowClear
-        className="w-1/3"
-      />
+      {showCategories && (
+        <Input
+          placeholder="Search by Name"
+          onChange={(e) => handleInputChange("name", e.target.value)}
+          allowClear
+          className="w-1/3"
+        />
+      )}
 
       {showCategories && (
         <Select
@@ -82,25 +67,19 @@ const SearchBar: React.FC<SearchBarProps> = ({
       )}
 
       {showServices && (
-        <Select placeholder="Filter by Service" className="w-1/3">
-          {services.map((service) => (
-            <Select.Option
-              key={service._id}
-              value={service._id}
-              data-name={service._id}
-            >
-              {service._id}
-            </Select.Option>
-          ))}
-        </Select>
+        <>
+          <Input
+            placeholder="Search by Customer Name"
+            onChange={(e) => handleInputChange("customerName", e.target.value)}
+            allowClear
+            className="w-1/3" />
+          <Input
+            placeholder="Search by Service Name"
+            onChange={(e) => handleInputChange("serviceName", e.target.value)}
+            allowClear
+            className="w-1/3" />
+        </>
       )}
-
-      <DatePicker
-        placeholder="Filter by Created Date"
-        onChange={handleDateChange}
-        format="YYYY-MM-DD"
-        className="w-1/3"
-      />
     </div>
   );
 };

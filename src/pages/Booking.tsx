@@ -44,38 +44,33 @@ const booking = () => {
   const pageSize = 8;
 
   const currentPage = Number(searchParams.get("page")) || 1;
-  const categoryIdFilter = searchParams.get("categoryId") || "";
-  const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
-  const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
+  const customerNameFilter = searchParams.get("customerName") || "";
+  const serviceNameFilter = searchParams.get("serviceName") || "";
 
   useEffect(() => {
     //@ts-ignore
     dispatch(
       getSalonBookings({
         page_no: currentPage,
-        categoryId: categoryIdFilter,
-        subCategoryName: subCategoryNameFilter,
-        subSubCategoryName: subSubCategoryNameFilter,
+        customerName: customerNameFilter,
+        serviceName: serviceNameFilter,
       })
     );
   }, [
     dispatch,
     currentPage,
-    categoryIdFilter,
-    subCategoryNameFilter,
-    subSubCategoryNameFilter,
+    customerNameFilter,
+    serviceNameFilter,
   ]);
 
   const handleSearch = (newFilters: {
-    categoryId?: string;
-    subCategoryName?: string;
-    subSubCategoryName?: string;
+    customerName?: string;
+    serviceName?: string;
   }) => {
     setSearchParams({
       page: "1",
-      categoryId: newFilters.categoryId || "",
-      subCategoryName: newFilters.subCategoryName || "",
-      subSubCategoryName: newFilters.subSubCategoryName || "",
+      customerName: newFilters.customerName || "",
+      serviceName: newFilters.serviceName || "",
     });
   };
 
@@ -203,13 +198,7 @@ const booking = () => {
             current: currentPage,
             pageSize: pageSize,
             total: totalBookings,
-            onChange: (page) =>
-              setSearchParams({
-                page: page.toString(),
-                categoryId: categoryIdFilter,
-                subCategoryName: subCategoryNameFilter,
-                subSubCategoryName: subSubCategoryNameFilter,
-              }),
+            onChange: (page) => setSearchParams({ page: page.toString() }),
           }}
           className="border-t"
           scroll={{ x: 1000 }}

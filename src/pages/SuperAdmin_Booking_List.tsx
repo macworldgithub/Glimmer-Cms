@@ -5,6 +5,8 @@ import { useSearchParams } from "react-router-dom";
 import { RootState, AppDispatch } from "../store/store";
 import { Table, Tag } from "antd";
 import DeleteBookingModal from "../components/DeleteBookingModal";
+import ServiceSearchBar from "../components/ServiceSearchBar";
+import SearchBar from "../components/SearchBar";
 
 interface Booking {
   name: string;
@@ -37,8 +39,8 @@ const SuperAdmin_Booking_List = () => {
 
   const currentPage = Number(searchParams.get("page")) || 1;
   const categoryIdFilter = searchParams.get("categoryId") || "";
-  const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
-  const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
+  const customerNameFilter = searchParams.get("customerName") || "";
+  const serviceNameFilter = searchParams.get("serviceName") || "";
   const salonId = searchParams.get("salonId") || "";
 
   useEffect(() => {
@@ -48,8 +50,8 @@ const SuperAdmin_Booking_List = () => {
         page_no: currentPage,
         salonId,
         categoryId: categoryIdFilter,
-        subCategoryName: subCategoryNameFilter,
-        subSubCategoryName: subSubCategoryNameFilter,
+        customerName: customerNameFilter,
+        serviceName: serviceNameFilter,
       })
     );
   }, [
@@ -57,13 +59,24 @@ const SuperAdmin_Booking_List = () => {
     currentPage,
     salonId,
     categoryIdFilter,
-    subCategoryNameFilter,
-    subSubCategoryNameFilter,
+    customerNameFilter,
+    serviceNameFilter
   ]);
 
   const handleDelete = (record) => {
     setSelectedSalon(record);
     setIsDeleteModalVisible(true);
+  };
+
+  const handleSearch = (newFilters: {
+    customerName?: string;
+    serviceName?: string;
+  }) => {
+    setSearchParams({
+      page: "1",
+      customerName: newFilters.customerName || "",
+      serviceName: newFilters.serviceName || "",
+    });
   };
 
   const columns = [
@@ -124,6 +137,14 @@ const SuperAdmin_Booking_List = () => {
   ];
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="p-4 text-lg font-semibold text-gray-800 border-b">
+        Booking List
+      </div>
+
+      {/* SearchBar */}
+      <div className="mb-5">
+        <SearchBar onSearch={handleSearch} showCategories={false} />
+      </div>
       {selectedSalon && role === "super_admin" && (
         <DeleteBookingModal
           visible={isDeleteModalVisible}
@@ -145,13 +166,7 @@ const SuperAdmin_Booking_List = () => {
             current: currentPage,
             pageSize: pageSize,
             total: totalBookings,
-            onChange: (page) =>
-              setSearchParams({
-                page: page.toString(),
-                categoryId: categoryIdFilter,
-                subCategoryName: subCategoryNameFilter,
-                subSubCategoryName: subSubCategoryNameFilter,
-              }),
+            onChange: (page) => setSearchParams({ page: page.toString() }),
           }}
           className="border-t"
           scroll={{ x: 1000 }}

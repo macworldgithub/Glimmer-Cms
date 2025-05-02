@@ -16,6 +16,7 @@ import {
   updateSingleServiceDiscount,
 } from "../api/service/api";
 import UpdateServiceModal from "../components/UpdateServiceModal";
+import ServiceSearchBar from "../components/ServiceSearchBar";
 
 interface TableData {
   _id: string;
@@ -53,8 +54,8 @@ const ServiceList = () => {
 
   const currentPage = Number(searchParams.get("page")) || 1;
   const categoryIdFilter = searchParams.get("categoryId") || "";
-  const subCategoryNameFilter = searchParams.get("subCategoryName") || "";
-  const subSubCategoryNameFilter = searchParams.get("subSubCategoryName") || "";
+  const nameFilter = searchParams.get("name") || "";
+
 
   useEffect(() => {
     //@ts-ignore
@@ -62,16 +63,14 @@ const ServiceList = () => {
       getAllServicesForSalon({
         page_no: currentPage,
         categoryId: categoryIdFilter,
-        subCategoryName: subCategoryNameFilter,
-        subSubCategoryName: subSubCategoryNameFilter,
+        name: nameFilter,
       })
     );
   }, [
     dispatch,
     currentPage,
     categoryIdFilter,
-    subCategoryNameFilter,
-    subSubCategoryNameFilter,
+    nameFilter,
   ]);
 
   const serviceList = useSelector((state: RootState) => state.AllSalon.salons);
@@ -145,9 +144,9 @@ const ServiceList = () => {
   const handleCheckAll = () => {
     const newChecked = !allChecked;
     setAllChecked(newChecked);
-  
+
     const services = salonServiceList.services || [];
-  
+
     setCheckedNames((prev) => {
       const updatedChecked = { ...prev };
       services.forEach((salon) => {
@@ -158,20 +157,16 @@ const ServiceList = () => {
   };
 
   const filteredServices = salonServiceList.services.filter((salon) => {
+    console.log(salon);
     const categoryId = salon.categoryId ? salon.categoryId.trim() : "";
-    const subCategoryName = salon.name
-      ? salon.subCategoryName.toLowerCase().trim()
-      : "";
-    const subSubCategoryName = salon.name
-      ? salon.subSubCategoryName.toLowerCase().trim()
+    const name = salon.name
+      ? salon.name.toLowerCase().trim()
       : "";
 
     return (
       (!categoryIdFilter || categoryId === categoryIdFilter) &&
-      (!subCategoryNameFilter ||
-        subCategoryName.includes(subCategoryNameFilter.toLowerCase())) &&
-      (!subSubCategoryNameFilter ||
-        subSubCategoryName.includes(subSubCategoryNameFilter.toLowerCase()))
+      (!nameFilter ||
+        name.includes(nameFilter.toLowerCase()))
     );
   });
 
@@ -190,14 +185,12 @@ const ServiceList = () => {
 
   const handleSearch = (newFilters: {
     categoryId?: string;
-    subCategoryName?: string;
-    subSubCategoryName?: string;
+    name?: string;
   }) => {
     setSearchParams({
       page: "1",
       categoryId: newFilters.categoryId || "",
-      subCategoryName: newFilters.subCategoryName || "",
-      subSubCategoryName: newFilters.subSubCategoryName || "",
+      name: newFilters.name || "",
     });
   };
 
@@ -237,7 +230,7 @@ const ServiceList = () => {
       message.error("Something went wrong.");
     }
   };
-  
+
   const columns = [
     {
       title: (
@@ -370,7 +363,7 @@ const ServiceList = () => {
       </div>
 
       {/* SearchBar */}
-      <SearchBar onSearch={handleSearch} showCategories={false} />
+      <ServiceSearchBar onSearch={handleSearch} />
 
       {/* Modals */}
       {selectedSalon && (
@@ -437,8 +430,7 @@ const ServiceList = () => {
               setSearchParams({
                 page: page.toString(),
                 categoryId: categoryIdFilter,
-                subCategoryName: subCategoryNameFilter,
-                subSubCategoryName: subSubCategoryNameFilter,
+                name: nameFilter,
               }),
           }}
           className="border-t"

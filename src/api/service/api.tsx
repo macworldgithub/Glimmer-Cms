@@ -413,6 +413,9 @@ interface GetAdminBookingsParams {
   categoryId?: string;
   subCategoryName?: string;
   subSubCategoryName?: string;
+  name?: string;
+  customerName?: string;
+  serviceName?: string;
 }
 
 export const getAdminBookings = createAsyncThunk(
@@ -435,6 +438,15 @@ export const getAdminBookings = createAsyncThunk(
             ...(params.subSubCategoryName && {
               subSubCategoryName: params.subSubCategoryName,
             }),
+            ...(params.name && {
+              name: params.name,
+            }),
+            ...(params.customerName && {
+              customerName: params.customerName,
+            }),
+            ...(params.serviceName && {
+              serviceName: params.serviceName,
+            }),
           },
           headers: {
             Authorization: `Bearer ${token}`,
@@ -455,6 +467,8 @@ interface GetSalonBookingsParams {
   categoryId?: string;
   subCategoryName?: string;
   subSubCategoryName?: string;
+  customerName?: string;
+  serviceName?: string;
 }
 export const getSalonBookings = createAsyncThunk(
   "getSalonBookings",
@@ -476,6 +490,12 @@ export const getSalonBookings = createAsyncThunk(
             }),
             ...(params.subSubCategoryName && {
               subSubCategoryName: params.subSubCategoryName,
+            }),
+            ...(params.customerName && {
+              customerName: params.customerName,
+            }),
+            ...(params.serviceName && {
+              serviceName: params.serviceName,
             }),
           },
           headers: {
