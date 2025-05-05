@@ -369,6 +369,27 @@ const ProductTableWithHeader = () => {
             >
               Update
             </button>
+            {role === "super_admin" && (
+              <button
+                onClick={() => handleDelete(record)}
+                className="text-red-500 hover:underline"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        );
+      }
+    },
+    {
+      title: "Website Highlights",
+      key: "actions",
+      render: (_: any, record: TableData) => {
+        const productActionNames = productActions[record._id] || [];
+        const displayText = productActionNames.length > 0 ? productActionNames.join(", ") : "More Option";
+
+        return (
+          <div className="flex space-x-2">
             <Dropdown
               overlay={
                 <Menu>
@@ -388,14 +409,6 @@ const ProductTableWithHeader = () => {
                 <button>{displayText}</button>
               </Tag>
             </Dropdown>
-            {role === "super_admin" && (
-              <button
-                onClick={() => handleDelete(record)}
-                className="text-red-500 hover:underline"
-              >
-                Delete
-              </button>
-            )}
           </div>
         );
       }
