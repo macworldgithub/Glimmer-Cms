@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Table, message } from 'antd';
 import { getAllStores } from '../api/service/api';
 import { AppDispatch } from '../store/store';
+import StoreSearchBar from '../components/StoreSearchBar';
 
 
 interface StoreData {
@@ -24,15 +25,17 @@ const All_Stores_Product = () => {
     const dispatch = useDispatch<AppDispatch>();
     const location = useLocation();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [stores, setStores] = useState<StoreData[]>([]);
     const [total, setTotal] = useState(0);
 
     const page = parseInt(new URLSearchParams(location.search).get('page_no') || '1');
+    const store_name = new URLSearchParams(location.search).get('store_name') || undefined;
 
     const fetchData = async () => {
         try {
-            const result = await dispatch(getAllStores(page)).unwrap();
+            const result = await dispatch(getAllStores({ page_no: page, store_name })).unwrap();
             setStores(result.stores);
             setTotal(result.total);
         } catch (error) {
@@ -42,10 +45,22 @@ const All_Stores_Product = () => {
 
     useEffect(() => {
         fetchData();
-    }, [page]);
+    }, [page, store_name]);
 
     const handlePageChange = (page: number) => {
         navigate(`?page_no=${page}`);
+    };
+
+    const handleSearch = (filters: { store_name?: string }) => {
+        const updatedParams: Record<string, string> = {};
+
+        if (filters.store_name) {
+            updatedParams.store_name = filters.store_name;
+        }
+
+        updatedParams.page = "1";
+
+        setSearchParams(updatedParams);
     };
 
     const columns = useMemo(() => [
@@ -107,6 +122,7 @@ const All_Stores_Product = () => {
     return (
         <div className="p-6 bg-white min-h-screen">
             <h1 className="text-2xl font-bold mb-4">All Stores</h1>
+            <StoreSearchBar onSearch={handleSearch} />
 
             <div className="overflow-x-auto shadow-lg">
                 <Table

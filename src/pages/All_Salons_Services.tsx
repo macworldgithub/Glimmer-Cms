@@ -1,10 +1,11 @@
 import { Button, Dropdown, Input, Menu, Modal, Table, Tag, message } from 'antd';
 import React, { useEffect, useState, useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { addRecommendedProduct, getAllProducts, getAllRecommendedProductsForSalon, getAllSalons, updateNewToGlimmer, updateRecommendedSalon, updateTrendingSalon } from '../api/service/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { getAllCategories, getAllProductItem, getAllSubcategories } from '../api/category/api';
+import SalonSearchBar from '../components/SalonSearchBar';
 
 
 interface TableData {
@@ -30,7 +31,8 @@ const All_Salons_Services = () => {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const navigate = useNavigate();
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
 
@@ -68,10 +70,11 @@ const All_Salons_Services = () => {
   // console.log(role);
 
   const page = parseInt(new URLSearchParams(location.search).get('page_no') || '1');
+  const salon_name = new URLSearchParams(location.search).get('salon_name') || undefined;
 
   const fetchData = async () => {
     try {
-      const result = await dispatch(getAllSalons(page)).unwrap();
+      const result = await dispatch(getAllSalons({ page_no: page, salon_name })).unwrap();
       setData(result.salons);
       setTotal(result.total);
     } catch (error) {
@@ -81,7 +84,7 @@ const All_Salons_Services = () => {
 
   useEffect(() => {
     fetchData();
-  }, [page]);
+  }, [page, salon_name]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -410,6 +413,18 @@ const All_Salons_Services = () => {
     }
   };
 
+  const handleSearch = (filters: { salon_name?: string }) => {
+    const updatedParams: Record<string, string> = {};
+
+    if (filters.salon_name) {
+      updatedParams.salon_name = filters.salon_name;
+    }
+
+    updatedParams.page = "1"; 
+
+    setSearchParams(updatedParams);
+  };
+
 // Column definition for the table
 const columns = useMemo(
   () => [
@@ -486,7 +501,7 @@ const columns = useMemo(
   return (
     <div className="p-6 bg-white min-h-screen">
       <h1 className="text-2xl font-bold mb-4">All Salons Services</h1>
-
+      <SalonSearchBar onSearch={handleSearch} />
       <div className="overflow-x-auto shadow-lg">
         <Table
           columns={columns}

@@ -670,11 +670,21 @@ interface GetAllSalonsResponse {
   salons: Salon[];
   total: number;
 }
-export const getAllSalons = createAsyncThunk<GetAllSalonsResponse, number>(
+interface GetAllSalonsParams {
+  page_no: number;
+  salon_name?: string;
+}
+
+export const getAllSalons = createAsyncThunk<GetAllSalonsResponse, GetAllSalonsParams>(
   "salons/getAllSalons",
-  async (page_no: number, { rejectWithValue }) => {
+  async ({ page_no, salon_name }, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/salon/get-all-salon?page_no=${page_no}`);
+      let url = `${BACKEND_URL}/salon/get-all-salon?page_no=${page_no}`;
+      if (salon_name) {
+        url += `&salon_name=${encodeURIComponent(salon_name)}`;
+      }
+
+      const response = await axios.get(url);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Failed to fetch salons");
@@ -866,24 +876,35 @@ interface GetAllStoresResponse {
   stores: Store[];
   total: number;
 }
-export const getAllStores = createAsyncThunk<GetAllStoresResponse, number>(
-  "salons/getAllStores",
-  async (page_no: number, { rejectWithValue, getState }) => {
+
+interface GetAllStoresParams {
+  page_no: number;
+  store_name?: string;
+}
+
+export const getAllStores = createAsyncThunk<GetAllStoresResponse, GetAllStoresParams>(
+  "stores/getAllStores",
+  async ({ page_no, store_name }, { rejectWithValue, getState }) => {
     try {
+      console.log("111")
       const state = getState() as RootState;
       const token = state.Login.token;
 
-      const response = await axios.get(
-        `${BACKEND_URL}/store/get_all_stores?page_no=${page_no}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add Bearer token
-          },
-        }
-      );
+      let url = `${BACKEND_URL}/store/get_all_stores?page_no=${page_no || 1}`;
+      console.log(url)
+      if (store_name) {
+        url += `&store_name=${encodeURIComponent(store_name)}`;
+      }
+
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Failed to fetch salons");
+      return rejectWithValue(error.response?.data || "Failed to fetch stores");
     }
   }
 );
