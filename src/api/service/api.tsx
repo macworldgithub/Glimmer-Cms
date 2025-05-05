@@ -252,26 +252,32 @@ export const getAllServicesForAdmin = createAsyncThunk(
   async (
     payload: {
       page_no: number;
-      salonId: string;
+      salonId?: string;
+      categoryId?: string;
+      name?: string;
     },
     { rejectWithValue, getState }
   ) => {
     try {
-      // Access token from the Redux state
       const state = getState() as RootState;
       const token = state.Login.token;
 
-      // Make API request with page number as a query parameter
+      const params = new URLSearchParams();
+      params.append("page_no", String(payload.page_no));
+      if (payload.salonId) params.append("salonId", payload.salonId);
+      if (payload.categoryId) params.append("categoryId", payload.categoryId);
+      if (payload.name) params.append("name", payload.name);
+
       const response = await axios.get(
-        `${BACKEND_URL}/salon-services/getAllServicesForAdmin?page_no=${payload.page_no}&salonId=${payload.salonId}`,
+        `${BACKEND_URL}/salon-services/getAllServicesForAdmin?${params.toString()}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Add Bearer token
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      return response.data; // Return the response data if successful
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");
     }

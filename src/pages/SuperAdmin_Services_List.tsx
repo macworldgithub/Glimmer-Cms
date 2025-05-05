@@ -175,11 +175,20 @@ const SuperAdmin_Services_List = () => {
     categoryId?: string;
     name?: string;
   }) => {
-    setSearchParams({
+    const currentParams = Object.fromEntries(searchParams.entries());
+    const updatedParams = {
+      ...currentParams,
       page: "1",
-      categoryId: newFilters.categoryId || "",
-      name: newFilters.name || "",
+      ...newFilters,
+    };
+
+    Object.keys(updatedParams).forEach((key) => {
+      if (!updatedParams[key]) {
+        delete updatedParams[key];
+      }
     });
+
+    setSearchParams(updatedParams);
   };
 
   const handlePriceChange = (id: string, value: string) => {

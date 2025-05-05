@@ -67,11 +67,20 @@ const booking = () => {
     customerName?: string;
     serviceName?: string;
   }) => {
-    setSearchParams({
+    const currentParams = Object.fromEntries(searchParams.entries());
+    const updatedParams = {
+      ...currentParams,
       page: "1",
-      customerName: newFilters.customerName || "",
-      serviceName: newFilters.serviceName || "",
+      ...newFilters,
+    };
+
+    Object.keys(updatedParams).forEach((key) => {
+      if (!updatedParams[key]) {
+        delete updatedParams[key];
+      }
     });
+
+    setSearchParams(updatedParams);
   };
 
   const handleViewDetails = async (bookingId: string) => {
