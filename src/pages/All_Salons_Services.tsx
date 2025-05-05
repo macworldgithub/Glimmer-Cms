@@ -464,14 +464,24 @@ const columns = useMemo(
       title: "Actions",
       key: "actions",
       render: (_: any, record: any) => {
-        const salonActionNames = salonActions[record._id] || [];
-        const displayText = salonActionNames.length > 0 ? salonActionNames.join(", ") : "More Option";
-
         return (
           <div className="flex space-x-2">
             <button onClick={() => handleUpdate(record)} className="text-blue-500 hover:underline">
               Update
             </button>
+          </div>
+        );
+      },
+    },
+    {
+      title: "Website Highlights",
+      key: "actions",
+      render: (_: any, record: any) => {
+        const salonActionNames = salonActions[record._id] || [];
+        const displayText = salonActionNames.length > 0 ? salonActionNames.join(", ") : "More Option";
+
+        return (
+          <div className="flex space-x-2">
             <Dropdown
               overlay={
                 <Menu>
