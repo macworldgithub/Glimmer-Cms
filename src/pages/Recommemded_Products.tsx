@@ -42,25 +42,27 @@ const Recommemded_Products = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res: any = await dispatch(getAllRecommendedProducts(salonId));
-      if (res.payload) {
-        const flattened = res.payload.flatMap((entry: any) =>
-          entry.productList.map((product: any) => {
-            const firstSale = product.saleRecords[0] || {};
-            return {
-              productId: product.productId,
-              productName: product.productName,
-              rate: product.rate,
-              soldUnits: product.soldUnits,
-              quantity: firstSale.quantity || '-',
-              price: firstSale.price || '-',
-              salonCut: firstSale.salonCut || '-',
-              saleRecords: product.saleRecords || []  // Store the saleRecords for later use
-            };
-          })
-        );
-        setData(flattened);
-        setTotal(flattened.length);
+      if (salonId) {
+        const res: any = await dispatch(getAllRecommendedProducts(salonId));
+        if (res.payload) {
+          const flattened = res.payload.flatMap((entry: any) =>
+            entry.productList.map((product: any) => {
+              const firstSale = product.saleRecords[0] || {};
+              return {
+                productId: product.productId,
+                productName: product.productName,
+                rate: product.rate,
+                soldUnits: product.soldUnits,
+                quantity: firstSale.quantity || '-',
+                price: firstSale.price || '-',
+                salonCut: firstSale.salonCut || '-',
+                saleRecords: product.saleRecords || []  // Store the saleRecords for later use
+              };
+            })
+          );
+          setData(flattened);
+          setTotal(flattened.length);
+        }
       }
     };
     fetchData();

@@ -222,17 +222,10 @@ export const getMenuItems = (
           ],
         },
         {
-          key: "salon",
+          key: "salon-recommended-products",
           icon: <FileOutlined />,
           label: "Recommended Products",
-          children: [
-            {
-              key: "salon-recommended-products",
-              icon: <FileOutlined />,
-              label: "Salon List",
-              path: "/All_Salons_Recommemded_Products",
-            },
-          ],
+          path: "/Recommemded_Products",
         },
       ]
       : []),

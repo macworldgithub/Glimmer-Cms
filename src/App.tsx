@@ -32,12 +32,12 @@ import SuperAdmin_Services_List from "./pages/SuperAdmin_Services_List.tsx";
 import SuperAdmin_Booking_List from "./pages/SuperAdmin_Booking_List.tsx";
 import All_Salons_Services from "./pages/All_Salons_Services.tsx";
 import All_Salons_Bookings from "./pages/All_Salons_Bookings.tsx";
-import Recommemded_Products from "./pages/Recommemded_Products.tsx";
 import All_Salons_Recommemded_Products from "./pages/All_Salons_Recommemded_Products.tsx";
 import All_Stores_Product from "./pages/All_Store_Products.tsx";
 import All_Store_Orders from "./pages/All_Store_Orders.tsx";
 import All_Salons_Highlights from "./pages/All_Salons_Highlights.tsx";
 import All_Products_Highlights from "./pages/All_Products_Highlights.tsx";
+import RecommendedProductsRouter from "./pages/RecommendedProductsRouter .tsx";
 
 function App() {
   //  const isAuthenticated = false;
@@ -106,7 +106,7 @@ function App() {
           <Route path="All_Salons_Services" element={<All_Salons_Services />} />
           <Route path="All_Salons_Bookings" element={<All_Salons_Bookings />} />
           <Route path="All_Salons_Recommemded_Products" element={<All_Salons_Recommemded_Products />} />
-          <Route path="Recommemded_Products" element={<Recommemded_Products />} />
+          <Route path="Recommemded_Products" element={<RecommendedProductsRouter />} />
           <Route path="All_Stores_Product" element={<All_Stores_Product />} />
           <Route path="All_Store_Orders" element={<All_Store_Orders />} />
           <Route path="All_Salons_Highlights" element={<All_Salons_Highlights />} />
