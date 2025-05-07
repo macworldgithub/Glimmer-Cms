@@ -518,7 +518,7 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
         </Form.Item>
         <p className="text-sm text-gray-600 mt-1">
           Final Price:{" "}
-          <span className="font-semibold text-black">${finalPrice}</span>
+          <span className="font-semibold text-black">PKR {finalPrice}</span>
         </p>
         <Form.Item
           label="Status"

@@ -405,7 +405,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
 
           <p className="text-sm text-gray-600 mt-1">
             Final Price:{" "}
-            <span className="font-semibold text-black">${finalPrice}</span>
+            <span className="font-semibold text-black">PKR {finalPrice}</span>
           </p>
 
           <div className="absolute top-2 right-4 bg-red-500 text-white text-xs px-2 py-1 rounded-md shadow-md">
