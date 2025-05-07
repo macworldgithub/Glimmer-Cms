@@ -63,14 +63,12 @@ const ServiceList = () => {
       getAllServicesForSalon({
         page_no: currentPage,
         categoryId: categoryIdFilter,
-        name: nameFilter,
       })
     );
   }, [
     dispatch,
     currentPage,
     categoryIdFilter,
-    nameFilter,
   ]);
 
   const serviceList = useSelector((state: RootState) => state.AllSalon.salons);
