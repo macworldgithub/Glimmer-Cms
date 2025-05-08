@@ -5,7 +5,7 @@ import Logo from "../assets/Logo/logo.png";
 import { AppDispatch } from "../store/store";
 
 import { useDispatch } from "react-redux";
-import { signInAdmin, signInSalon, signInStore } from "../api/auth/api";
+import { getNotification, signInAdmin, signInSalon, signInStore } from "../api/auth/api";
 
 const options = [
   { label: "Admin", value: 1 },
@@ -44,30 +44,40 @@ const Login = () => {
     }));
   };
 
-  const HandleLogin = () => {
-    if (loginCredentials.category === 1) {
-      dispatch(
-        signInAdmin({
-          email: loginCredentials.userName,
-          password: loginCredentials.password,
-        })
-      );
-    }
-    if (loginCredentials.category === 2) {
-      dispatch(
-        signInSalon({
-          email: loginCredentials.userName,
-          password: loginCredentials.password,
-        })
-      );
-    }
-    if (loginCredentials.category === 3) {
-      dispatch(
-        signInStore({
-          email: loginCredentials.userName,
-          password: loginCredentials.password,
-        })
-      );
+  const HandleLogin = async () => {
+    try {
+      let response;
+      if (loginCredentials.category === 1) {
+        response = await dispatch(
+          signInAdmin({
+            email: loginCredentials.userName,
+            password: loginCredentials.password,
+          })
+        ).unwrap();
+      } else if (loginCredentials.category === 2) {
+        response = await dispatch(
+          signInSalon({
+            email: loginCredentials.userName,
+            password: loginCredentials.password,
+          })
+        ).unwrap();
+      } else if (loginCredentials.category === 3) {
+        response = await dispatch(
+          signInStore({
+            email: loginCredentials.userName,
+            password: loginCredentials.password,
+          })
+        ).unwrap();
+        console.log(response)
+      }
+  
+      const userId = response?.store?._id;
+      console.log(userId)
+      if (userId) {
+        dispatch(getNotification({ userId }));
+      }
+    } catch (error) {
+      console.error("Login or notification fetch failed:", error);
     }
 
   };

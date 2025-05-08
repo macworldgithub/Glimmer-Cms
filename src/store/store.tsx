@@ -9,6 +9,7 @@ import allOrderSlice from "../slices/orderSlice";
 import addSalonSlice from "../slices/addSalonSlice";
 import allSalonSlice from "../slices/allSalonSlice";
 import allBookingSlice from "../slices/allBookingSlice";
+import notificationReducer from "../slices/notificationSlice";
 
 // Combine reducers
 const rootReducer = combineReducers({
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
   AllBooking: allBookingSlice.reducer,
   // Orders: orderSlice.reducer,
   AllOrders: allOrderSlice.reducer,
+  Notifications: notificationReducer,
 });
 
 // Type for the root reducer

@@ -76,3 +76,39 @@ export const createSalon = async (form: FormData) => {
     throw error; // Re-throw the error to handle it in the caller
   }
 };
+
+export const getNotification = createAsyncThunk(
+  "notification/getNotification",
+  async ({ userId }: { userId: string }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/notifications/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "An error occurred");
+    }
+  }
+);
+
+export const markNotificationAsReadAPI = createAsyncThunk(
+  "notification/markAsRead",
+  async (notificationId: string, { rejectWithValue }) => {
+    try {
+      await axios.patch(`${BACKEND_URL}/notifications/${notificationId}/read`);
+      return notificationId;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to mark as read");
+    }
+  }
+);
+
+export const markAllNotificationsAsReadAPI = createAsyncThunk(
+  "notification/markAllAsRead",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      await axios.patch(`${BACKEND_URL}/notifications/${userId}/readAll`);
+      return userId;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to mark all as read");
+    }
+  }
+);

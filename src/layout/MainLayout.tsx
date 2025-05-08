@@ -6,24 +6,57 @@ import Bell from "../components/Bell";
 import Profile from "../components/Profile";
 import SideBar from "../components/SideBar";
 import UpdateStoreModal from "../components/UpdateStore";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
-
-import { Navigate } from "react-router-dom";
 import SalonProfile from "../components/SalonProfile";
 import UpdateSalonModal from "../components/UpdateSalon";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { toast } from "react-toastify";
+import io from "socket.io-client";
+import { addNotification } from "../slices/notificationSlice";
+import { BACKEND_URL } from "../config/server";
+
+// Sound effect (can be customized)
+const notificationSound = new Audio("/notification.mp3"); 
 
 const { Header, Content } = Layout;
 
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-
-  const role = useSelector((state: RootState) => state.Login.role);
   const [profile, setProfile] = useState<boolean>(false);
-  // const {
-  //   token: { colorBgContainer, borderRadiusLG },
-  // } = theme.useToken();
+  const role = useSelector((state: RootState) => state.Login.role);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const socket = io(BACKEND_URL, {
+      transports: ["websocket"],
+    });
+
+    socket.on("connect", () => {
+      console.log("Connected to WebSocket:", socket.id);
+    });
+
+    socket.on("newOrder", (order) => {
+      // Play sound
+      notificationSound.play();
+
+      // Toast (optional)
+      toast.success(`New order from ${order.customerName}`);
+
+      console.log("New order received:", order);
+      // Save notification to Redux
+      dispatch(addNotification({
+        id: order._id,
+        message: `New order received from ${order.customerName}`,
+        timestamp: new Date().toISOString(),
+        read: false,
+        data: order,
+      }));
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [dispatch]);
 
   return (
     <Layout>
@@ -67,12 +100,10 @@ const MainLayout = () => {
         <Content
           style={{
             margin: "10px 16px",
-
             minHeight: 280,
-
             background: "#F5F5F5",
-            overflowY: "auto", // Enables vertical scrolling
-            height: "60vh", // Full height minus the header height (adjust as needed)
+            overflowY: "auto",
+            height: "60vh",
           }}
         >
           {(role === "store" || role === "super_admin") && (
