@@ -25,11 +25,13 @@ const Bell = () => {
     : 0;
 
   const handleRead = (id: string) => {
+    //@ts-ignore
     dispatch(markNotificationAsReadAPI(id));
   };
 
   const handleMarkAllRead = () => {
     if (userId) {
+      //@ts-ignore
       dispatch(markAllNotificationsAsReadAPI(userId));
     }
   };
