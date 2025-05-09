@@ -16,7 +16,7 @@ import { addNotification } from "../slices/notificationSlice";
 import { BACKEND_URL } from "../config/server";
 
 // Sound effect (can be customized)
-const notificationSound = new Audio("/notification.mp3"); 
+const notificationSound = new Audio("/notification.mp3");
 
 const { Header, Content } = Layout;
 
@@ -24,6 +24,7 @@ const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [profile, setProfile] = useState<boolean>(false);
   const role = useSelector((state: RootState) => state.Login.role);
+  console.log(role);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -35,23 +36,33 @@ const MainLayout = () => {
       console.log("Connected to WebSocket:", socket.id);
     });
 
-    socket.on("newOrder", (order) => {
-      // Play sound
-      notificationSound.play();
+    if (role === "store" || role === "super_admin") {
+      socket.on("newOrder", (order) => {
+        notificationSound.play();
+        toast.success(`New order from ${order.customerName}`);
+        dispatch(addNotification({
+          id: order._id,
+          message: `A new order has been placed by ${order.customerName}. Please review and process it. Order ID: ${order._id}`,
+          timestamp: new Date().toISOString(),
+          read: false,
+          data: order,
+        }));
+      });
+    }
 
-      // Toast (optional)
-      toast.success(`New order from ${order.customerName}`);
-
-      console.log("New order received:", order);
-      // Save notification to Redux
-      dispatch(addNotification({
-        id: order._id,
-        message: `New order received from ${order.customerName}`,
-        timestamp: new Date().toISOString(),
-        read: false,
-        data: order,
-      }));
-    });
+    if (role === "salon" || role === "super_admin") {
+      socket.on("newBooking", (booking) => {
+        notificationSound.play();
+        toast.success(`New booking from ${booking.customerName}`);
+        dispatch(addNotification({
+          id: booking._id,
+          message: `A new salon appointment has been booked by ${booking.customerName}. Please review the details. Salon ID: ${booking._id}`,
+          timestamp: new Date().toISOString(),
+          read: false,
+          data: booking,
+        }));
+      });
+    }
 
     return () => {
       socket.disconnect();

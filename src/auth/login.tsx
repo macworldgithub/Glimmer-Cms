@@ -47,6 +47,7 @@ const Login = () => {
   const HandleLogin = async () => {
     try {
       let response;
+      let userId;
       if (loginCredentials.category === 1) {
         response = await dispatch(
           signInAdmin({
@@ -54,6 +55,7 @@ const Login = () => {
             password: loginCredentials.password,
           })
         ).unwrap();
+        userId = response?.admin?._id;
       } else if (loginCredentials.category === 2) {
         response = await dispatch(
           signInSalon({
@@ -61,6 +63,7 @@ const Login = () => {
             password: loginCredentials.password,
           })
         ).unwrap();
+        userId = response?.salon?._id;
       } else if (loginCredentials.category === 3) {
         response = await dispatch(
           signInStore({
@@ -68,18 +71,16 @@ const Login = () => {
             password: loginCredentials.password,
           })
         ).unwrap();
-        console.log(response)
+        userId = response?.store?._id;
       }
   
-      const userId = response?.store?._id;
-      console.log(userId)
       if (userId) {
-        dispatch(getNotification({ userId }));
+        const isSuperAdmin = loginCredentials.category === 1;
+        dispatch(getNotification({ userId: isSuperAdmin ? undefined : userId }));
       }
     } catch (error) {
       console.error("Login or notification fetch failed:", error);
     }
-
   };
   return (
     <div className="w-[100vw] h-[100vh] bg-[#F5F5F9] flex justify-center items-center ">

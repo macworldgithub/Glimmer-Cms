@@ -79,9 +79,13 @@ export const createSalon = async (form: FormData) => {
 
 export const getNotification = createAsyncThunk(
   "notification/getNotification",
-  async ({ userId }: { userId: string }, { rejectWithValue }) => {
+  async ({ userId }: { userId?: string }, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/notifications/${userId}`);
+      const url = userId
+        ? `${BACKEND_URL}/notifications?userId=${userId}`
+        : `${BACKEND_URL}/notifications`;
+
+      const response = await axios.get(url);
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");

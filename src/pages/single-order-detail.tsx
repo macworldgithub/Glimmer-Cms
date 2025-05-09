@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Card, message, Table, Tag } from "antd";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { BACKEND_URL } from "../config/server";
 import { useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import { RootState } from "../store/store";
 import { createSaleRecordForSalonCut } from "../api/service/api";
 
 const OrderDetailPage = () => {
+  const { id: orderId } = useParams();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   //   const order = location.state?.data;
@@ -16,27 +17,36 @@ const OrderDetailPage = () => {
   const store_id = useSelector((state: RootState) => state.Login._id);
 
   const storeId = searchParams.get('store');
-  const showActionColumn = order.productList.some(
-    (item) => item.orderProductStatus === "Pending"
-  );
+
   const fetchData = async () => {
-    const response = await axios.get(
-      `${BACKEND_URL}/order/get_store_order_by_id?order_id=${location.state?.data._id}&store_id=${store_id || storeId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    // console.log(response.data);
-    setOrders(response.data);
+    if (!orderId) return;
+
+    try {
+      const response = await axios.get(
+        `${BACKEND_URL}/order/get_store_order_by_id?order_id=${orderId}&store_id=${store_id || storeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setOrders(response.data);
+    } catch (error) {
+      message.error("Failed to fetch order details.");
+    }
   };
+
   useEffect(() => {
     fetchData();
-  }, [location]);
+  }, [orderId, store_id, storeId, token]);
+
   if (!order) {
     return <p className="text-center text-lg">No order details available.</p>;
   }
+
+  const showActionColumn = order.productList.some(
+    (item) => item.orderProductStatus === "Pending"
+  );
   const columns = [
     {
       title: "Product Image",
