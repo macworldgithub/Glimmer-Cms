@@ -351,6 +351,12 @@ const ProductTableWithHeader = () => {
       title: "Discounted Price",
       dataIndex: "discounted_price",
       key: "discounted_price",
+      render: (_: number, record: any) => {
+        const base = record.base_price || 0;
+        const discountPercent = record.discounted_price || 0;
+        const discountedValue = base - (base * discountPercent) / 100;
+        return discountedValue.toFixed(2);
+      },
     },
     { title: "Status", dataIndex: "status", key: "status" },
     { title: "Stock", dataIndex: "quantity", key: "quantity" },
