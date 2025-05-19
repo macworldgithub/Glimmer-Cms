@@ -469,6 +469,7 @@ const columns = useMemo(
             <button onClick={() => handleUpdate(record)} className="text-blue-500 hover:underline">
               Update
             </button>
+            <button onClick={()=> handleUpdate(record)} className="text-blue-500 hover:underline"> /Delete</button>
           </div>
         );
       },
