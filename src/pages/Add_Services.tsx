@@ -34,7 +34,7 @@ const ServicePage = () => {
   );
   const [productItems, setProductItems] = useState<string[]>([]);
 
-  // Fetch Categories
+  
   const fetchServices = async () => {
     try {
       const data = await getAllServices();
@@ -44,7 +44,7 @@ const ServicePage = () => {
     }
   };
 
-  // Fetch Subservices and Products
+
   const fetchSubservicesAndProducts = async (categoryId: string) => {
     try {
       const data = await getAllServicesById(categoryId);
@@ -75,7 +75,7 @@ const ServicePage = () => {
 
   useEffect(() => {
     if (selectedSubservice) {
-      // Extract products (values) for the selected subservice category
+      
       const selectedProducts = subservices[selectedSubservice] || [];
       setProductItems(selectedProducts);
     }
@@ -90,8 +90,8 @@ const ServicePage = () => {
     dispatch(
       updateSalon({
         categoryId: id,
-        subCategoryName: "", // Reset subcategory when a new service is selected
-        subSubCategoryName: "", // Reset subSubCategory
+        subCategoryName: "", 
+        subSubCategoryName: "", 
       })
     );
   };
