@@ -1,12 +1,41 @@
-import { Button, Dropdown, Input, Menu, Modal, Table, Tag, message } from 'antd';
-import React, { useEffect, useState, useMemo } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { addRecommendedProduct, getAllProducts, getAllRecommendedProductsForSalon, getAllSalons, updateNewToGlimmer, updateRecommendedSalon, updateTrendingSalon } from '../api/service/api';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store/store';
-import { getAllCategories, getAllProductItem, getAllSubcategories } from '../api/category/api';
-import SalonSearchBar from '../components/SalonSearchBar';
+import {
+  Button,
+  Dropdown,
+  Input,
+  Menu,
+  Modal,
+  Table,
+  Tag,
+  message,
+} from "antd";
+import React, { useEffect, useState, useMemo } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  addRecommendedProduct,
+  getAllProducts,
+  getAllRecommendedProductsForSalon,
+  getAllSalons,
+  updateNewToGlimmer,
+  updateRecommendedSalon,
+  updateTrendingSalon,
+} from "../api/service/api";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
+import {
+  getAllCategories,
+  getAllProductItem,
+  getAllSubcategories,
+} from "../api/category/api";
+import SalonSearchBar from "../components/SalonSearchBar";
+import axios from "axios";
+import { developmentServer, BACKEND_URL } from "../../src/config/server";
 
+export const deleteSalon = async (salonId: string) => {
+  const response = await axios.delete(
+    `${BACKEND_URL}/salon/delete?salon_id=${salonId}`
+  );
+  return response.data;
+};
 
 interface TableData {
   _id: string;
@@ -17,6 +46,7 @@ interface TableData {
   contact_number: number;
   openingHour: string;
   closingHour: string;
+  status?: "active" | "inactive";
 }
 
 interface ProductOption {
@@ -32,14 +62,18 @@ const All_Salons_Services = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDropdownModalVisible, setIsDropdownModalVisible] = useState(false);
-  const [recommendedProducts, setRecommendedProducts] = useState<ProductOption[]>([]);
-  const [activeProductIndex, setActiveProductIndex] = useState<number | null>(null);
+  const [recommendedProducts, setRecommendedProducts] = useState<
+    ProductOption[]
+  >([]);
+  const [activeProductIndex, setActiveProductIndex] = useState<number | null>(
+    null
+  );
 
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
@@ -56,29 +90,43 @@ const All_Salons_Services = () => {
     _id: "",
     name: "",
   });
-  const [selectedProducts, setSelectedProducts] = useState({ _id: "", name: "" });
+  const [selectedProducts, setSelectedProducts] = useState({
+    _id: "",
+    name: "",
+  });
   const [selectedSalonId, setSelectedSalonId] = useState<string | null>(null);
 
   const [relatedProducts, setRelatedProducts] = useState<ProductOption[]>([]);
-  const [selectedRelatedProducts, setSelectedRelatedProducts] = useState<ProductOption[]>([]);
+  const [selectedRelatedProducts, setSelectedRelatedProducts] = useState<
+    ProductOption[]
+  >([]);
 
-  const [fetchedRecommendedProducts, setFetchedRecommendedProducts] = useState<ProductOption[]>([]);
+  const [fetchedRecommendedProducts, setFetchedRecommendedProducts] = useState<
+    ProductOption[]
+  >([]);
 
-  const [salonActions, setSalonActions] = useState<Record<string, string[]>>({});
+  const [salonActions, setSalonActions] = useState<Record<string, string[]>>(
+    {}
+  );
 
   // const role = useSelector((state: RootState) => state.Login.role);
   // console.log(role);
 
-  const page = parseInt(new URLSearchParams(location.search).get('page_no') || '1');
-  const salon_name = new URLSearchParams(location.search).get('salon_name') || undefined;
+  const page = parseInt(
+    new URLSearchParams(location.search).get("page_no") || "1"
+  );
+  const salon_name =
+    new URLSearchParams(location.search).get("salon_name") || undefined;
 
   const fetchData = async () => {
     try {
-      const result = await dispatch(getAllSalons({ page_no: page, salon_name })).unwrap();
+      const result = await dispatch(
+        getAllSalons({ page_no: page, salon_name })
+      ).unwrap();
       setData(result.salons);
       setTotal(result.total);
     } catch (error) {
-      message.error('Failed to fetch salons');
+      message.error("Failed to fetch salons");
     }
   };
 
@@ -151,11 +199,12 @@ const All_Salons_Services = () => {
         id
       );
       console.log(response);
-      const products = response?.products?.map((p) => ({
-        _id: p._id,
-        name: p.name,
-        image1: p.image1,
-      })) || [];
+      const products =
+        response?.products?.map((p) => ({
+          _id: p._id,
+          name: p.name,
+          image1: p.image1,
+        })) || [];
 
       setRelatedProducts(products);
       setSelectedRelatedProducts([]);
@@ -169,7 +218,6 @@ const All_Salons_Services = () => {
       (item) => item._id === selectedCategory._id
     );
     setFilterSubcategory(filteredSubCategories);
-
   }, [selectedCategory._id]);
 
   useEffect(() => {
@@ -194,7 +242,6 @@ const All_Salons_Services = () => {
     );
 
     setFilterProducts(filteredProducts);
-
   }, [selectedSubcategory._id]);
 
   const handleConfirmProductSelection = () => {
@@ -224,8 +271,6 @@ const All_Salons_Services = () => {
     setSelectedRelatedProducts([]);
   };
 
-
-
   const handlePageChange = (page: number) => {
     navigate(`?page_no=${page}`);
   };
@@ -236,18 +281,20 @@ const All_Salons_Services = () => {
       setFetchedRecommendedProducts([]);
       setRecommendedProducts([]);
       setIsModalVisible(true); // Open modal early if you want loading UX
-  
+
       // Now load new salon's data
       setSelectedSalonId(record._id);
-  
-      const res: any = await dispatch(getAllRecommendedProductsForSalon(record._id));
+
+      const res: any = await dispatch(
+        getAllRecommendedProductsForSalon(record._id)
+      );
       if (res.payload && Array.isArray(res.payload)) {
         const mapped = res.payload.map((product: any) => ({
           _id: product._id,
           name: product.name,
           image1: product.image1,
         }));
-  
+
         setFetchedRecommendedProducts(mapped);
         setRecommendedProducts(mapped);
       }
@@ -255,7 +302,18 @@ const All_Salons_Services = () => {
       console.error("Failed to fetch saved products", error);
       message.error("Could not load saved recommended products.");
     }
-  };  
+  };
+
+  const handleDeleteSalon = async (salonId: string) => {
+    try {
+      await deleteSalon(salonId);
+      message.success("Salon deleted successfully");
+      fetchData();
+    } catch (error) {
+      console.error("Failed to delete salon", error);
+      message.error("Failed to delete salon");
+    }
+  };
 
   const handleDropdownClick = (index: number) => {
     if (!recommendedProducts[index]?.name) {
@@ -271,13 +329,18 @@ const All_Salons_Services = () => {
 
   const handleAddProduct = () => {
     if (recommendedProducts.length < 10) {
-      setRecommendedProducts([...recommendedProducts, { _id: '', name: '', image1: '' }]);
+      setRecommendedProducts([
+        ...recommendedProducts,
+        { _id: "", name: "", image1: "" },
+      ]);
     }
   };
 
   const handleRemoveProduct = (index: number) => {
     const updated = recommendedProducts.filter((_, i) => i !== index);
-    setRecommendedProducts(updated.length ? updated : [{ _id: '', name: '', image1: '' }]);
+    setRecommendedProducts(
+      updated.length ? updated : [{ _id: "", name: "", image1: "" }]
+    );
   };
 
   const handleAddProductForSalon = async () => {
@@ -288,7 +351,10 @@ const All_Salons_Services = () => {
     }
 
     const newProducts = validProducts.filter(
-      (product) => !fetchedRecommendedProducts.some((fetched) => fetched._id === product._id)
+      (product) =>
+        !fetchedRecommendedProducts.some(
+          (fetched) => fetched._id === product._id
+        )
     );
 
     if (newProducts.length === 0) {
@@ -310,20 +376,14 @@ const All_Salons_Services = () => {
     }
   };
 
-
-  // const handleDelete = (record: TableData) => {
-  //   setSelectedSalon(record);
-  //   setIsDeleteModalVisible(true);
-  // };
-
   const formatTime = (timeStr) => {
-    if (!timeStr) return '-';
+    if (!timeStr) return "-";
 
-    const [hourStr, minute = "00"] = timeStr.split(':');
+    const [hourStr, minute = "00"] = timeStr.split(":");
     let hour = parseInt(hourStr, 10);
     const isPM = hour >= 12;
     const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
-    const suffix = isPM ? 'pm' : 'am';
+    const suffix = isPM ? "pm" : "am";
     return `${formattedHour}:${minute} ${suffix}`;
   };
 
@@ -334,7 +394,9 @@ const All_Salons_Services = () => {
     }
   };
 
-  const saveSalonActionsToLocalStorage = (updatedActions: Record<string, string[]>) => {
+  const saveSalonActionsToLocalStorage = (
+    updatedActions: Record<string, string[]>
+  ) => {
     localStorage.setItem("salonActions", JSON.stringify(updatedActions));
   };
 
@@ -398,7 +460,9 @@ const All_Salons_Services = () => {
             updatedActions[salonId].push(actionText);
           }
         } else {
-          updatedActions[salonId] = updatedActions[salonId].filter((action) => action !== actionText);
+          updatedActions[salonId] = updatedActions[salonId].filter(
+            (action) => action !== actionText
+          );
         }
 
         // Save updated actions to localStorage
@@ -406,7 +470,9 @@ const All_Salons_Services = () => {
         return updatedActions;
       });
 
-      alert(`Successfully ${status ? "added to" : "removed from"} ${actionText}!`);
+      alert(
+        `Successfully ${status ? "added to" : "removed from"} ${actionText}!`
+      );
     } catch (error) {
       console.error("Error performing action:", error);
       alert("There was an error performing the action.");
@@ -420,95 +486,214 @@ const All_Salons_Services = () => {
       updatedParams.salon_name = filters.salon_name;
     }
 
-    updatedParams.page = "1"; 
+    updatedParams.page = "1";
 
     setSearchParams(updatedParams);
   };
 
-// Column definition for the table
-const columns = useMemo(
-  () => [
-    {
-      title: "Salon Name",
-      dataIndex: "salon_name",
-      key: "salon_name",
-      render: (_: any, record: any) => (
-        <button onClick={() => navigate(`/SuperAdmin_Services_List?salonId=${record._id}`)} className="text-orange-500 hover:underline">
-          {record.salon_name}
-        </button>
-      ),
-    },
-    {
-      title: "Email",
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: "Opening Hours",
-      dataIndex: "openingHour",
-      key: "openingHour",
-      render: (time) => formatTime(time),
-    },
-    {
-      title: "Closing Hours",
-      dataIndex: "closingHour",
-      key: "closingHour",
-      render: (time) => formatTime(time),
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      key: "address",
-    },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_: any, record: any) => {
-        return (
-          <div className="flex space-x-2">
-            <button onClick={() => handleUpdate(record)} className="text-blue-500 hover:underline">
-              Update
-            </button>
-            <button onClick={()=> handleUpdate(record)} className="text-blue-500 hover:underline"> /Delete</button>
-          </div>
-        );
-      },
-    },
-    {
-      title: "Website Highlights",
-      key: "actions",
-      render: (_: any, record: any) => {
-        const salonActionNames = salonActions[record._id] || [];
-        const displayText = salonActionNames.length > 0 ? salonActionNames.join(", ") : "More Option";
+  const toggleStatus = async (record: TableData) => {
+    try {
+      const newStatus = record.status === "active" ? "inactive" : "active";
+      const token = localStorage.getItem("token");
 
-        return (
-          <div className="flex space-x-2">
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item key="new-to-glimmer" onClick={() => handleMenuClick("new-to-glimmer", record._id)}>
-                    New To Glimmer
-                  </Menu.Item>
-                  <Menu.Item key="recommended-salon" onClick={() => handleMenuClick("recommended-salon", record._id)}>
-                    Recommended Salons
-                  </Menu.Item>
-                  <Menu.Item key="trending-salon" onClick={() => handleMenuClick("trending-salon", record._id)}>
-                    Trending Salons
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Tag color="blue">
-                <button>{displayText}</button>
-              </Tag>
-            </Dropdown>
-          </div>
-        );
+      if (!token) {
+        message.error("You are not authenticated");
+        return;
+      }
+
+      console.log("PATCH /update_status with status:", newStatus);
+
+      const response = await axios.patch(
+        `/update_status`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Response:", response.data);
+
+      message.success(`Salon status updated to ${newStatus}`);
+      fetchData();
+    } catch (error: any) {
+      console.error(error.response?.data || error.message);
+      message.error("Failed to update status");
+    }
+  };
+
+  const StatusTag = ({
+    initialStatus,
+    onToggle,
+  }: {
+    initialStatus: "active" | "inactive" | "default";
+    onToggle: (newStatus: "active" | "inactive") => void;
+  }) => {
+    // Local state for color toggling
+    const [status, setStatus] = useState<"active" | "inactive" | "default">(
+      initialStatus
+    );
+
+    const handleClick = () => {
+      let newStatus: "active" | "inactive";
+      if (status === "active") newStatus = "inactive";
+      else if (status === "inactive") newStatus = "active";
+      else newStatus = "active";
+      setStatus(newStatus);
+      onToggle(newStatus);
+    };
+
+    let color = "blue";
+    let text = "Default";
+
+    if (status === "active") {
+      color = "green";
+      text = "Active";
+    } else if (status === "inactive") {
+      color = "red";
+      text = "Inactive";
+    }
+
+    return (
+      <Tag color={color} style={{ cursor: "pointer" }} onClick={handleClick}>
+        {text}
+      </Tag>
+    );
+  };
+
+  // Column definition for the table
+  const columns = useMemo(
+    () => [
+      {
+        title: "Salon Name",
+        dataIndex: "salon_name",
+        key: "salon_name",
+        render: (_: any, record: any) => (
+          <button
+            onClick={() =>
+              navigate(`/SuperAdmin_Services_List?salonId=${record._id}`)
+            }
+            className="text-orange-500 hover:underline"
+          >
+            {record.salon_name}
+          </button>
+        ),
       },
-    },
-  ],
-  [salonActions]
-);
+      {
+        title: "Email",
+        dataIndex: "email",
+        key: "email",
+      },
+      {
+        title: "Opening Hours",
+        dataIndex: "openingHour",
+        key: "openingHour",
+        render: (time) => formatTime(time),
+      },
+      {
+        title: "Closing Hours",
+        dataIndex: "closingHour",
+        key: "closingHour",
+        render: (time) => formatTime(time),
+      },
+      {
+        title: "Address",
+        dataIndex: "address",
+        key: "address",
+      },
+      {
+        title: "Actions",
+        key: "actions",
+        render: (_: any, record: any) => {
+          return (
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleUpdate(record)}
+                className="text-blue-500 hover:underline"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => handleDeleteSalon(record._id)}
+                className="text-red-500 hover:underline"
+              >
+                /Delete
+              </button>
+            </div>
+          );
+        },
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        render: (
+          status: "active" | "inactive" | "default",
+          record: TableData
+        ) => (
+          <StatusTag
+            initialStatus={status}
+            onToggle={(newStatus) => {
+              toggleStatus({ ...record, status: newStatus });
+            }}
+          />
+        ),
+      },
+
+      {
+        title: "Website Highlights",
+        key: "actions",
+        render: (_: any, record: any) => {
+          const salonActionNames = salonActions[record._id] || [];
+          const displayText =
+            salonActionNames.length > 0
+              ? salonActionNames.join(", ")
+              : "More Option";
+
+          return (
+            <div className="flex space-x-2">
+              <Dropdown
+                overlay={
+                  <Menu>
+                    <Menu.Item
+                      key="new-to-glimmer"
+                      onClick={() =>
+                        handleMenuClick("new-to-glimmer", record._id)
+                      }
+                    >
+                      New To Glimmer
+                    </Menu.Item>
+                    <Menu.Item
+                      key="recommended-salon"
+                      onClick={() =>
+                        handleMenuClick("recommended-salon", record._id)
+                      }
+                    >
+                      Recommended Salons
+                    </Menu.Item>
+                    <Menu.Item
+                      key="trending-salon"
+                      onClick={() =>
+                        handleMenuClick("trending-salon", record._id)
+                      }
+                    >
+                      Trending Salons
+                    </Menu.Item>
+                  </Menu>
+                }
+              >
+                <Tag color="blue">
+                  <button>{displayText}</button>
+                </Tag>
+              </Dropdown>
+            </div>
+          );
+        },
+      },
+    ],
+    [salonActions]
+  );
   return (
     <div className="p-6 bg-white min-h-screen">
       <h1 className="text-2xl font-bold mb-4">All Salons Services</h1>
@@ -543,32 +728,35 @@ const columns = useMemo(
             Add Recommended Product
           </Button>
           {recommendedProducts.map((product, index) => {
-            console.log('Rendering product:', product);
+            console.log("Rendering product:", product);
             return (
-              <><div key={index} className="flex items-center gap-4">
-                <Button
-                  onClick={() => handleDropdownClick(index)}
-                  className="flex-1 text-left border border-gray-300 cursor-default"
-                >
-
-                  <div className="flex items-center gap-2">
-                    {product.image1 && (
-                      <img
-                        src={product.image1}
-                        alt={product.name}
-                        className="w-6 h-6 object-cover rounded" />
-                    )}
-                    {product?.name || 'Select Product'}
-                  </div>
-                </Button>
-                {product.name && (
-                  <Button danger onClick={() => handleRemoveProduct(index)}>
-                    Remove
+              <>
+                <div key={index} className="flex items-center gap-4">
+                  <Button
+                    onClick={() => handleDropdownClick(index)}
+                    className="flex-1 text-left border border-gray-300 cursor-default"
+                  >
+                    <div className="flex items-center gap-2">
+                      {product.image1 && (
+                        <img
+                          src={product.image1}
+                          alt={product.name}
+                          className="w-6 h-6 object-cover rounded"
+                        />
+                      )}
+                      {product?.name || "Select Product"}
+                    </div>
                   </Button>
-                )}
-              </div>
-                <div className='flex justify-center'>
-                  <Button onClick={handleAddProductForSalon}>Add to Salon</Button>
+                  {product.name && (
+                    <Button danger onClick={() => handleRemoveProduct(index)}>
+                      Remove
+                    </Button>
+                  )}
+                </div>
+                <div className="flex justify-center">
+                  <Button onClick={handleAddProductForSalon}>
+                    Add to Salon
+                  </Button>
                 </div>
               </>
             );
@@ -642,18 +830,24 @@ const columns = useMemo(
           </label>
 
           {relatedProducts.map((prod, i) => {
-            const isSelected = selectedRelatedProducts.some(p => p._id === prod._id);
+            const isSelected = selectedRelatedProducts.some(
+              (p) => p._id === prod._id
+            );
             return (
               <label key={prod._id} className="flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={isSelected}
                   onChange={() => {
-                    const isSelected = selectedRelatedProducts.some(p => p._id === prod._id);
+                    const isSelected = selectedRelatedProducts.some(
+                      (p) => p._id === prod._id
+                    );
                     if (isSelected) {
-                      setSelectedRelatedProducts(prev => prev.filter(p => p._id !== prod._id));
+                      setSelectedRelatedProducts((prev) =>
+                        prev.filter((p) => p._id !== prod._id)
+                      );
                     } else {
-                      setSelectedRelatedProducts(prev => [...prev, prod]);
+                      setSelectedRelatedProducts((prev) => [...prev, prod]);
                     }
                   }}
                 />
@@ -661,10 +855,8 @@ const columns = useMemo(
               </label>
             );
           })}
-
         </div>
       </Modal>
-
     </div>
   );
 };

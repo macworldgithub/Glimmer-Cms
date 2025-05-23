@@ -46,7 +46,8 @@ const ServiceList = () => {
     {}
   );
   const [confirmVisible, setConfirmVisible] = useState(false);
-  const [selectedStatusRecord, setSelectedStatusRecord] = useState<TableData | null>(null);
+  const [selectedStatusRecord, setSelectedStatusRecord] =
+    useState<TableData | null>(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -56,7 +57,6 @@ const ServiceList = () => {
   const categoryIdFilter = searchParams.get("categoryId") || "";
   const nameFilter = searchParams.get("name") || "";
 
-
   useEffect(() => {
     //@ts-ignore
     dispatch(
@@ -65,11 +65,7 @@ const ServiceList = () => {
         categoryId: categoryIdFilter,
       })
     );
-  }, [
-    dispatch,
-    currentPage,
-    categoryIdFilter,
-  ]);
+  }, [dispatch, currentPage, categoryIdFilter]);
 
   const serviceList = useSelector((state: RootState) => state.AllSalon.salons);
 
@@ -115,9 +111,9 @@ const ServiceList = () => {
   const salonServiceList = useMemo(() => {
     return Array.isArray(serviceList)
       ? {
-        services: serviceList,
-        total: serviceList.length,
-      }
+          services: serviceList,
+          total: serviceList.length,
+        }
       : serviceList || { services: [], total: 0 };
   }, [serviceList]);
 
@@ -157,14 +153,11 @@ const ServiceList = () => {
   const filteredServices = salonServiceList.services.filter((salon) => {
     console.log(salon);
     const categoryId = salon.categoryId ? salon.categoryId.trim() : "";
-    const name = salon.name
-      ? salon.name.toLowerCase().trim()
-      : "";
+    const name = salon.name ? salon.name.toLowerCase().trim() : "";
 
     return (
       (!categoryIdFilter || categoryId === categoryIdFilter) &&
-      (!nameFilter ||
-        name.includes(nameFilter.toLowerCase()))
+      (!nameFilter || name.includes(nameFilter.toLowerCase()))
     );
   });
 
@@ -181,10 +174,7 @@ const ServiceList = () => {
     setIsDeleteModalVisible(true);
   };
 
-  const handleSearch = (newFilters: {
-    categoryId?: string;
-    name?: string;
-  }) => {
+  const handleSearch = (newFilters: { categoryId?: string; name?: string }) => {
     const currentParams = Object.fromEntries(searchParams.entries());
     const updatedParams = {
       ...currentParams,
@@ -223,12 +213,13 @@ const ServiceList = () => {
 
       if (changeActivationStatus.fulfilled.match(resultAction)) {
         message.success(
-          `Service marked as ${selectedStatusRecord.status ? "Inactive" : "Active"
+          `Service marked as ${
+            selectedStatusRecord.status ? "Inactive" : "Active"
           }`
         );
         setConfirmVisible(false);
         setSelectedStatusRecord(null);
-        alert("Status has been updated")
+        alert("Status has been updated");
         window.location.reload(); // or trigger a refetch instead
       } else {
         message.error("Failed to change status.");
@@ -327,7 +318,9 @@ const ServiceList = () => {
       key: "status",
       render: (status: boolean, record: TableData) => (
         <span
-          className={`cursor-pointer font-medium ${status ? "text-green-600" : "text-red-600"}`}
+          className={`cursor-pointer font-medium ${
+            status ? "text-green-600" : "text-red-600"
+          }`}
           onClick={() => {
             setSelectedStatusRecord(record);
             setConfirmVisible(true);
@@ -353,7 +346,7 @@ const ServiceList = () => {
               onClick={() => handleDelete(record)}
               className="text-red-500 hover:underline"
             >
-              Delete
+            Delete
             </button>
           )}
         </div>
@@ -407,7 +400,9 @@ const ServiceList = () => {
       >
         <p>
           Are you sure you want to{" "}
-          <strong>{selectedStatusRecord?.status ? "deactivate" : "activate"}</strong>{" "}
+          <strong>
+            {selectedStatusRecord?.status ? "deactivate" : "activate"}
+          </strong>{" "}
           this service?
         </p>
       </Modal>
