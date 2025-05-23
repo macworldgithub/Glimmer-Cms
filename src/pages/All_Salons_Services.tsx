@@ -30,9 +30,18 @@ import SalonSearchBar from "../components/SalonSearchBar";
 import axios from "axios";
 import { developmentServer, BACKEND_URL } from "../../src/config/server";
 
-export const deleteSalon = async (salonId: string) => {
+export const deleteSalon = async (salonId: string, token: string) => {
+  if (!token) {
+    console.error("No authentication token found");
+    throw new Error("No authentication token found");
+  }
   const response = await axios.delete(
-    `${BACKEND_URL}/salon/delete?salon_id=${salonId}`
+    `${BACKEND_URL}/salon/delete?salon_id=${salonId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
   return response.data;
 };
@@ -62,6 +71,7 @@ const All_Salons_Services = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const token = useSelector((state: RootState) => state.Login.token);
 
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -306,7 +316,7 @@ const All_Salons_Services = () => {
 
   const handleDeleteSalon = async (salonId: string) => {
     try {
-      await deleteSalon(salonId);
+      await deleteSalon(salonId,token);
       message.success("Salon deleted successfully");
       fetchData();
     } catch (error) {
@@ -492,36 +502,33 @@ const All_Salons_Services = () => {
   };
 
   const toggleStatus = async (record: TableData) => {
-    try {
-      const newStatus = record.status === "active" ? "inactive" : "active";
-      const token = localStorage.getItem("token");
+  try {
+    const newStatus = record.status === "active" ? "Active" : "Inactive"; // Use capitalized values
 
-      if (!token) {
-        message.error("You are not authenticated");
-        return;
-      }
-
-      console.log("PATCH /update_status with status:", newStatus);
-
-      const response = await axios.patch(
-        `/update_status`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("Response:", response.data);
-
-      message.success(`Salon status updated to ${newStatus}`);
-      fetchData();
-    } catch (error: any) {
-      console.error(error.response?.data || error.message);
-      message.error("Failed to update status");
+    if (!token) {
+      message.error("You are not authenticated");
+      return;
     }
-  };
+
+    const response = await axios.patch(
+      `${BACKEND_URL}/salon/update_status?salon_id=${record._id}`,
+      { status: newStatus },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Response:", response.data);
+    message.success(`Salon status updated to ${newStatus}`);
+    fetchData();
+  } catch (error: any) {
+    console.error("Error updating status:", error.response?.data || error.message);
+    message.error(error.response?.data?.message || "Failed to update status");
+  }
+};
 
   const StatusTag = ({
     initialStatus,
