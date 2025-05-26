@@ -39,6 +39,7 @@ import All_Salons_Highlights from "./pages/All_Salons_Highlights.tsx";
 import All_Products_Highlights from "./pages/All_Products_Highlights.tsx";
 import RecommendedProductsRouter from "./pages/RecommendedProductsRouter .tsx";
 
+
 function App() {
   //  const isAuthenticated = false;
   const isAuthenticated = useSelector(

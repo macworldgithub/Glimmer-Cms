@@ -129,6 +129,18 @@ export const getMenuItems = (
           label: "Product Highlights",
           path: "/All_Products_Highlights",
         },
+
+ {
+          key: "Manage Reviews",
+          icon: <FileOutlined />,
+          label: "Manage Reviews",
+          path: "/Manage_Review",
+        },
+
+
+
+
+        
       ]
       : []),
 

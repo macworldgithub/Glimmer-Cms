@@ -2,7 +2,13 @@ import { Button, Checkbox, Dropdown, Input, Menu, Table, Tag } from "antd";
 import "antd/dist/reset.css";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllProducts, updateBestSellerProduct, updateProductPrices, updateTrendingProduct, updateYouMusthaveThisProduct } from "../../api/products/api";
+import {
+  getAllProducts,
+  updateBestSellerProduct,
+  updateProductPrices,
+  updateTrendingProduct,
+  updateYouMusthaveThisProduct,
+} from "../../api/products/api";
 import DeleteProductModal from "../../components/DeleteProductModal";
 import UpdateModal from "../../components/UpdateProductModal";
 import SearchBar from "../../components/SearchBar"; // Import SearchBar
@@ -51,7 +57,9 @@ const ProductTableWithHeader = () => {
   const [allChecked, setAllChecked] = useState(false);
   const [discount, setDiscount] = useState<number>(0);
 
-  const [productActions, setProductActions] = useState<Record<string, string[]>>({});
+  const [productActions, setProductActions] = useState<
+    Record<string, string[]>
+  >({});
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -110,7 +118,14 @@ const ProductTableWithHeader = () => {
         storeId,
       })
     );
-  }, [dispatch, currentPage, nameFilter, categoryFilter, createdAtFilter, storeId]);
+  }, [
+    dispatch,
+    currentPage,
+    nameFilter,
+    categoryFilter,
+    createdAtFilter,
+    storeId,
+  ]);
 
   const rawProductList = useSelector(
     (state: RootState) => state.AllProducts.products
@@ -137,9 +152,9 @@ const ProductTableWithHeader = () => {
   const productList = useMemo(() => {
     return Array.isArray(rawProductList)
       ? {
-        products: transformProductData(rawProductList, selections),
-        total: rawProductList.length,
-      }
+          products: transformProductData(rawProductList, selections),
+          total: rawProductList.length,
+        }
       : rawProductList || { products: [], total: 0 };
   }, [rawProductList, selections]);
 
@@ -245,7 +260,9 @@ const ProductTableWithHeader = () => {
     }
   };
 
-  const saveProductActionsToLocalStorage = (updatedActions: Record<string, string[]>) => {
+  const saveProductActionsToLocalStorage = (
+    updatedActions: Record<string, string[]>
+  ) => {
     localStorage.setItem("productActions", JSON.stringify(updatedActions));
   };
 
@@ -261,13 +278,15 @@ const ProductTableWithHeader = () => {
 
   const getActionDetails = (key: string, productId: string) => {
     const actionMapping: Record<string, string> = {
-      "best_seller": "Best Seller",
-      "trending_product": "Trending Product",
-      "you_must_have_this": "You Must Have This",
+      best_seller: "Best Seller",
+      trending_product: "Trending Product",
+      you_must_have_this: "You Must Have This",
     };
 
     const actionText = actionMapping[key];
-    const status = productActions[productId]?.includes(actionText) ? false : true;
+    const status = productActions[productId]?.includes(actionText)
+      ? false
+      : true;
 
     return { actionText, status };
   };
@@ -304,7 +323,9 @@ const ProductTableWithHeader = () => {
             updatedActions[productId].push(actionText);
           }
         } else {
-          updatedActions[productId] = updatedActions[productId].filter((action) => action !== actionText);
+          updatedActions[productId] = updatedActions[productId].filter(
+            (action) => action !== actionText
+          );
         }
 
         // Save updated actions to localStorage
@@ -312,7 +333,9 @@ const ProductTableWithHeader = () => {
         return updatedActions;
       });
 
-      alert(`Successfully ${status ? "added to" : "removed from"} ${actionText}!`);
+      alert(
+        `Successfully ${status ? "added to" : "removed from"} ${actionText}!`
+      );
     } catch (error) {
       console.error("Error performing action:", error);
       alert("There was an error performing the action.");
@@ -365,7 +388,10 @@ const ProductTableWithHeader = () => {
       key: "actions",
       render: (_: any, record: TableData) => {
         const productActionNames = productActions[record._id] || [];
-        const displayText = productActionNames.length > 0 ? productActionNames.join(", ") : "More Option";
+        const displayText =
+          productActionNames.length > 0
+            ? productActionNames.join(", ")
+            : "More Option";
 
         return (
           <div className="flex space-x-2">
@@ -385,40 +411,40 @@ const ProductTableWithHeader = () => {
             )}
           </div>
         );
-      }
+      },
     },
-    {
-      title: "Website Highlights",
-      key: "actions",
-      render: (_: any, record: TableData) => {
-        const productActionNames = productActions[record._id] || [];
-        const displayText = productActionNames.length > 0 ? productActionNames.join(", ") : "More Option";
+    // {
+    //   title: "Website Highlights",
+    //   key: "actions",
+    //   render: (_: any, record: TableData) => {
+    //     const productActionNames = productActions[record._id] || [];
+    //     const displayText = productActionNames.length > 0 ? productActionNames.join(", ") : "More Option";
 
-        return (
-          <div className="flex space-x-2">
-            <Dropdown
-              overlay={
-                <Menu>
-                  <Menu.Item key="best_seller" onClick={() => handleMenuClick("best_seller", record._id)}>
-                    Best Seller
-                  </Menu.Item>
-                  <Menu.Item key="trending_product" onClick={() => handleMenuClick("trending_product", record._id)}>
-                    Trending Product
-                  </Menu.Item>
-                  <Menu.Item key="you_must_have_this" onClick={() => handleMenuClick("you_must_have_this", record._id)}>
-                    You must have this
-                  </Menu.Item>
-                </Menu>
-              }
-            >
-              <Tag color="blue">
-                <button>{displayText}</button>
-              </Tag>
-            </Dropdown>
-          </div>
-        );
-      }
-    },
+    //     return (
+    //       <div className="flex space-x-2">
+    //         <Dropdown
+    //           overlay={
+    //             <Menu>
+    //               <Menu.Item key="best_seller" onClick={() => handleMenuClick("best_seller", record._id)}>
+    //                 Best Seller
+    //               </Menu.Item>
+    //               <Menu.Item key="trending_product" onClick={() => handleMenuClick("trending_product", record._id)}>
+    //                 Trending Product
+    //               </Menu.Item>
+    //               <Menu.Item key="you_must_have_this" onClick={() => handleMenuClick("you_must_have_this", record._id)}>
+    //                 You must have this
+    //               </Menu.Item>
+    //             </Menu>
+    //           }
+    //         >
+    //           <Tag color="blue">
+    //             <button>{displayText}</button>
+    //           </Tag>
+    //         </Dropdown>
+    //       </div>
+    //     );
+    //   }
+    // },
     { title: "Created at", dataIndex: "created_at", key: "created_At" },
   ];
 
@@ -430,7 +456,11 @@ const ProductTableWithHeader = () => {
       </div>
 
       {/* SearchBar */}
-      <SearchBar onSearch={handleSearch} categories={categoryNamesWithIds} showServices={false} />
+      <SearchBar
+        onSearch={handleSearch}
+        categories={categoryNamesWithIds}
+        showServices={false}
+      />
 
       {/* Modals */}
       {selectedProduct && (
