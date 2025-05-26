@@ -5,11 +5,16 @@ import Logo from "../assets/Logo/logo.png";
 import { AppDispatch } from "../store/store";
 
 import { useDispatch } from "react-redux";
-import { getNotification, signInAdmin, signInSalon, signInStore } from "../api/auth/api";
+import {
+  getNotification,
+  signInAdmin,
+  signInSalon,
+  signInStore,
+} from "../api/auth/api";
 
 const options = [
   { label: "Admin", value: 1 },
-  { label: "Saloon", value: 2 },
+  { label: "Salon", value: 2 },
   { label: "Ecommerce", value: 3 },
 ];
 
@@ -73,10 +78,12 @@ const Login = () => {
         ).unwrap();
         userId = response?.store?._id;
       }
-  
+
       if (userId) {
         const isSuperAdmin = loginCredentials.category === 1;
-        dispatch(getNotification({ userId: isSuperAdmin ? undefined : userId }));
+        dispatch(
+          getNotification({ userId: isSuperAdmin ? undefined : userId })
+        );
       }
     } catch (error) {
       console.error("Login or notification fetch failed:", error);
