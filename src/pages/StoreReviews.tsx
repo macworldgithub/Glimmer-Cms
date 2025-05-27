@@ -17,6 +17,7 @@ interface RatingData {
 const pageSize = 8;
 
 const StoreReviews = () => {
+  console.log('working')
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,11 +25,13 @@ const StoreReviews = () => {
   const [total, setTotal] = useState(0);
   const token = useSelector((state: RootState) => state.Login.token);
   const role = useSelector((state: RootState) => state.Login.role);
-  const storeId = useSelector((state: RootState) => state.Login.user?._id);
+  const storeId = useSelector((state: RootState) => state.Login._id);
 
   const page = parseInt(new URLSearchParams(location.search).get('page_no') || '1');
 
   const fetchRatings = async () => {
+    console.log("fetch rating")
+    console.log(storeId)
     if (role !== 'store') {
       message.error('Access denied. Store role only.');
       navigate('/E_Dashboard');
