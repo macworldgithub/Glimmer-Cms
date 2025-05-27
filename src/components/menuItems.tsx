@@ -93,7 +93,7 @@ export const getMenuItems = (
             {
               key: "super-admin-manage-services",
               icon: <FileOutlined />,
-              label: "Salon Service List",
+              label: "All Salons",
               path: "/All_Salons_Services",
             },
             {

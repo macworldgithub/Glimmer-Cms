@@ -703,7 +703,7 @@ const All_Salons_Services = () => {
   );
   return (
     <div className="p-6 bg-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">All Salons Services</h1>
+      <h1 className="text-2xl font-bold mb-4">All Salons</h1>
       <SalonSearchBar onSearch={handleSearch} />
       <div className="overflow-x-auto shadow-lg">
         <Table
