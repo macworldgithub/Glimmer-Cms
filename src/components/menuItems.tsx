@@ -130,8 +130,8 @@ export const getMenuItems = (
           path: "/All_Products_Highlights",
         },
 
- {
-          key: "Manage Reviews",
+{
+          key: "manage-reviews",
           icon: <FileOutlined />,
           label: "Manage Reviews",
           path: "/Manage_Review",
@@ -190,11 +190,12 @@ export const getMenuItems = (
         //   icon: <UserOutlined />,
         //   label: "Customer",
         // },
-        {
-          key: "ecommerce-reviews",
-          icon: <FileOutlined />,
-          label: "Managing Reviews",
-        },
+       {
+           key: "ecommerce-reviews",
+           icon: <FileOutlined />,
+           label: "Managing Reviews",
+           path: "/Store_Reviews",
+         },
       ]
       : []),
 

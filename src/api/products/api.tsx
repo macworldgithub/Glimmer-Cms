@@ -351,3 +351,53 @@ export const getAllProductHighlights = createAsyncThunk<any, { filter?: string }
     }
   }
 );
+
+export const getProductRatings = createAsyncThunk(
+  "getProductRatings",
+  async (productId: string, { rejectWithValue, getState }) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.get(
+        `${BACKEND_URL}/product/ratings?id=${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch product ratings");
+    }
+  }
+);
+
+export const updateProductRating = createAsyncThunk(
+  "updateProductRating",
+  async (
+    { ratingId, rating }: { ratingId: string; rating: number },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.put(
+        `${BACKEND_URL}/product/update_rating?rating_id=${ratingId}`,
+        { rating },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update product rating");
+    }
+  }
+);

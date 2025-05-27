@@ -39,7 +39,8 @@ import All_Salons_Highlights from "./pages/All_Salons_Highlights.tsx";
 import All_Products_Highlights from "./pages/All_Products_Highlights.tsx";
 import RecommendedProductsRouter from "./pages/RecommendedProductsRouter .tsx";
 
-
+import ManageReviews from "./pages/ManageReviews.tsx"; // Import new component
+import StoreReviews from "./pages/StoreReviews.tsx";
 function App() {
   //  const isAuthenticated = false;
   const isAuthenticated = useSelector(
@@ -112,6 +113,8 @@ function App() {
           <Route path="All_Store_Orders" element={<All_Store_Orders />} />
           <Route path="All_Salons_Highlights" element={<All_Salons_Highlights />} />
           <Route path="All_Products_Highlights" element={<All_Products_Highlights />} />
+          <Route path="Manage_Review" element={<ManageReviews />} /> 
+          <Route path="Store_Reviews" element={<StoreReviews />} />
 
         </Route>
       </Routes>
