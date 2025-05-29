@@ -1,9 +1,7 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { Modal, Button, Input, Upload } from "antd";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../store/store";
-import { useDispatch } from "react-redux";
-
 import { UploadOutlined } from "@ant-design/icons";
 import { updateStoreApi } from "../api/products/api";
 import { updateStore } from "../slices/loginSlice";
@@ -19,10 +17,18 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
 }) => {
   const [newImageUrl, setNewImageUrl] = useState<string>();
   const dispatch = useDispatch();
-
   const store = useSelector((state: RootState) => state.Login);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    store_name: string;
+    vendor_name: string;
+    description: string;
+    store_contact_email: string;
+    email: string;
+    country: string;
+    address: string;
+    store_image: string | File;
+  }>({
     store_name: store.store_name,
     vendor_name: store.vendor_name,
     description: store.description,
@@ -32,44 +38,55 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
     address: store.address,
     store_image: store.store_image,
   });
-  // Handle image upload
+
   const handleImageChange = (info: any) => {
     if (info.file.status === "done" || info.file.originFileObj) {
-      const newImageUrl = URL.createObjectURL(info.file.originFileObj);
-      setFormData({ ...formData, store_image: info.file.originFileObj });
-
-      setNewImageUrl(newImageUrl);
+      const file = info.file.originFileObj;
+      const imageUrl = URL.createObjectURL(file);
+      setNewImageUrl(imageUrl);
+      setFormData({ ...formData, store_image: file });
     }
   };
 
-  // Handle input change
   const handleChange = (field: string, value: string) => {
     setFormData({ ...formData, [field]: value });
   };
 
-  // Called when the user clicks "Cancel"
   const handleCancel = () => {
     setProfile(false);
   };
 
-  // Called when the user clicks "Update"
   const handleUpdate = async () => {
     try {
-      const res = await updateStoreApi(store.token, formData);
+      const data = new FormData();
+      data.append("store_name", formData.store_name);
+      data.append("vendor_name", formData.vendor_name);
+      data.append("description", formData.description);
+      data.append("store_contact_email", formData.store_contact_email);
+      data.append("email", formData.email);
+      data.append("country", formData.country);
+      data.append("address", formData.address);
+
+      if (formData.store_image instanceof File) {
+        data.append("store_image", formData.store_image);
+      }
+
+      const res = await updateStore(store.token, data);
 
       if (res) {
         dispatch(updateStore({ type: "updateStore", payload: { res } }));
       }
+
       setProfile(false);
     } catch (error) {
-      console.error("error", error);
+      console.error("Update error:", error);
     }
   };
 
   return (
     <Modal
       title="Update Store Details"
-      visible={profile}
+      open={profile}
       onCancel={handleCancel}
       footer={[
         <Button key="cancel" onClick={handleCancel}>
@@ -89,14 +106,14 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
         <strong>Store Name:</strong>
         <Input
           value={formData.store_name}
-          onChange={(e) => handleChange("storeName", e.target.value)}
+          onChange={(e) => handleChange("store_name", e.target.value)}
         />
       </p>
       <p>
         <strong>Vendor Name:</strong>
         <Input
           value={formData.vendor_name}
-          onChange={(e) => handleChange("vendorName", e.target.value)}
+          onChange={(e) => handleChange("vendor_name", e.target.value)}
         />
       </p>
       <p>
@@ -110,7 +127,7 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
         <strong>Contact Email:</strong>
         <Input
           value={formData.store_contact_email}
-          onChange={(e) => handleChange("contactEmail", e.target.value)}
+          onChange={(e) => handleChange("store_contact_email", e.target.value)}
         />
       </p>
       <p>
@@ -139,15 +156,21 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
       </p>
       <div style={{ marginBottom: "16px" }}>
         <img
-          src={newImageUrl ? newImageUrl : formData.store_image}
+          src={
+            newImageUrl ||
+            (typeof formData.store_image === "string"
+              ? formData.store_image
+              : "")
+          }
           alt="Store"
           style={{
             width: "150px",
             height: "150px",
             marginBottom: "8px",
             cursor: "pointer",
+            objectFit: "cover",
+            borderRadius: "4px",
           }}
-          //   onClick={handlePreview} // Open preview on click
         />
       </div>
       <Upload

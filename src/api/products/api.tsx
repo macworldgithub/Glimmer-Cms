@@ -14,6 +14,7 @@ export interface UpdateStoreApi {
   store_image: string;
 }
 
+
 // Async thunk for signup
 export const getAllProducts = createAsyncThunk(
   "getAllProducts",
@@ -237,26 +238,27 @@ export const updateStoreApi = async (token: string, data: UpdateStoreApi) => {
   const formData = new FormData();
 
   formData.append("store_name", data.store_name);
-  formData.append("verndor_name", data.vendor_name);
+  formData.append("vendor_name", data.vendor_name); 
   formData.append("description", data.description);
   formData.append("store_contact_email", data.store_contact_email);
   formData.append("email", data.email);
   formData.append("country", data.country);
   formData.append("address", data.address);
-  formData.append("store_image", data.store_image);
 
-  const response = await axios.put(
-    `${BACKEND_URL}/store/update_store`,
-    formData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  // ✅ Only add image if it's a File (not a URL string)
+  if (typeof data.store_image !== "string") {
+    formData.append("store_image", data.store_image);
+  }
+ const response = await axios.put(`${BACKEND_URL}/store/updateStore`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
   return response.data;
 };
+
 
 export const updateTrendingProduct = createAsyncThunk(
   "updateTrendingProduct",
