@@ -70,7 +70,6 @@ const ProductTableWithHeader = () => {
   const categoryFilter = searchParams.get("category") || "";
   const createdAtFilter = searchParams.get("created_at") || "";
   const storeId = searchParams.get("store") || "";
-  console.log(storeId);
 
   useEffect(() => {
     const fetchSelections = async () => {

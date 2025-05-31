@@ -340,34 +340,61 @@ export const approvePriceUpdate = createAsyncThunk(
   }
 );
 
-export const updateServiceDiscount = createAsyncThunk(
-  "bulk_update_service_discount",
-  async (
-    { discountPercentage, id }: { discountPercentage: number; id: string[] },
-    { getState, rejectWithValue }
-  ) => {
-    try {
-      const state = getState() as RootState;
-      const token = state.Login.token;
+// export const updateServiceDiscount = createAsyncThunk(
+//   "bulk_update_service_discount",
+//   async (
+//     { discountPercentage, id }: { discountPercentage: number; id: string[] },
+//     { getState, rejectWithValue }
+//   ) => {
+//     try {
+//       const state = getState() as RootState;
+//       const token = state.Login.token;
 
-      // Make the API call to update prices
-      const response = await axios.patch(
-        `${BACKEND_URL}/salon-services/applyBulkDiscount`,
-        { discountPercentage, id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+//       // Make the API call to update prices
+//       const response = await axios.patch(
+//         `${BACKEND_URL}/salon-services/applyBulkDiscount`,
+//         { discountPercentage, id },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
 
-      return response.data; // Return success data
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Failed to update prices");
-    }
-  }
-);
+//       return response.data; // Return success data
+//     } catch (error: any) {
+//       return rejectWithValue(error.response?.data || "Failed to update prices");
+//     }
+//   }
+// );
 
+// export const updateSingleServiceDiscount = createAsyncThunk(
+//   "bulk_update_single_service_discount",
+//   async (
+//     { discountPercentage, id }: { discountPercentage: number; id: string },
+//     { getState, rejectWithValue }
+//   ) => {
+//     try {
+//       const state = getState() as RootState;
+//       const token = state.Login.token;
+
+//       // Make the API call to update prices
+//       const response = await axios.patch(
+//         `${BACKEND_URL}/salon-services/applyDiscounttoSingleService`,
+//         { discountPercentage, id },
+//         {
+//           headers: {
+//             Authorization: `Bearer ${token}`,
+//           },
+//         }
+//       );
+
+//       return response.data; // Return success data
+//     } catch (error: any) {
+//       return rejectWithValue(error.response?.data || "Failed to update prices");
+//     }
+//   }
+// );
 export const updateSingleServiceDiscount = createAsyncThunk(
   "bulk_update_single_service_discount",
   async (
@@ -378,23 +405,47 @@ export const updateSingleServiceDiscount = createAsyncThunk(
       const state = getState() as RootState;
       const token = state.Login.token;
 
-      // Make the API call to update prices
       const response = await axios.patch(
         `${BACKEND_URL}/salon-services/applyDiscounttoSingleService`,
         { discountPercentage, id },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 10000, // 10 seconds timeout
         }
       );
 
-      return response.data; // Return success data
+      return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Failed to update prices");
+      return rejectWithValue(error.response?.data || "Failed to update discount");
     }
   }
 );
+
+export const updateServiceDiscount = createAsyncThunk(
+  "bulk_update_service_discount",
+  async (
+    { discountPercentage, id }: { discountPercentage: number; id: string[] },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/salon-services/applyBulkDiscount`,
+        { discountPercentage, id },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          timeout: 10000, // 10 seconds timeout
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to update discounts");
+    }
+  }
+)
 
 export const deleteServiceApi = async (id: string, token: string) => {
   try {
