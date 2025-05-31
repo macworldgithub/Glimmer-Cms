@@ -105,7 +105,6 @@ const ProductTableWithHeader = () => {
     name: selection.category_name,
     id: selection.category_id,
   }));
-
   useEffect(() => {
     //@ts-ignore
     dispatch(
@@ -114,7 +113,7 @@ const ProductTableWithHeader = () => {
         name: nameFilter,
         category: categoryFilter,
         created_at: createdAtFilter,
-        storeId,
+        storeId: role === "super_admin" ? storeId : undefined, // Only pass storeId for admin
       })
     );
   }, [
@@ -124,7 +123,27 @@ const ProductTableWithHeader = () => {
     categoryFilter,
     createdAtFilter,
     storeId,
+    role,
   ]);
+  // useEffect(() => {
+  //   //@ts-ignore
+  //   dispatch(
+  //     getAllProducts({
+  //       page_no: currentPage,
+  //       name: nameFilter,
+  //       category: categoryFilter,
+  //       created_at: createdAtFilter,
+  //       storeId,
+  //     })
+  //   );
+  // }, [
+  //   dispatch,
+  //   currentPage,
+  //   nameFilter,
+  //   categoryFilter,
+  //   createdAtFilter,
+  //   storeId,
+  // ]);
 
   const rawProductList = useSelector(
     (state: RootState) => state.AllProducts.products
@@ -239,7 +258,7 @@ const ProductTableWithHeader = () => {
     setIsDeleteModalVisible(true);
   };
 
-  const handleSearch = (newFilters: {
+    const handleSearch = (newFilters: {
     name?: string;
     category?: string;
     created_at?: string;
@@ -249,6 +268,7 @@ const ProductTableWithHeader = () => {
       name: newFilters.name || "",
       category: newFilters.category || "",
       created_at: newFilters.created_at || "",
+      store: role === "super_admin" ? storeId : "",
     });
   };
 
@@ -500,7 +520,7 @@ const ProductTableWithHeader = () => {
           columns={columns}
           //@ts-ignore
           dataSource={filteredProducts}
-          pagination={{
+            pagination={{
             current: currentPage,
             pageSize: pageSize,
             total: productList?.total,
@@ -510,6 +530,7 @@ const ProductTableWithHeader = () => {
                 name: nameFilter,
                 category: categoryFilter,
                 created_at: createdAtFilter,
+                store: role === "super_admin" ? storeId : "",
               }),
           }}
           className="border-t"

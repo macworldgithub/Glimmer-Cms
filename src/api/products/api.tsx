@@ -54,28 +54,29 @@ export interface UpdateStoreApi {
 export const getAllProducts = createAsyncThunk(
   "getAllProducts",
   async (
-    payload: { page_no: number; name?: string; category?: string; created_at?: string },
+    payload: { page_no: number; name?: string; category?: string; created_at?: string; storeId?: string },
     { rejectWithValue, getState }
   ) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
 
-      // Build query parameters dynamically
       const params = new URLSearchParams();
       params.append("page_no", payload.page_no.toString());
 
       if (payload.name) params.append("name", payload.name);
       if (payload.category) params.append("category", payload.category);
       if (payload.created_at) params.append("created_at", payload.created_at);
+      if (payload.storeId) params.append("store", payload.storeId);
 
-      console.log("Fetching products with params:", params.toString());
+      const endpoint = payload.storeId
+        ? `${BACKEND_URL}/product/get_all_products_for_admin`
+        : `${BACKEND_URL}/product/get_all_store_products`;
+
       const response = await axios.get(
-        `${BACKEND_URL}/product/get_all_store_products?${params.toString()}`,
+        `${endpoint}?${params.toString()}`,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: payload.storeId ? {} : { Authorization: `Bearer ${token}` }, // No token for admin endpoint
         }
       );
 
