@@ -814,29 +814,116 @@ export const addRecommendedProduct = async (
   }
 };
 
-export const getAllRecommendedProductsForSalon = createAsyncThunk(
-  "admin/recommended-products",
-  async (salonId: string, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Failed to fetch salons");
-    }
-  }
-);
+// export const getAllRecommendedProductsForSalon = createAsyncThunk(
+//   "admin/recommended-products",
+//   async (salonId: string, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get(`${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`);
+//       return response.data;
+//     } catch (error: any) {
+//       return rejectWithValue(error.response?.data || "Failed to fetch salons");
+//     }
+//   }
+// );
 
-export const getAllRecommendedProducts = createAsyncThunk(
-  "admin/recommended-products",
-  async (salonId: string, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(`${BACKEND_URL}/admin/recommended-products?salonId=${salonId}`);
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Failed to fetch salons");
+// export const getAllRecommendedProducts = createAsyncThunk(
+//   "admin/recommended-products",
+//   async (salonId: string, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.get(`${BACKEND_URL}/admin/recommended-products?salonId=${salonId}`);
+//       return response.data;
+//     } catch (error: any) {
+//       return rejectWithValue(error.response?.data || "Failed to fetch salons");
+//     }
+//   }
+// );
+export const getAllRecommendedProductsForSalon = createAsyncThunk(
+    "admin/get-recommended-products-of-salon",
+    async (salonId: string, { rejectWithValue, getState }) => {
+      try {
+        const state = getState() as RootState;
+        const token = state.Login.token;
+
+        const response = await axios.get(
+          `${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        return response.data;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data || "Failed to fetch recommended products");
+      }
     }
-  }
-);
+  );
+
+  export const getAllRecommendedProducts = createAsyncThunk(
+    "admin/recommended-products",
+    async (salonId: string, { rejectWithValue, getState }) => {
+      try {
+        const state = getState() as RootState;
+        const token = state.Login.token;
+
+        const response = await axios.get(
+          `${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        return response.data;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data || "Failed to fetch recommended products");
+      }
+    }
+  );
+
+  export const getRecommendedProductsForSalon = createAsyncThunk(
+    "admin/get-recommended-products-of-salon",
+    async (salonId: string, { rejectWithValue, getState }) => {
+      try {
+        const state = getState() as RootState;
+        const token = state.Login.token;
+
+        const response = await axios.get(
+          `${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        return response.data;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data || "Failed to fetch recommended products");
+      }
+    }
+  );
+
+  export const getRecommendedProducts = createAsyncThunk(
+    "admin/recommended-products",
+    async (salonId: string, { rejectWithValue, getState }) => {
+      try {
+        const state = getState() as RootState;
+        const token = state.Login.token;
+
+        const response = await axios.get(
+          `${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        return response.data;
+      } catch (error: any) {
+        return rejectWithValue(error.response?.data || "Failed to fetch recommended products");
+      }
+    }
+  );
 
 export const createSaleRecordForSalonCut = async (
   salonId: string,
