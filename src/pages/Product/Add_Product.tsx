@@ -220,28 +220,7 @@ const ProductPage = () => {
                 onChange={(e) => HandleChange("name", e.target.value)}
               />
             </div>
-            {/* <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
-                  SKU
-                </label>
-                <input
-                  type="number"
-                  placeholder="SKU"
-                  className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500 mb-1">
-                  Barcode
-                </label>
-                <input
-                  type="text"
-                  placeholder="0123-4567"
-                  className="w-full  rounded-md shadow-sm p-3 border-solid border border-gray-400"
-                />
-              </div>
-            </div> */}
+           
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">
                 Description (Optional)
@@ -302,59 +281,7 @@ const ProductPage = () => {
             </div>
           </div>
 
-          {/* <div className="border-gray-200  rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
-            <div className="mt-4 flex flex-row justify-between max-sm:flex-col max-sm:mt-1">
-              <div>
-                <h2 className="text-lg text-gray-700 mb-4">Product Image</h2>
-              </div>
-              <div>
-                <button className="text-sm text-[#5F61E6] hover:underline">
-                  Add media from URL
-                </button>
-              </div>
-            </div>
-            <div className="mb-6 border-gray-300 rounded-md">
-              <p className="text-gray-800 font-medium text-xl max-sm:text-md">
-                Drag and drop your image here
-              </p>
-              <p className="text-gray-500 mt-2 text-xsm">or</p>
-              <p className="text-gray-500 text-xsm">Browse image</p>
-
-              <div className="mt-4">
-                <input
-                  type="file"
-                  className="max-sm:text-[10px] text-sm text-gray-700"
-                />
-              </div>
-            </div>
-          </div> */}
-
-          {/* <div className="border-gray-200 shadow-md  rounded-md max-md:w-full bg-white p-4  my-4">
-            <h2 className="text-lg  mb-4 text-gray-700">Variants</h2>
-            <label className="block text-xsm font-medium text-gray-600 mb-1">
-              Options
-            </label>
-            <div className="mb-4 flex flex-row gap-6 w-full">
-              <div className="w-[40%]">
-                <select className="w-full  rounded-md shadow-sm border-solid border border-gray-400 p-3">
-                  <option>Size</option>
-                  <option>Color</option>
-                  <option>Weight</option>
-                  <option>Smell</option>
-                </select>
-              </div>
-              <div className="w-[60%]">
-                <input
-                  type="number"
-                  placeholder="Enter size"
-                  className="w-full border-gray-400 rounded-md shadow-sm border-solid border p-3"
-                />
-              </div>
-            </div>
-            <button className="bg-[#5F61E6] text-white px-4 py-2 rounded-md">
-              + Add another option
-            </button>
-          </div> */}
+         
 
           <div className="border-gray-200  rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
             <h2 className="text-lg  mt-6 mb-4">Inventory (Quantity)</h2>
@@ -384,23 +311,9 @@ const ProductPage = () => {
                   className="w-full border-gray-400 rounded-md shadow-sm p-3  border-solid border"
                 />
               </div>
-              {/*
-                            <div className="flex items-end">
-                                <button
-                                    onClick={HandleConfirm}
-                                    className="px-4 py-2 bg-[#5F61E6] text-white rounded-md "
-                                >
-                                    Confirm
-                                </button>
-                            </div>
-                            */}
+             
             </div>
-            {/* <div className="mt-4 text-sm text-gray-600">
-              <p>Product in stock now: 54</p>
-              <p>Product in transit: 390</p>
-              <p>Last time restocked: 24th June, 2023</p>
-              <p>Total stock over lifetime: 2430</p>
-            </div> */}
+           
           </div>
         </div>
 
@@ -454,25 +367,7 @@ const ProductPage = () => {
                 readOnly
               />
             </div>
-            {/*
-            <div className="flex items-center justify-between border-t border-gray-300 pt-4">
-              <span className="text-sm font-medium text-gray-700">
-                In stock
-              </span>
-              <div
-                className={`relative inline-block w-12 h-6 rounded-full cursor-pointer ${
-                  isInStock ? "bg-[#5F61E6]" : "bg-gray-300"
-                }`}
-                onClick={() => setIsInStock(!isInStock)}
-              >
-                <span
-                  className={`absolute top-1/2 transform -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow transition-transform ${
-                    isInStock ? "translate-x-6" : "translate-x-1"
-                  }`}
-                ></span>
-              </div>
-            </div>
-            */}
+        
           </div>
 
           <div className="shadow-md  p-6 bg-white rounded-md max-md:w-full">
