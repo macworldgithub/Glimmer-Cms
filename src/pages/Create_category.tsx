@@ -30,6 +30,8 @@ const CategoryTable = () => {
   const [productItems, setProductItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
+
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
@@ -47,6 +49,7 @@ const CategoryTable = () => {
   });
   const [selectedProduct, setSelectedProduct] = useState({ _id: "", name: "" });
 
+  const [newCategory, setNewCategory]=useState();
   const [newSubcategory, setNewSubCategory] = useState();
   const [newProduct, setNewProduct] = useState();
 
@@ -174,15 +177,84 @@ const CategoryTable = () => {
     console.log("8888", filteredProducts, selectedSubcategory);
   }, [selectedSubcategory._id]);
 
+ const openCategoryModal = (type) => {
+    setModalType(type);
+    setIsCategoryModalOpen(true);
+  };
+
+
+
   const openSubCategoryModal = (type) => {
     setModalType(type);
     setIsSubCategoryModalOpen(true);
   };
 
+
+ 
   const openProductModal = (type) => {
     setModalType(type);
     setIsProductModalOpen(true);
   };
+
+
+//  const closeCategoryModal = async () => {
+//     if (modalType === "Add") {
+//       try {
+//         const res = await createCategory(
+//           newCategory,
+//           "aaaa",
+//           selectedCategory._id
+//         );
+
+//         if (res) {
+//           alert("New Category Added");
+//         }
+//       } catch (error) {
+//         console.error("error", error);
+//       }
+//     }
+//     if (modalType === "Update") {
+//       try {
+//         //@ts-ignore
+//         setNewCategory(selectedCategory.name);
+//         const res = updateCategory(
+//           newCategory,
+//           "desc",
+//           selectedCategory._id,
+//           selectedCategory._id
+//         );
+
+//         if (res) {
+//           alert(`Updated ${newCategory}`);
+//         }
+//       } catch (error) {
+//         console.error("error", error);
+//         throw error;
+//       }
+//     }
+//     if (modalType === "Delete") {
+//       try {
+//         const res = await deleteCategory(selectedCategory._id);
+//         if (res) {
+//           alert(`deleted ${selectedCategory.name}`);
+//         }
+//       } catch (error) {
+//         console.error("error", error);
+//         throw error;
+//       }
+//     }
+//     setIsCategoryModalOpen(false);
+//     setModalType("");
+//   };
+
+
+
+
+
+
+
+
+
 
   const closeSubCategoryModal = async () => {
     if (modalType === "Add") {
@@ -507,6 +579,35 @@ const CategoryTable = () => {
           </select>
         </label>
       </div>
+
+  {/* Add Category Actions */}
+      {selectedCategory?._id && (
+        <div className="mt-4 flex gap-3">
+          {selectedCategory._id && (
+            <Button
+              className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
+              onClick={() => openSubCategoryModal("Update")}
+            >
+              Update Category
+            </Button>
+          )}
+          <Button
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+            onClick={() => openSubCategoryModal("Add")}
+          >
+            Add Category
+          </Button>
+          {selectedCategory._id && (
+            <Button
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+              onClick={() => openSubCategoryModal("Delete")}
+            >
+              Delete Category
+            </Button>
+          )}
+        </div>
+      )}
+
 
       {/* Subcategory Actions */}
       {selectedCategory?._id && (

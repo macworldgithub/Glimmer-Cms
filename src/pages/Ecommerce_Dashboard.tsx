@@ -256,9 +256,10 @@ const Dashboard = () => {
                   key={id}
                   className="p-3 bg-gray-100 rounded-md text-center flex flex-col items-center"
                 >
-                  <p className="text-gray-500 text-xs sm:text-sm truncate w-full">
+                  <p className="text-gray-500 text-xs sm:text-sm text-center break-words w-full">
                     {status}
                   </p>
+
                   <h3 className="text-lg font-semibold">
                     {dashboardData?.salesCount[status as keyof SalesCount] || 0}
                   </h3>
