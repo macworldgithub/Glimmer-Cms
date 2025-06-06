@@ -149,3 +149,57 @@ export const deleteProductItem = async (productItem_id: string) => {
     throw error;
   }
 };
+
+export const createCategory = async (
+  name: string,
+  description: string,
+  category_id: string
+) => {
+  try {
+    const res = await axios.post(
+      `${BACKEND_URL}/product-category/create_product_category`,
+      {
+        name: name,
+        description: description,
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("error", error);
+    throw error;
+  }
+  
+};
+
+export const updateCategory = async (
+  name: string,
+  description: string,
+  category_id: string,
+  unused_id: string // Not used in payload, kept for consistency with other functions
+) => {
+  try {
+    const res = await axios.put(
+      `${BACKEND_URL}/product-category/update_product_category?id=${category_id}`,
+      {
+        name: name,
+        description: description,
+      }
+    );
+    return res.data;
+  } catch (error) {
+    console.error("error", error);
+    throw error;
+  }
+};
+
+export const deleteCategory = async (category_id: string) => {
+  try {
+    const res = await axios.delete(
+      `${BACKEND_URL}/product-category/delete_product_category?id=${category_id}`
+    );
+    return res.data;
+  } catch (error) {
+    console.error("error", error);
+    throw error;
+  }
+};
