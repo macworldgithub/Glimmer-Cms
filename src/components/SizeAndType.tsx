@@ -98,7 +98,7 @@ const SizeAndType = ({
               >
                 <option value="mg">mg</option>
                 <option value="kg">kg</option>
-                <option value="l">l</option>
+                <option value="G">G</option>
               </select>
               <button onClick={() => removeSizeField(size.id)} className="ml-2">
                 -
