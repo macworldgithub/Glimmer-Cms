@@ -285,29 +285,21 @@ const ProductPage = () => {
 
           <div className="border-gray-200  rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
             <h2 className="text-lg  mt-6 mb-4">Inventory (Quantity)</h2>
-            {/*
-                            <div className="flex mb-4 gap-1 items-center bg-[#5F61E6] text-white w-40 p-2 rounded-md">
-                                <IoCubeOutline size={18} />
-                                <div className=" text-xl font-medium">Restock</div>
-                            </div>
-                             */}
+           
             <div className="grid grid-cols-2 gap-4">
               <div>
-                {/*
-                                            <div className="block text-md font-medium text-gray-700 mb-2">
-                                                Options
-                                            </div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                Add to Stock
-                                            </label>
-                                     */}
+                
                 <input
                   type="number"
                   placeholder="Quantity"
-                  value={addProduct.quantity}
-                  onChange={(e) =>
-                    HandleChange("quantity", parseInt(e.target.value))
-                  }
+                  value={addProduct.quantity }
+                 onChange={(e) =>
+  HandleChange(
+    "quantity",
+    e.target.value === "" ? "" : parseInt(e.target.value)
+  )
+}
+
                   className="w-full border-gray-400 rounded-md shadow-sm p-3  border-solid border"
                 />
               </div>
