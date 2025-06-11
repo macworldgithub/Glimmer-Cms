@@ -1,5 +1,5 @@
 import React, { SetStateAction, Dispatch } from "react";
-import { Popover, Avatar, Divider } from "antd";
+import { Popover, Avatar, Divider, Modal } from "antd";
 import {
   UserOutlined,
   SettingOutlined,
@@ -18,6 +18,10 @@ interface PropsProfile {
 const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   const data = useSelector((state: RootState) => state.Login);
   const dispatch = useDispatch();
+
+  const [isModalVisible, setIsModalVisible] = React.useState(false);
+  const [showResetOption, setShowResetOption] = React.useState(false);
+
   const HandleClick = (name: string) => {
     if (name === "logout") {
       dispatch(logout());
@@ -28,9 +32,27 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
     setProfile(true);
   };
 
+  const showModal = () => {
+    setIsModalVisible(true);
+    setShowResetOption(false); // hide reset option after modal opens
+  };
+
+  const handleOk = () => {
+    // Password reset logic here
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  const toggleResetOption = () => {
+    setShowResetOption((prev) => !prev);
+  };
+
   const content = (
     <div className="h-max flex flex-col">
-      {/* User Info Section */}
+      {/* User Info */}
       <div className="flex items-center w-full p-2">
         <Avatar
           size={"large"}
@@ -44,7 +66,7 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
       </div>
       <Divider className="my-1" />
 
-      {/* Salon Profile Section */}
+      {/* Salon Profile */}
       <div
         onClick={HandleProfileClick}
         className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors"
@@ -54,14 +76,28 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
       </div>
       <Divider className="my-1" />
 
-      {/* Settings Section */}
-      <div className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors">
-        <SettingOutlined className="text-base mr-2" />
-        <h2 className="text-sm font-normal">Settings</h2>
+      {/* Settings + Toggle Reset Password */}
+      <div className="flex flex-col">
+        <div
+          onClick={toggleResetOption}
+          className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors"
+        >
+          <SettingOutlined className="text-base mr-2" />
+          <h2 className="text-sm font-normal">Settings</h2>
+        </div>
+
+        {showResetOption && (
+          <div
+            onClick={showModal}
+            className="ml-6 pl-2 py-1 text-sm text-black cursor-pointer"
+          >
+            Reset Password
+          </div>
+        )}
       </div>
       <Divider className="my-1" />
 
-      {/* Logout Section */}
+      {/* Logout */}
       <div
         onClick={() => HandleClick("logout")}
         className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors"
@@ -73,13 +109,48 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   );
 
   return (
-    <Popover content={content} title="Salon Profile Info" trigger="click">
-      <Avatar
-        size={"large"}
-        src={data.role === "salon" ? data.store_image : Profilepic}
-        icon="user"
-      />
-    </Popover>
+    <>
+      <Popover content={content} title="Salon Profile Info" trigger="click">
+        <Avatar
+          size={"large"}
+          src={data.role === "salon" ? data.store_image : Profilepic}
+          icon="user"
+        />
+      </Popover>
+
+      {/* Reset Password Modal */}
+      <Modal
+        title="Reset Password"
+        open={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Submit"
+        cancelText="Cancel"
+      >
+        <div className="flex flex-col gap-4">
+          <input
+            type="email"
+            placeholder="Email Address"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md"
+          />
+          <input
+            type="password"
+            placeholder="Current Password"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md"
+          />
+          <input
+            type="password"
+            placeholder="New Password"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md"
+          />
+          <input
+            type="password"
+            placeholder="Confirm New Password"
+            className="w-full px-4 py-2 border border-gray-300 rounded-md"
+          />
+        </div>
+      </Modal>
+    </>
   );
 };
 
