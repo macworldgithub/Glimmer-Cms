@@ -543,6 +543,7 @@
 // };
 
 // export default ProductTableWithHeader;
+
 import { Button, Checkbox, Dropdown, Input, Menu, Table, Tag } from "antd";
 import "antd/dist/reset.css";
 import { useEffect, useMemo, useState } from "react";
@@ -555,24 +556,32 @@ import {
   updateYouMusthaveThisProduct,
 } from "../../api/products/api";
 import DeleteProductModal from "../../components/DeleteProductModal";
-import UpdateModal from "../../components/UpdateProductModal";
-import SearchBar from "../../components/SearchBar"; // Import SearchBar
+import UpdateModal from "../../components/UpdateModal";
+import SearchBar from "../../components/SearchBar";
 import { AppDispatch, RootState } from "../../store/store";
 import { getAllProductItem } from "../../api/category/api";
 import dayjs from "dayjs";
 import { useSearchParams } from "react-router-dom";
 
-interface TableData {
-  name: string;
-  quantity: number;
-  description: string;
-  base_price: number;
-  discounted_price: number;
-  status: "Active" | "Inactive";
-  _id: string;
+interface TableData extends Product {
   category: string;
   item: string;
   created_at: string;
+}
+
+interface Product {
+  name: string;
+  quantity: number;
+  description: string;
+  image1: string;
+  image2: string;
+  image3: string;
+  base_price: number;
+  discounted_price: number;
+  status: "Active" | "Inactive";
+  store: string;
+  _id: string;
+  actions: string;
 }
 
 interface CategorySelection {
@@ -592,9 +601,7 @@ const ProductTableWithHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
   const role = useSelector((state: RootState) => state.Login.role);
 
-  const [selectedProduct, setSelectedProduct] = useState<TableData | null>(
-    null
-  );
+  const [selectedProduct, setSelectedProduct] = useState<TableData | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [selections, setSelections] = useState<CategorySelection[]>([]);
@@ -658,7 +665,7 @@ const ProductTableWithHeader = () => {
         name: nameFilter,
         category: categoryFilter,
         created_at: createdAtFilter,
-        storeId: role === "super_admin" ? storeId : undefined, // Only pass storeId for admin
+        storeId: role === "super_admin" ? storeId : undefined,
       })
     );
   }, [
@@ -784,7 +791,7 @@ const ProductTableWithHeader = () => {
     setIsDeleteModalVisible(true);
   };
 
-    const handleSearch = (newFilters: {
+  const handleSearch = (newFilters: {
     name?: string;
     category?: string;
     created_at?: string;
@@ -921,7 +928,7 @@ const ProductTableWithHeader = () => {
       key: "discounted_price",
       render: (_: number, record: any) => {
         const base = record.base_price || 0;
-        const discountedValue = record.discounted_price || 0; // Use discounted_price directly
+        const discountedValue = record.discounted_price || 0;
         return discountedValue.toFixed(2);
       },
     },

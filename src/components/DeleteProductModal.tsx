@@ -125,7 +125,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
       // Attempt to delete the product
       const result = await deleteProductApi(product._id, token);
 
-      // If successful, fetch the updated list of products
+      // Dispatch the getAllProducts action with proper filters
       dispatch(
         getAllProducts({
           page_no: page,
@@ -158,7 +158,7 @@ const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
       onOk={handleOk}
       okText="Yes, Delete"
       cancelText="Cancel"
-      okButtonProps={{ className: "ant-btn-dangerous-delete-modal" }} // Add danger class
+      okButtonProps={{ className: "ant-btn-dangerous-delete-modal" }}
     >
       <p>
         Are you sure you want to delete <strong>{product.name}</strong>?
