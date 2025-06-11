@@ -73,8 +73,7 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
   }
 }
 
-      const res = await updateStore(store.token, data);
-
+const res = await updateStore({ token: store.token, data });
       if (res) {
         dispatch(updateStore({ type: "updateStore", payload: { res } }));
       }
