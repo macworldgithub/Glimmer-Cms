@@ -17,8 +17,8 @@ interface PropsProfile {
 
 const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   const data = useSelector((state: RootState) => state.Login);
+  console.log(data)
   const dispatch = useDispatch();
-
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [showResetOption, setShowResetOption] = React.useState(false);
 
@@ -56,7 +56,7 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
       <div className="flex items-center w-full p-2">
         <Avatar
           size={"large"}
-          src={data.role === "salon" ? data.images[0] : Profilepic}
+          src={data.role === "store" ? data.images[0] : Profilepic}
           icon="user"
         />
         <div className="ml-2">
@@ -113,7 +113,7 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
       <Popover content={content} title="Salon Profile Info" trigger="click">
         <Avatar
           size={"large"}
-          src={data.role === "salon" ? data.store_image : Profilepic}
+          src={data.role === "store" ? data.store_image : Profilepic}
           icon="user"
         />
       </Popover>

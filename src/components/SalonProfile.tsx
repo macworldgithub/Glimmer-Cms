@@ -18,7 +18,7 @@ interface PropsProfile {
 const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   const data = useSelector((state: RootState) => state.Login);
   const dispatch = useDispatch();
-
+  console.log(data)
   const [isModalVisible, setIsModalVisible] = React.useState(false);
   const [showResetOption, setShowResetOption] = React.useState(false);
 

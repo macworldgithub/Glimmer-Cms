@@ -142,7 +142,7 @@ const loginSlice = createSlice({
       state.email = store.email;
       state.country = store.country;
       state.address = store.address;
-      state.store_image = `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${store.store_image}`;
+      state.store_image = `${store.store_image}`;
       state.token = token;
       state.isAuthenticated = true; // Mark as authenticated
       state.role = role;
@@ -171,10 +171,10 @@ const loginSlice = createSlice({
       state.email = salon.email;
       state.address = salon.address;
       state.images = [
-        salon.image1 ? `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.image1}` : null,
-        salon.image2 ? `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.image2}` : null,
-        salon.image3 ? `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.image3}` : null,
-        salon.image4 ? `https://glimmerbucket.s3.eu-north-1.amazonaws.com/${salon.image4}` : null,
+        salon.image1 ? `${salon.image1}` : null,
+        salon.image2 ? `${salon.image2}` : null,
+        salon.image3 ? `${salon.image3}` : null,
+        salon.image4 ? `${salon.image4}` : null,
       ].filter(Boolean);
       state.token = token;
       state.isAuthenticated = true; // Mark as authenticated
