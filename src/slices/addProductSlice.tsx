@@ -8,6 +8,7 @@ export interface Product {
   images: string[];
   base_price: number;
   discounted_price: number;
+  final_price_display: string;
   status: "Active" | "Inactive"; // Enum-like string literals
   category: string;
   subcategory: string;
@@ -24,6 +25,7 @@ const initialState: Product = {
   images: [],
   base_price: 0,
   discounted_price: 0,
+  final_price_display: "", // Added for UI display
   status: "Active",
   category: "",
   subcategory: "",

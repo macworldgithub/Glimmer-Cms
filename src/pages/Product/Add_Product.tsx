@@ -147,17 +147,21 @@ const ProductPage = () => {
   }, [sub_category_options]); // Runs whenever sub_category_options changes
 
   useEffect(() => {}, [subcategory]);
+const handleDiscountChange = (value) => {
+  let discountPercentage = parseFloat(value);
 
-  const handleDiscountChange = (value) => {
-    let discount = parseFloat(value);
+  // Ensure discount percentage does not exceed 100
+  if (discountPercentage > 100) discountPercentage = 100;
+  if (discountPercentage < 0 || isNaN(discountPercentage)) discountPercentage = 0;
 
-    // Ensure discount does not exceed 100
-    if (discount > 100) discount = 100;
-    if (discount < 0 || isNaN(discount)) discount = 0;
+  // Store the percentage in discounted_price for UI
+  HandleChange("discounted_price", discountPercentage);
 
-    HandleChange("discounted_price", discount);
-  };
-
+  // Calculate and update final price (not stored in Redux, just for UI)
+  const basePrice = parseFloat(addProduct.base_price || "0");
+  const finalPrice = basePrice - (basePrice * discountPercentage) / 100;
+  HandleChange("final_price_display", finalPrice.toFixed(2)); // Temporary display value
+};
   return (
     <div className=" mx-auto overflow-hidden">
       <div className="p-6 flex flex-col md:flex-row md:items-center md:justify-between ">
@@ -288,7 +292,7 @@ const ProductPage = () => {
 
         {/* Right Section (Pricing) */}
 
-        <div className="w-1/3 max-lg:w-full">
+        {/* <div className="w-1/3 max-lg:w-full">
           <div className="p-6 bg-white rounded-md my-4 shadow-md">
             <h2 className="text-lg font-medium mb-4">Pricing</h2>
             <div className="mb-4">
@@ -337,7 +341,50 @@ const ProductPage = () => {
               />
             </div>
         
-          </div>
+          </div> */}
+          <div className="w-1/3 max-lg:w-full">
+    <div className="p-6 bg-white rounded-md my-4 shadow-md">
+      <h2 className="text-lg font-medium mb-4">Pricing</h2>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Actual Price
+        </label>
+        <input
+          type="number"
+          placeholder="Price"
+          className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
+          value={addProduct.base_price || ""}
+          onChange={(e) =>
+            HandleChange("base_price", parseFloat(e.target.value))
+          }
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Discount Percentage (%)
+        </label>
+        <input
+          type="number"
+          placeholder="Discount Percentage"
+          className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
+          value={addProduct.discounted_price || ""}
+          onChange={(e) => handleDiscountChange(e.target.value)}
+          max="100"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Final Price
+        </label>
+        <input
+          type="number"
+          placeholder="Final Price"
+          className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400 bg-gray-100"
+          value={addProduct.final_price_display || addProduct.base_price || ""}
+          readOnly
+        />
+      </div>
+    </div>
 
           <div className="shadow-md  p-6 bg-white rounded-md max-md:w-full">
             <h2 className="text-lg font-medium text-gray-700 mb-4">Organize</h2>

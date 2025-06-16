@@ -147,22 +147,21 @@ export const addProductApi = createAsyncThunk(
   "addProduct",
   async (payload: {}, { rejectWithValue, getState }) => {
     try {
-      // Access token from the Redux state
       const state = getState() as RootState;
       const token = state.Login.token;
-
       const product = state.AddProduct;
 
-      // Construct FormData
+      // Calculate final price based on discount percentage
+      const basePrice = parseFloat(product.base_price || "0");
+      const discountPercentage = parseFloat(product.discounted_price || "0");
+      const finalPrice = basePrice - (basePrice * discountPercentage) / 100;
+
       const formData = new FormData();
       formData.append("name", product.name);
       formData.append("quantity", product.quantity.toString());
       formData.append("description", product.description);
       formData.append("base_price", product.base_price.toString());
-      formData.append(
-        "discounted_price",
-        product.discounted_price ? product.discounted_price.toString() : "0"
-      );
+      formData.append("discounted_price", finalPrice.toString()); // Send final price
       formData.append("status", product.status);
       formData.append("category", product.category);
       formData.append("sub_category", product.subcategory);
@@ -172,7 +171,6 @@ export const addProductApi = createAsyncThunk(
         formData.append(`size${index + 1}`, JSON.stringify(size));
       });
 
-      // ✅ Append type objects as separate fields (type1, type2, etc.)
       product.type.forEach((type, index) => {
         formData.append(`type${index + 1}`, JSON.stringify(type));
       });
@@ -182,20 +180,15 @@ export const addProductApi = createAsyncThunk(
         formData.append(`image${index + 1}`, file);
       });
 
-      // Make API request
-      const response = await axios.post(
-        `${BACKEND_URL}/product/create`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add Bearer token
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await axios.post(`${BACKEND_URL}/product/create`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
       console.log(response, "result");
 
-      return response.data; // Return the response data if successful
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "An error occurred");
     }
