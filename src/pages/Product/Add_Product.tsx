@@ -157,10 +157,10 @@ const handleDiscountChange = (value) => {
   // Store the percentage in discounted_price for UI
   HandleChange("discounted_price", discountPercentage);
 
-  // Calculate and update final price (not stored in Redux, just for UI)
-  const basePrice = parseFloat(addProduct.base_price || "0");
+  // Calculate and update final price for display
+  const basePrice = parseFloat((addProduct.base_price || 0).toString()); // Convert to string
   const finalPrice = basePrice - (basePrice * discountPercentage) / 100;
-  HandleChange("final_price_display", finalPrice.toFixed(2)); // Temporary display value
+  HandleChange("final_price_display", finalPrice.toFixed(2));
 };
   return (
     <div className=" mx-auto overflow-hidden">

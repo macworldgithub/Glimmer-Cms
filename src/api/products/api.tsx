@@ -152,8 +152,8 @@ export const addProductApi = createAsyncThunk(
       const product = state.AddProduct;
 
       // Calculate final price based on discount percentage
-      const basePrice = parseFloat(product.base_price || "0");
-      const discountPercentage = parseFloat(product.discounted_price || "0");
+      const basePrice = parseFloat((product.base_price || 0).toString()); // Convert to string
+      const discountPercentage = parseFloat((product.discounted_price || "0").toString());
       const finalPrice = basePrice - (basePrice * discountPercentage) / 100;
 
       const formData = new FormData();
