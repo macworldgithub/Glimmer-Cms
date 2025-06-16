@@ -156,8 +156,9 @@
 
 // export default SalonProfile;
 
-import React, { SetStateAction, Dispatch } from "react";
-import { Popover, Avatar, Divider, Modal } from "antd";
+
+import React, { SetStateAction, Dispatch, useState } from "react";
+import { Popover, Avatar, Divider, Modal, Input, message } from "antd";
 import {
   UserOutlined,
   SettingOutlined,
@@ -167,6 +168,8 @@ import Profilepic from "../assets/Profile/pic.png";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../store/store";
 import { logout } from "../slices/loginSlice";
+import axios from "axios";
+import { BACKEND_URL } from "../config/server";
 
 interface PropsProfile {
   profile: boolean;
@@ -177,8 +180,13 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   const data = useSelector((state: RootState) => state.Login);
   console.log(data);
   const dispatch = useDispatch();
-  const [isModalVisible, setIsModalVisible] = React.useState(false);
-  const [showResetOption, setShowResetOption] = React.useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [showResetOption, setShowResetOption] = useState(false);
+  const [resetPasswordVisible, setResetPasswordVisible] = useState(false);
+  const [email, setEmail] = useState(data.email || "");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const HandleClick = (name: string) => {
     if (name === "logout") {
@@ -192,11 +200,10 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
 
   const showModal = () => {
     setIsModalVisible(true);
-    setShowResetOption(false); // hide reset option after modal opens
+    setShowResetOption(false);
   };
 
   const handleOk = () => {
-    // Password reset logic here
     setIsModalVisible(false);
   };
 
@@ -208,6 +215,33 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
     setShowResetOption((prev) => !prev);
   };
 
+  const handleResetPassword = async () => {
+    if (!email || !currentPassword || !newPassword || !confirmPassword) {
+      message.error("All fields are required");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      message.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      await axios.post(`${BACKEND_URL}/auth/reset-password`, {
+        email,
+        currentPassword,
+        newPassword,
+      });
+      message.success("Password reset successfully");
+      setResetPasswordVisible(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      message.error("Failed to reset password. Check your current password.");
+      console.error(error);
+    }
+  };
+
   const content = (
     <div className="h-max flex flex-col">
       {/* User Info */}
@@ -216,10 +250,10 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
           size={"large"}
           src={
             data.role === "store"
-              ? data.store_image || Profilepic // Fallback to store_image or default
+              ? data.store_image || Profilepic
               : data.images && data.images.length > 0
               ? data.images[0]
-              : Profilepic // Safe access to images array
+              : Profilepic
           }
           icon={<UserOutlined />}
         />
@@ -254,7 +288,7 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
 
         {showResetOption && (
           <div
-            onClick={showModal}
+            onClick={() => setResetPasswordVisible(true)}
             className="ml-6 pl-2 py-1 text-sm text-black cursor-pointer"
           >
             Reset Password
@@ -281,10 +315,10 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
           size={"large"}
           src={
             data.role === "store"
-              ? data.store_image || Profilepic // Fallback for store
+              ? data.store_image || Profilepic
               : data.images && data.images.length > 0
               ? data.images[0]
-              : Profilepic // Safe access for salon
+              : Profilepic
           }
           icon={<UserOutlined />}
         />
@@ -293,34 +327,55 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
       {/* Reset Password Modal */}
       <Modal
         title="Reset Password"
-        open={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Submit"
+        open={resetPasswordVisible}
+        onOk={handleResetPassword}
+        onCancel={() => setResetPasswordVisible(false)}
+        okText="Reset"
         cancelText="Cancel"
       >
         <div className="flex flex-col gap-4">
-          <input
+          <Input
             type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder="Email Address"
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
+            disabled // Disable email field since it's pre-filled from state
           />
-          <input
+          <Input
             type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="Current Password"
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
           />
-          <input
+          <Input
             type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
             placeholder="New Password"
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
           />
-          <input
+          <Input
             type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirm New Password"
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
           />
         </div>
+      </Modal>
+
+      {/* Settings Modal (if needed) */}
+      <Modal
+        title="Settings"
+        open={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Save"
+        cancelText="Cancel"
+      >
+        {/* Add settings content here if needed */}
       </Modal>
     </>
   );
