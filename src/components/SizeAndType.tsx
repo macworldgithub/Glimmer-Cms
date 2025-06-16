@@ -20,7 +20,7 @@ const SizeAndType = ({
   HandleChange,
 }: SizeAndType) => {
   const product = useSelector((state: RootState) => state.AddProduct);
-  
+
   const addSizeField = () => {
     setSizes([...sizes, { id: sizes.length + 1, value: "", unit: "mg" }]);
   };
@@ -96,8 +96,8 @@ const SizeAndType = ({
                   handleSizeChange(size.id, "unit", e.target.value)
                 }
               >
-                <option value="mg">mg</option>
-                <option value="kg">kg</option>
+                <option value="mg">MG</option>
+                <option value="kg">ML</option>
                 <option value="G">G</option>
               </select>
               <button onClick={() => removeSizeField(size.id)} className="ml-2">

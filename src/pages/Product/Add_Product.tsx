@@ -85,33 +85,10 @@ const ProductPage = () => {
     dispatch(updateProduct({ [name]: value }));
   };
 
-  // const [images, setImages] = useState([]); // Array to hold Base64 images
+ 
 
   const images = useSelector((state: RootState) => state.AddProduct.images);
 
-  // const handleFileChange = (e: any) => {
-  //   const files = Array.from(e.target.files); // Get selected files
-  //   if (files.length + images.length > 5) {
-  //     alert("You can only upload up to 5 images.");
-  //     return;
-  //   }
-
-  //   // Convert files to Base64
-  //   Promise.all(
-  //     files.map((file) => {
-  //       return new Promise((resolve, reject) => {
-  //         const reader = new FileReader();
-  //         reader.onload = () => resolve(reader.result);
-  //         reader.onerror = reject;
-  //         //@ts-ignore
-  //         reader.readAsDataURL(file); // Convert to Base64
-  //       });
-  //     })
-  //   ).then((base64Images) => {
-  //     // setImages((prevImages: unknown) => [...prevImages, ...base64Images]);
-  //     dispatch(addImages(base64Images));
-  //   });
-  // };
 
   const handleFileChange = (e: any) => {
     const files = Array.from(e.target.files) as File[]; // Get selected files
@@ -127,7 +104,7 @@ const ProductPage = () => {
   };
 
   const handleRemoveImage = (index: number) => {
-    // setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    
     if (images.length === 1) {
       dispatch(resetImage());
       setPreviewUrls([]);
