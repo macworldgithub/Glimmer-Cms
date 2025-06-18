@@ -83,14 +83,14 @@ const loginSlice = createSlice({
         store_image,
       } = action.payload;
 
-      state.address = address;
-      state.address = country;
-      state.description = description;
-      state.email = email;
-      state.store_contact_email = store_contact_email;
-      state.store_image = store_image;
-      state.store_name = store_name;
-      state.vendor_name = vendor_name;
+      state.store_name = store_name ?? state.store_name;
+      state.vendor_name = vendor_name ?? state.vendor_name;
+      state.description = description ?? state.description;
+      state.store_contact_email = store_contact_email ?? state.store_contact_email;
+      state.email = email ?? state.email;
+      state.country = country ?? state.country; // Fixed: Assign to country
+      state.address = address ?? state.address;
+      state.store_image = store_image ?? state.store_image;
     },
     addImages: (state, action) => {
       if (!state.images) {
@@ -111,7 +111,7 @@ const loginSlice = createSlice({
     },
     updateSalon: (state, action) => {
       const {
-        salon_name,
+         salon_name,
         about,
         contact_number,
         email,
@@ -121,14 +121,14 @@ const loginSlice = createSlice({
         images,
       } = action.payload;
 
-      state.address = address;
-      state.about = about;
-      state.email = email;
-      state.contact_number = contact_number;
-      state.images = images.slice(0, 4);
-      state.salon_name = salon_name;
-      state.openingHour = openingHour;
-      state.closingHour = closingHour;
+      state.salon_name = salon_name ?? state.salon_name;
+      state.about = about ?? state.about;
+      state.contact_number = contact_number ?? state.contact_number;
+      state.email = email ?? state.email;
+      state.address = address ?? state.address;
+      state.openingHour = openingHour ?? state.openingHour;
+      state.closingHour = closingHour ?? state.closingHour;
+      state.images = Array.isArray(images) ? images.slice(0, 4).filter(Boolean) : state.images;
     },
   },
   extraReducers(builder) {

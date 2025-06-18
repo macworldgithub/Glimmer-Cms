@@ -11,7 +11,7 @@ export interface UpdateStoreApi {
   email: string;
   country: string;
   address: string;
-  store_image: string;
+  store_image?: File; // Optional File type
 }
 
 
@@ -262,32 +262,36 @@ export const deleteProductApi = async (_id: string, token: string) => {
   }
 };
 
+
 export const updateStoreApi = async (token: string, data: UpdateStoreApi) => {
   const formData = new FormData();
-
   formData.append("store_name", data.store_name);
-  formData.append("vendor_name", data.vendor_name); 
+  formData.append("vendor_name", data.vendor_name);
   formData.append("description", data.description);
   formData.append("store_contact_email", data.store_contact_email);
   formData.append("email", data.email);
   formData.append("country", data.country);
   formData.append("address", data.address);
 
-  // ✅ Only add image if it's a File (not a URL string)
-  if (typeof data.store_image !== "string") {
+  if (data.store_image instanceof File) {
     formData.append("store_image", data.store_image);
   }
- const response = await axios.put(`${BACKEND_URL}/store/updateStore`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
 
-  return response.data;
+  try {
+    console.log("FormData entries:", [...formData.entries()]);
+    const response = await axios.put(`${BACKEND_URL}/store/update_store`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    console.log("UpdateStoreApi response:", response.data);
+    return response.data;
+  } catch (error: any) {
+    console.error("Error in updateStoreApi:", error.response?.data || error.message);
+    throw error;
+  }
 };
-
-
 export const updateTrendingProduct = createAsyncThunk(
   "updateTrendingProduct",
   async (
@@ -464,3 +468,4 @@ export const getAllRatedProducts = createAsyncThunk(
     }
   }
 );
+
