@@ -469,3 +469,32 @@ export const getAllRatedProducts = createAsyncThunk(
   }
 );
 
+export const getStoreRatedProducts = createAsyncThunk(
+  "getStoreRatedProducts",
+  async (
+    payload: { page_no: number; page_size?: number },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const params = new URLSearchParams();
+      params.append("page_no", payload.page_no.toString());
+      if (payload.page_size) params.append("page_size", payload.page_size.toString());
+
+      const response = await axios.get(
+        `${BACKEND_URL}/product/get_store_rated_products?${params.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to fetch store rated products");
+    }
+  }
+);
