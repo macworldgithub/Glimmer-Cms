@@ -141,7 +141,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Table, message, Spin } from 'antd';
+import { Table, message } from 'antd';
 import { AppDispatch, RootState } from '../store/store';
 import { getStoreRatedProducts } from '../api/products/api';
 
@@ -162,7 +162,6 @@ const StoreReviews = () => {
   const location = useLocation();
   const [ratings, setRatings] = useState<RatingData[]>([]);
   const [totalRated, setTotalRated] = useState(0);
-  const [loading, setLoading] = useState(false); // Add loading state
   const token = useSelector((state: RootState) => state.Login.token);
   const role = useSelector((state: RootState) => state.Login.role);
   const storeId = useSelector((state: RootState) => state.Login._id);
@@ -181,7 +180,6 @@ const StoreReviews = () => {
       return;
     }
 
-    setLoading(true); // Set loading to true before fetching
     try {
       const result = await dispatch(getStoreRatedProducts({ page_no: page, page_size: pageSize })).unwrap();
       console.log('Raw API response (order check):', result.products.flatMap(p => p.ratings.map(r => ({ _id: r._id, createdAt: r.createdAt }))));
@@ -243,8 +241,6 @@ const StoreReviews = () => {
     } catch (error: any) {
       console.error('Error in fetchRatings:', error);
       message.error(error.message || 'Failed to fetch reviews');
-    } finally {
-      setLoading(false); // Set loading to false after fetching
     }
   };
 
@@ -297,26 +293,19 @@ const StoreReviews = () => {
     <div className="p-6 bg-white min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Store Reviews</h1>
       <div className="overflow-x-auto shadow-lg">
-        {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <Spin size="large" />
-          </div>
-        ) : (
-          <Table
-            columns={columns}
-            dataSource={ratings}
-            rowKey={(record) => record._id}
-            pagination={{
-              current: page,
-              pageSize,
-              total: totalRated,
-              onChange: handlePageChange,
-              showSizeChanger: false, // Optional: Disable page size changer for simplicity
-            }}
-            className="border-t"
-            scroll={{ x: 1000 }}
-          />
-        )}
+        <Table
+          columns={columns}
+          dataSource={ratings}
+          rowKey={(record) => record._id}
+          pagination={{
+            current: page,
+            pageSize,
+            total: totalRated,
+            onChange: handlePageChange,
+          }}
+          className="border-t"
+          scroll={{ x: 1000 }}
+        />
       </div>
     </div>
   );
