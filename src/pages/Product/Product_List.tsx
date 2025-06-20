@@ -16,7 +16,7 @@ import { AppDispatch, RootState } from "../../store/store";
 import { getAllProductItem } from "../../api/category/api";
 import dayjs from "dayjs";
 import { useSearchParams } from "react-router-dom";
-
+import { UseSelector } from "react-redux";
 interface TableData {
   name: string;
   quantity: number;
@@ -46,6 +46,8 @@ interface CategorySelection {
 const ProductTableWithHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
   const role = useSelector((state: RootState) => state.Login.role);
+
+  
 
   const [selectedProduct, setSelectedProduct] = useState<TableData | null>(
     null
@@ -433,38 +435,39 @@ const ProductTableWithHeader = () => {
         );
       },
     },
-    // {
-    //   title: "Website Highlights",
-    //   key: "actions",
-    //   render: (_: any, record: TableData) => {
-    //     const productActionNames = productActions[record._id] || [];
-    //     const displayText = productActionNames.length > 0 ? productActionNames.join(", ") : "More Option";
 
-    //     return (
-    //       <div className="flex space-x-2">
-    //         <Dropdown
-    //           overlay={
-    //             <Menu>
-    //               <Menu.Item key="best_seller" onClick={() => handleMenuClick("best_seller", record._id)}>
-    //                 Best Seller
-    //               </Menu.Item>
-    //               <Menu.Item key="trending_product" onClick={() => handleMenuClick("trending_product", record._id)}>
-    //                 Trending Product
-    //               </Menu.Item>
-    //               <Menu.Item key="you_must_have_this" onClick={() => handleMenuClick("you_must_have_this", record._id)}>
-    //                 You must have this
-    //               </Menu.Item>
-    //             </Menu>
-    //           }
-    //         >
-    //           <Tag color="blue">
-    //             <button>{displayText}</button>
-    //           </Tag>
-    //         </Dropdown>
-    //       </div>
-    //     );
-    //   }
-    // },
+    {
+      title: "Website Highlights",
+      key: "actions",
+      render: (_: any, record: TableData) => {
+        const productActionNames = productActions[record._id] || [];
+        const displayText = productActionNames.length > 0 ? productActionNames.join(", ") : "More Option";
+
+        return (
+          <div className="flex space-x-2">
+            <Dropdown
+              overlay={
+                <Menu>
+                  <Menu.Item key="best_seller" onClick={() => handleMenuClick("best_seller", record._id)}>
+                    Best Seller
+                  </Menu.Item>
+                  <Menu.Item key="trending_product" onClick={() => handleMenuClick("trending_product", record._id)}>
+                    Trending Product
+                  </Menu.Item>
+                  <Menu.Item key="you_must_have_this" onClick={() => handleMenuClick("you_must_have_this", record._id)}>
+                    You must have this
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Tag color="blue">
+                <button>{displayText}</button>
+              </Tag>
+            </Dropdown>
+          </div>
+        );
+      }
+    },
     { title: "Created at", dataIndex: "created_at", key: "created_At" },
   ];
 
