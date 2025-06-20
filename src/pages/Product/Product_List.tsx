@@ -46,7 +46,7 @@ interface CategorySelection {
 const ProductTableWithHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
   const role = useSelector((state: RootState) => state.Login.role);
-
+  console.log(role)
   const [selectedProduct, setSelectedProduct] = useState<TableData | null>(
     null
   );
@@ -362,111 +362,129 @@ const ProductTableWithHeader = () => {
   };
 
   const columns = [
-    {
-      title: (
-        <Checkbox onChange={handleCheckAll} checked={allChecked}>
-          Name
-        </Checkbox>
-      ),
-      dataIndex: "name",
-      key: "name",
-      render: (text, record) => (
-        <div className="flex items-center">
-          <Checkbox
-            onChange={() => handleCheck(record._id)}
-            checked={checkedNames[record._id] || false}
-          />
-          <span className="ml-2">{text}</span>
-        </div>
-      ),
+  {
+    title: (
+      <Checkbox onChange={handleCheckAll} checked={allChecked}>
+        Name
+      </Checkbox>
+    ),
+    dataIndex: "name",
+    key: "name",
+    render: (text, record) => (
+      <div className="flex items-center">
+        <Checkbox
+          onChange={() => handleCheck(record._id)}
+          checked={checkedNames[record._id] || false}
+        />
+        <span className="ml-2">{text}</span>
+      </div>
+    ),
+  },
+  { title: "Description", dataIndex: "description", key: "description" },
+  {
+    title: "Price",
+    dataIndex: "base_price",
+    key: "base_price",
+    render: (text: number) => {
+      return text.toFixed(2);
     },
-    { title: "Description", dataIndex: "description", key: "description" },
-    {
-      title: "Price",
-      dataIndex: "base_price",
-      key: "base_price",
-      render: (text: number) => {
-        return text.toFixed(2);
-      },
+  },
+  {
+    title: "Discounted Price",
+    dataIndex: "discounted_price",
+    key: "discounted_price",
+    render: (_: number, record: any) => {
+      const base = record.base_price || 0;
+      const discountedValue = record.discounted_price;
+      return discountedValue.toFixed(2);
     },
-    {
-      title: "Discounted Price",
-      dataIndex: "discounted_price",
-      key: "discounted_price",
-      render: (_: number, record: any) => {
-        const base = record.base_price || 0;
-        // const discountPercent = record.discounted_price || 0;
-        // const discountedValue = base - (base * discountPercent) / 100;
-        const discountedValue = record.discounted_price
-        return discountedValue.toFixed(2);
-      },
-    },
-    { title: "Status", dataIndex: "status", key: "status" },
-    { title: "Stock", dataIndex: "quantity", key: "quantity" },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_: any, record: TableData) => {
-        const productActionNames = productActions[record._id] || [];
-        const displayText =
-          productActionNames.length > 0
-            ? productActionNames.join(", ")
-            : "More Option";
+  },
+  { title: "Status", dataIndex: "status", key: "status" },
+  { title: "Stock", dataIndex: "quantity", key: "quantity" },
+  {
+    title: "Actions",
+    key: "actions",
+    render: (_: any, record: TableData) => {
+      const productActionNames = productActions[record._id] || [];
+      const displayText =
+        productActionNames.length > 0
+          ? productActionNames.join(", ")
+          : "More Option";
 
-        return (
-          <div className="flex space-x-2">
+      return (
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleUpdate(record)}
+            className="text-blue-500 hover:underline"
+          >
+            Update
+          </button>
+          {role === "super_admin" && (
             <button
-              onClick={() => handleUpdate(record)}
-              className="text-blue-500 hover:underline"
+              onClick={() => handleDelete(record)}
+              className="text-red-500 hover:underline"
             >
-              Update
+              Delete
             </button>
-            {role === "super_admin" && (
-              <button
-                onClick={() => handleDelete(record)}
-                className="text-red-500 hover:underline"
-              >
-                Delete
-              </button>
-            )}
-          </div>
-        );
-      },
+          )}
+        </div>
+      );
     },
-    // {
-    //   title: "Website Highlights",
-    //   key: "actions",
-    //   render: (_: any, record: TableData) => {
-    //     const productActionNames = productActions[record._id] || [];
-    //     const displayText = productActionNames.length > 0 ? productActionNames.join(", ") : "More Option";
+  },
+  ...(role === "super_admin"
+    ? [
+        {
+          title: "Website Highlights",
+          key: "website_highlights",
+          render: (_: any, record: TableData) => {
+            const productActionNames = productActions[record._id] || [];
+            const displayText =
+              productActionNames.length > 0
+                ? productActionNames.join(", ")
+                : "More Option";
 
-    //     return (
-    //       <div className="flex space-x-2">
-    //         <Dropdown
-    //           overlay={
-    //             <Menu>
-    //               <Menu.Item key="best_seller" onClick={() => handleMenuClick("best_seller", record._id)}>
-    //                 Best Seller
-    //               </Menu.Item>
-    //               <Menu.Item key="trending_product" onClick={() => handleMenuClick("trending_product", record._id)}>
-    //                 Trending Product
-    //               </Menu.Item>
-    //               <Menu.Item key="you_must_have_this" onClick={() => handleMenuClick("you_must_have_this", record._id)}>
-    //                 You must have this
-    //               </Menu.Item>
-    //             </Menu>
-    //           }
-    //         >
-    //           <Tag color="blue">
-    //             <button>{displayText}</button>
-    //           </Tag>
-    //         </Dropdown>
-    //       </div>
-    //     );
-    //   }
-    // },
-    { title: "Created at", dataIndex: "created_at", key: "created_At" },
-  ];
+            return (
+              <div className="flex space-x-2">
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item
+                        key="best_seller"
+                        onClick={() => handleMenuClick("best_seller", record._id)}
+                      >
+                        Best Seller
+                      </Menu.Item>
+                      <Menu.Item
+                        key="trending_product"
+                        onClick={() =>
+                          handleMenuClick("trending_product", record._id)
+                        }
+                      >
+                        Trending Product
+                      </Menu.Item>
+                      <Menu.Item
+                        key="you_must_have_this"
+                        onClick={() =>
+                          handleMenuClick("you_must_have_this", record._id)
+                        }
+                      >
+                        You must have this
+                      </Menu.Item>
+                    </Menu>
+                  }
+                >
+                  <Tag color="blue">
+                    <button>{displayText}</button>
+                  </Tag>
+                </Dropdown>
+              </div>
+            );
+          },
+        },
+      ]
+    : []),
+  { title: "Created at", dataIndex: "created_at", key: "created_At" },
+];
 
   return (
     <div>
