@@ -3,6 +3,8 @@ import axios from "axios";
 import { RootState } from "../../store/store";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
+
+
 export interface UpdateSalonApi {
   salon_name: string;
   about: string;
@@ -10,11 +12,10 @@ export interface UpdateSalonApi {
   openingHour: string;
   closingHour: string;
   email: string;
-  password: string;
   address: string;
-  salon_image: string;
+  salon_image?: File | string; // Make salon_image optional and allow File type
+  password?: string; // Make password optional
 }
-
 export const getAllServices = async () => {
   try {
     const res = await axios.get(
@@ -90,28 +91,33 @@ export const deleteService = createAsyncThunk(
   }
 );
 
+
 export const updateSalonApi = async (token: string, data: UpdateSalonApi) => {
   const formData = new FormData();
-
   formData.append("salon_name", data.salon_name);
   formData.append("about", data.about);
   formData.append("contact_number", data.contact_number);
-  formData.append("opeingHour", data.openingHour);
+  formData.append("openingHour", data.openingHour); // Fix typo if present
   formData.append("closingHour", data.closingHour);
   formData.append("email", data.email);
-  formData.append("password", data.password);
   formData.append("address", data.address);
-  formData.append("salon_image", data.salon_image);
+  if (data.salon_image instanceof File) {
+    formData.append("image1", data.salon_image); // Send as image1
+  }
 
-  const response = await axios.put(`${BACKEND_URL}/salon/update`, formData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "multipart/form-data",
-    },
-  });
-  return response.data;
+  try {
+    const response = await axios.put(`${BACKEND_URL}/salon/update`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error: any) {
+    console.error("Error in updateSalonApi:", error.response?.data || error.message);
+    throw error;
+  }
 };
-
 export const addSalonApi = createAsyncThunk(
   "addSalon",
   async (payload: {}, { rejectWithValue, getState }) => {

@@ -1,3 +1,4 @@
+
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { Modal, Button, Input, Upload } from "antd";
 import { useSelector, useDispatch } from "react-redux";
@@ -27,21 +28,21 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
     email: string;
     country: string;
     address: string;
-    store_image: string | File;
+    store_image: File | null;
   }>({
-    store_name: store.store_name,
-    vendor_name: store.vendor_name,
-    description: store.description,
-    store_contact_email: store.store_contact_email,
-    email: store.email,
-    country: store.country,
-    address: store.address,
-    store_image: store.store_image,
+    store_name: store.store_name || "",
+    vendor_name: store.vendor_name || "",
+    description: store.description || "",
+    store_contact_email: store.store_contact_email || "",
+    email: store.email || "",
+    country: store.country || "",
+    address: store.address || "",
+    store_image: null,
   });
 
   const handleImageChange = (info: any) => {
     if (info.file.status === "done" || info.file.originFileObj) {
-      const file = info.file.originFileObj;
+      const file = info.file.originFileObj as File;
       const imageUrl = URL.createObjectURL(file);
       setNewImageUrl(imageUrl);
       setFormData({ ...formData, store_image: file });
@@ -58,29 +59,25 @@ const UpdateStoreModal: React.FC<PropsUpdateStoreModal> = ({
 
   const handleUpdate = async () => {
     try {
-      const data = new FormData();
-      data.append("store_name", formData.store_name);
-      data.append("vendor_name", formData.vendor_name);
-      data.append("description", formData.description);
-      data.append("store_contact_email", formData.store_contact_email);
-      data.append("email", formData.email);
-      data.append("country", formData.country);
-      data.append("address", formData.address);
-
-    if (formData.store_image instanceof File || formData.store_image === null) {
-  if (formData.store_image instanceof File) {
-    data.append("store_image", formData.store_image);
-  }
-}
-
-const res = await updateStore({ token: store.token, data });
+      const res = await updateStoreApi(store.token, formData);
       if (res) {
-        dispatch(updateStore({ type: "updateStore", payload: { res } }));
+        dispatch(
+          updateStore({
+            store_name: res.store_name,
+            vendor_name: res.vendor_name,
+            description: res.description,
+            store_contact_email: res.store_contact_email,
+            email: res.email,
+            country: res.country,
+            address: res.address,
+            store_image: res.store_image,
+          })
+        );
       }
-
       setProfile(false);
-    } catch (error) {
-      console.error("Update error:", error);
+    } catch (error: any) {
+      console.error("Update error:", error.response?.data || error.message);
+      alert("Failed to update store: " + (error.response?.data?.message || "Unknown error"));
     }
   };
 
@@ -156,26 +153,25 @@ const res = await updateStore({ token: store.token, data });
         <strong>Store Image:</strong>
       </p>
       <div style={{ marginBottom: "16px" }}>
-        <img
-          src={
-            newImageUrl ||
-            (typeof formData.store_image === "string"
-              ? formData.store_image
-              : "")
-          }
-          alt="Store"
-          style={{
-            width: "150px",
-            height: "150px",
-            marginBottom: "8px",
-            cursor: "pointer",
-            objectFit: "cover",
-            borderRadius: "4px",
-          }}
-        />
+        {newImageUrl || store.store_image ? (
+          <img
+            src={newImageUrl || store.store_image}
+            alt="Store"
+            style={{
+              width: "150px",
+              height: "150px",
+              marginBottom: "8px",
+              cursor: "pointer",
+              objectFit: "cover",
+              borderRadius: "4px",
+            }}
+          />
+        ) : (
+          <p>No image selected</p>
+        )}
       </div>
       <Upload
-        name="storeImage"
+        name="store_image" // Match backend field
         showUploadList={false}
         beforeUpload={(file) => {
           const isImage = file.type.startsWith("image/");
