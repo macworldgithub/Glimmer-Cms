@@ -217,7 +217,7 @@ const OrderDetails = () => {
         <div className=" space-y-6 w-1/3 max-lg:w-full">
           {/* Customer Details */}
           <div className="bg-white p-4 rounded-lg shadow ">
-            <h2 className="sm:text-lg text:md  font-medium text-gray-500">Customer details</h2>
+            <h2 className="sm:text-lg text:md  font-medium text-gray-500">Customer details </h2>
             <div className="flex gap-x-4">
               <div>
                 <Avatar size={"large"} src={pic} icon="user" />

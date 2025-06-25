@@ -293,6 +293,7 @@ const OrderDetailPage = () => {
           </p>
           <p>
             <strong>Payment Method:</strong> {order.paymentMethod}
+            <Tag color="blue">{order.paymentMethod}COD</Tag>
           </p>
           <p>
             <strong>Order Status:</strong>{" "}
