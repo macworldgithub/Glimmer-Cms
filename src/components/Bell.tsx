@@ -72,7 +72,6 @@ const Bell = () => {
           <List
             dataSource={notifications}
             renderItem={(item) => {
-              console.log(item);
               return (
                 <List.Item
                   key={item.id}
