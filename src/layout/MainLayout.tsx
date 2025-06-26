@@ -25,11 +25,17 @@ const MainLayout = () => {
   const [profile, setProfile] = useState<boolean>(false);
   const role = useSelector((state: RootState) => state.Login.role);
   console.log(role);
+  const id = useSelector((state: RootState) => state.Login._id);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const socket = io(BACKEND_URL, {
       transports: ["websocket"],
+      query: {
+        storeId: role === "store" ? id : undefined,
+        salonId: role === "salon" ? id : undefined,
+        userId: role === "super_admin" ? id : undefined,
+      },
     });
 
     socket.on("connect", () => {
@@ -38,36 +44,51 @@ const MainLayout = () => {
 
     if (role === "store" || role === "super_admin") {
       socket.on("newOrder", (order) => {
-        notificationSound.play();
-        toast.success(`New order from ${order.customerName}`);
-        dispatch(addNotification({
-          id: order._id,
-          message: `A new order has been placed by ${order.customerName}. Please review and process it. Order ID: ${order._id}`,
-          timestamp: new Date().toISOString(),
-          read: false,
-          data: order,
-        }));
+        const orderData = order._doc || order; // fallback if it's already plain
+
+        console.log("Order received:", orderData);
+
+        const storeId = order.storeId || orderData.productList?.[0]?.storeId;
+
+        if (role === "super_admin" || storeId === id) {
+          notificationSound.play();
+          toast.success(`New order from ${orderData.customerName}`);
+
+          dispatch(
+            addNotification({
+              id: orderData._id,
+              message: `A new order has been placed by ${orderData.customerName}. Please review and process it. Order ID: ${orderData._id}`,
+              timestamp: new Date().toISOString(),
+              read: false,
+              data: orderData,
+            })
+          );
+        }
       });
     }
 
     if (role === "salon" || role === "super_admin") {
       socket.on("newBooking", (booking) => {
-        notificationSound.play();
-        toast.success(`New booking from ${booking.customerName}`);
-        dispatch(addNotification({
-          id: booking._id,
-          message: `A new salon appointment has been booked by ${booking.customerName}. Please review the details. Salon ID: ${booking._id}`,
-          timestamp: new Date().toISOString(),
-          read: false,
-          data: booking,
-        }));
+        if (role === "super_admin" || booking.salonId === id) {
+          notificationSound.play();
+          toast.success(`New booking from ${booking.customerName}`);
+          dispatch(
+            addNotification({
+              id: booking._id,
+              message: `A new salon appointment has been booked by ${booking.customerName}. Please review the details. Salon ID: ${booking._id}`,
+              timestamp: new Date().toISOString(),
+              read: false,
+              data: booking,
+            })
+          );
+        }
       });
     }
 
     return () => {
       socket.disconnect();
     };
-  }, [dispatch]);
+  }, [dispatch, id, role]);
 
   return (
     <Layout>
