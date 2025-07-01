@@ -1,5 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { approvePriceUpdate, getAllServicesForAdmin, updateServiceDiscount, updateSingleServiceDiscount } from "../api/service/api";
+import {
+  approvePriceUpdate,
+  getAllServicesForAdmin,
+  updateServiceDiscount,
+  updateSingleServiceDiscount,
+} from "../api/service/api";
 import { useSelector, useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import { RootState, AppDispatch } from "../store/store";
@@ -58,13 +63,7 @@ const SuperAdmin_Services_List = () => {
         salonId,
       })
     );
-  }, [
-    dispatch,
-    currentPage,
-    categoryIdFilter,
-    nameFilter,
-    salonId,
-  ]);
+  }, [dispatch, currentPage, categoryIdFilter, nameFilter, salonId]);
 
   const handleUpdate = (record: TableData) => {
     setSelectedSalon(null);
@@ -88,8 +87,8 @@ const SuperAdmin_Services_List = () => {
       return;
     }
 
-    if (discount <= 0) {
-      alert("Please enter a valid discount greater than 0.");
+    if (discount < 0) {
+      alert("Please enter a valid discount greater or equal to 0.");
       return;
     }
 
@@ -121,9 +120,9 @@ const SuperAdmin_Services_List = () => {
   const salonServiceList = useMemo(() => {
     return Array.isArray(serviceList)
       ? {
-        services: serviceList,
-        total: serviceList.length,
-      }
+          services: serviceList,
+          total: serviceList.length,
+        }
       : serviceList || { services: [], total: 0 };
   }, [serviceList]);
 
@@ -162,19 +161,15 @@ const SuperAdmin_Services_List = () => {
 
   const filteredServices = salonServiceList.services.filter((salon) => {
     const categoryId = salon.categoryId ? salon.categoryId.trim() : "";
-    const name = salon.name
-      ? salon.name.toLowerCase().trim()
-      : "";
+    const name = salon.name ? salon.name.toLowerCase().trim() : "";
 
     return (
       (!categoryIdFilter || categoryId === categoryIdFilter) &&
-      (!nameFilter || name.includes(nameFilter.toLowerCase())));
+      (!nameFilter || name.includes(nameFilter.toLowerCase()))
+    );
   });
 
-  const handleSearch = (newFilters: {
-    categoryId?: string;
-    name?: string;
-  }) => {
+  const handleSearch = (newFilters: { categoryId?: string; name?: string }) => {
     const currentParams = Object.fromEntries(searchParams.entries());
     const updatedParams = {
       ...currentParams,
@@ -251,7 +246,11 @@ const SuperAdmin_Services_List = () => {
           <input
             type="number"
             className="border p-1 w-20"
-            value={editedPrices[record._id] !== undefined ? editedPrices[record._id] : (text || "")}
+            value={
+              editedPrices[record._id] !== undefined
+                ? editedPrices[record._id]
+                : text || ""
+            }
             onChange={(e) => handlePriceChange(record._id, e.target.value)}
           />
           <button
