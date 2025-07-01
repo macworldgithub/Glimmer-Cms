@@ -320,7 +320,8 @@ const OrderList = () => {
         }
       );
       if (response.data.statusCode === "200") {
-        message.success("Order transferred to PostEx.");
+        alert("Order transferred to PostEx successfully.");
+        window.location.reload(); 
         fetchData();
       }
     } catch (error) {
