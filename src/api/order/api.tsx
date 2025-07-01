@@ -252,3 +252,36 @@ export const updateProductStatus = createAsyncThunk(
     }
   }
 );
+
+export const updateConfirmedOrderStatus = createAsyncThunk(
+  "updateConfirmedOrderStatus",
+  async (
+    { orderId, orderStatus }: { orderId: string; orderStatus: string },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      // Make the API call to update order status
+      const response = await axios.put(
+        `${BACKEND_URL}/order/updateConfirmedOrderStatus`,
+        {
+          orderId,
+          orderStatus,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data; // Return success data
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data || "Failed to update order status"
+      );
+    }
+  }
+);

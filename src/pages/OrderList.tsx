@@ -1,4 +1,3 @@
-
 // import React, { useEffect, useState } from "react";
 // import { useSelector } from "react-redux";
 // import { Button, Table, Tag } from "antd";
@@ -14,7 +13,7 @@
 //   const [filters, setFilters] = useState<{ order_id?: string; customerEmail?: string }>({});
 //   const token = useSelector((state: RootState) => state.Login.token);
 //   const store_id = useSelector((state: RootState) => state.Login._id);
-//   const role = useSelector((state: RootState) => state.Login.role); 
+//   const role = useSelector((state: RootState) => state.Login.role);
 //   const navigate = useNavigate();
 //   const [searchParams, setSearchParams] = useSearchParams();
 //   const pageSize = 10;
@@ -235,22 +234,27 @@
 
 // export default OrderList;
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Button, Table, Tag, message } from "antd";
+import { useDispatch, useSelector } from "react-redux";
+import { Button, Dropdown, Menu, Select, Table, Tag, message } from "antd";
 import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { RootState } from "../store/store";
+import { AppDispatch, RootState } from "../store/store";
 import { BACKEND_URL } from "../config/server";
 import OrderSearchBar from "../components/OrderSearchBar";
+import { updateConfirmedOrderStatus } from "../api/order/api";
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [totalOrders, setTotalOrders] = useState(0);
-  const [filters, setFilters] = useState<{ order_id?: string; customerEmail?: string }>({});
+  const [filters, setFilters] = useState<{
+    order_id?: string;
+    customerEmail?: string;
+  }>({});
   const token = useSelector((state: RootState) => state.Login.token);
   const store_id = useSelector((state: RootState) => state.Login._id);
   const role = useSelector((state: RootState) => state.Login.role);
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const [searchParams, setSearchParams] = useSearchParams();
   const pageSize = 10;
   const currentPage = Number(searchParams.get("page")) || 1;
@@ -270,8 +274,10 @@ const OrderList = () => {
         store_id: store_id || storeId,
       });
 
-      if (customFilters.order_id) queryParams.append("order_id", customFilters.order_id);
-      if (customFilters.customerEmail) queryParams.append("customerEmail", customFilters.customerEmail);
+      if (customFilters.order_id)
+        queryParams.append("order_id", customFilters.order_id);
+      if (customFilters.customerEmail)
+        queryParams.append("customerEmail", customFilters.customerEmail);
 
       console.log("Fetching orders with params:", queryParams.toString()); // Debug log
 
@@ -300,7 +306,10 @@ const OrderList = () => {
     fetchData();
   }, [currentPage, storeId, role, store_id]);
 
-  const handleSearch = (newFilters: { order_id?: string; customerEmail?: string }) => {
+  const handleSearch = (newFilters: {
+    order_id?: string;
+    customerEmail?: string;
+  }) => {
     setFilters(newFilters);
     // Only set page and store in URL
     setSearchParams({
@@ -316,20 +325,28 @@ const OrderList = () => {
         `${BACKEND_URL}/postex/order`,
         { orderId: orderId },
         {
-          headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
-       const result = response.data?.[0];
+      const result = response.data?.[0];
       if (result?.statusCode === "200") {
         message.success("Order transferred to PostEx.");
         fetchData();
-        window.location.reload(); 
+        window.location.reload();
       }
     } catch (error) {
-      console.error("Error transferring order to PostEx:", error.response?.data || error.message);
+      console.error(
+        "Error transferring order to PostEx:",
+        error.response?.data || error.message
+      );
       message.error("Failed to transfer order to PostEx.");
     }
   };
+
+  const allowedStatuses = ["In Process", "Delivered", "Returned", "Cancelled"];
 
   const columns = [
     {
@@ -363,7 +380,7 @@ const OrderList = () => {
       title: "ORDER STATUS",
       dataIndex: "status",
       key: "status",
-      render: (status: string) => {
+      render: (status: string, record: any) => {
         let color = "blue";
         const statusMap: Record<string, string> = {
           Unbooked: "orange",
@@ -385,6 +402,59 @@ const OrderList = () => {
           shipped: "green",
         };
         color = statusMap[status] || "blue";
+        const handleMenuClick = ({ key }: { key: string }) => {
+          dispatch(
+            updateConfirmedOrderStatus({
+              orderId: record._id,
+              orderStatus: key,
+            })
+          );
+        };
+
+        const menu = (
+          <Menu onClick={handleMenuClick}>
+            {allowedStatuses.map((s) => (
+              <Menu.Item key={s}>{s}</Menu.Item>
+            ))}
+          </Menu>
+        );
+
+        if (status === "Confirmed") {
+          return (
+            <Dropdown overlay={menu} trigger={["click"]}>
+              <Tag color={color} style={{ cursor: "pointer" }}>
+                {status}
+              </Tag>
+            </Dropdown>
+          );
+        }
+        (value: string) => {
+          dispatch(
+            updateConfirmedOrderStatus({
+              orderId: record._id,
+              orderStatus: value,
+            })
+          );
+        };
+
+        if (status === "Confirmed") {
+          const handleChange = (value: string) => {
+            dispatch(
+              updateConfirmedOrderStatus({
+                orderId: record._id,
+                orderStatus: value,
+              })
+            );
+          };
+          return (
+            <Select
+              defaultValue={status}
+              style={{ width: 160 }}
+              onChange={handleChange}
+              options={allowedStatuses.map((s) => ({ value: s, label: s }))}
+            />
+          );
+        }
         return <Tag color={color}>{status || "N/A"}</Tag>;
       },
     },
@@ -404,9 +474,14 @@ const OrderList = () => {
           <Button
             type="primary"
             onClick={() =>
-              navigate(`/order-details/${record._id}?store=${storeId || store_id || ""}`, {
-                state: { data: record },
-              })
+              navigate(
+                `/order-details/${record._id}?store=${
+                  storeId || store_id || ""
+                }`,
+                {
+                  state: { data: record },
+                }
+              )
             }
           >
             View Details
@@ -419,7 +494,9 @@ const OrderList = () => {
   return (
     <div>
       {role === "super_admin" && !storeId && !store_id && (
-        <p className="text-center text-red-500">Please select a store to view orders.</p>
+        <p className="text-center text-red-500">
+          Please select a store to view orders.
+        </p>
       )}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
         Order List
