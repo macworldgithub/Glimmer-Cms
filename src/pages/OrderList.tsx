@@ -346,8 +346,6 @@ const OrderList = () => {
     }
   };
 
-  const allowedStatuses = ["In Process", "Delivered", "Returned", "Cancelled"];
-
   const columns = [
     {
       title: "ORDER ID",
@@ -381,7 +379,6 @@ const OrderList = () => {
       dataIndex: "status",
       key: "status",
       render: (status: string, record: any) => {
-        let color = "blue";
         const statusMap: Record<string, string> = {
           Unbooked: "orange",
           Booked: "blue",
@@ -401,25 +398,42 @@ const OrderList = () => {
           Pending: "orange",
           shipped: "green",
         };
-        color = statusMap[status] || "blue";
-        const handleMenuClick = ({ key }: { key: string }) => {
-          dispatch(
+        const allowedStatuses = [
+          "In Process",
+          "Delivered",
+          "Returned",
+          "Cancelled",
+        ];
+        const color = statusMap[status] || "blue";
+
+        // Handle menu item click from dropdown
+        const handleMenuClick = async ({ key }: { key: string }) => {
+          const resultAction = await dispatch(
             updateConfirmedOrderStatus({
               orderId: record._id,
               orderStatus: key,
             })
           );
+
+          if (updateConfirmedOrderStatus.fulfilled.match(resultAction)) {
+            message.success(`Order status updated to ${key}`);
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          } else {
+            message.error("Failed to update order status");
+          }
         };
 
-        const menu = (
-          <Menu onClick={handleMenuClick}>
-            {allowedStatuses.map((s) => (
-              <Menu.Item key={s}>{s}</Menu.Item>
-            ))}
-          </Menu>
-        );
-
         if (status === "Confirmed") {
+          const menu = (
+            <Menu onClick={handleMenuClick}>
+              {allowedStatuses.map((s) => (
+                <Menu.Item key={s}>{s}</Menu.Item>
+              ))}
+            </Menu>
+          );
+
           return (
             <Dropdown overlay={menu} trigger={["click"]}>
               <Tag color={color} style={{ cursor: "pointer" }}>
@@ -428,33 +442,7 @@ const OrderList = () => {
             </Dropdown>
           );
         }
-        (value: string) => {
-          dispatch(
-            updateConfirmedOrderStatus({
-              orderId: record._id,
-              orderStatus: value,
-            })
-          );
-        };
 
-        if (status === "Confirmed") {
-          const handleChange = (value: string) => {
-            dispatch(
-              updateConfirmedOrderStatus({
-                orderId: record._id,
-                orderStatus: value,
-              })
-            );
-          };
-          return (
-            <Select
-              defaultValue={status}
-              style={{ width: 160 }}
-              onChange={handleChange}
-              options={allowedStatuses.map((s) => ({ value: s, label: s }))}
-            />
-          );
-        }
         return <Tag color={color}>{status || "N/A"}</Tag>;
       },
     },
