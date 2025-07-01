@@ -319,10 +319,11 @@ const OrderList = () => {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
         }
       );
-      if (response.data.statusCode === 200) {
+       const result = response.data?.[0];
+      if (result?.statusCode === "200") {
         message.success("Order transferred to PostEx.");
-        window.location.reload(); 
         fetchData();
+        window.location.reload(); 
       }
     } catch (error) {
       console.error("Error transferring order to PostEx:", error.response?.data || error.message);
