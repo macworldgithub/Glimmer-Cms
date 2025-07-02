@@ -104,7 +104,7 @@ const OrderDetailPage = () => {
       render: (price) => <Tag color="green">{price} PKR</Tag>,
     },
     {
-      title: "Total Price",
+      title: "Total Price (incl. DC)",
       dataIndex: "total_price",
       key: "total_price",
       render: (price) => `${price} PKR`,

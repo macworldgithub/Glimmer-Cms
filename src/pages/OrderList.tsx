@@ -370,8 +370,8 @@ const OrderList = () => {
     },
     {
       title: "Total (PKR)",
-      dataIndex: "discountedTotal",
-      key: "discountedTotal",
+      dataIndex: "total",
+      key: "total",
       render: (total) => `${total || 0}`,
     },
     {
