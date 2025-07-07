@@ -10,6 +10,7 @@ import {
   deleteProductItem,
 } from "../api/category/api"; // Import your API functions
 import {
+  createService,
   deleteService,
   getAllServices,
   getAllServicesById,
@@ -30,6 +31,7 @@ const CreateServices = () => {
   );
   const [productItems, setProductItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
 
   const [isSubServiceModalOpen, setIsSubServiceModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -44,6 +46,7 @@ const CreateServices = () => {
     name: "",
   });
   const [selectedProduct, setSelectedProduct] = useState({ _id: "", name: "" });
+  const [newService, setNewService] = useState("");
   const [newSubservice, setNewSubService] = useState<string>("");
   const [newProduct, setNewProduct] = useState<string>("");
 
@@ -146,6 +149,35 @@ const CreateServices = () => {
     });
   };
 
+  const openServiceModal = () => {
+    setIsServiceModalOpen(true);
+  };
+
+  const closeServiceModal = async () => {
+  const trimmedService = newService.trim();
+  if (!trimmedService) return;
+
+  try {
+    const newServiceData = {
+      category: trimmedService,
+      services: {}, 
+    };
+
+    const res = await dispatch(createService(newServiceData)).unwrap();
+
+    if (res) {
+      message.success("Service added successfully!");
+      setNewService("");
+      fetchServices(); 
+    }
+  } catch (error) {
+    console.error("Failed to add service", error);
+    message.error("Failed to add service");
+  }
+
+  setIsServiceModalOpen(false);
+};
+
   const openSubServiceModal = (type) => {
     setModalType(type);
     setIsSubServiceModalOpen(true);
@@ -246,12 +278,17 @@ const CreateServices = () => {
         }
         if (modalType === "Update" && selectedProduct?._id) {
           const oldProductName = selectedProduct._id;
-        
-          if (selectedSubservice._id && updatedProduct[selectedSubservice._id]) {
+
+          if (
+            selectedSubservice._id &&
+            updatedProduct[selectedSubservice._id]
+          ) {
             // Find index of the existing product and replace it
-            const productIndex = updatedProduct[selectedSubservice.name].indexOf(oldProductName);
+            const productIndex =
+              updatedProduct[selectedSubservice.name].indexOf(oldProductName);
             if (productIndex !== -1) {
-              updatedProduct[selectedSubservice.name][productIndex] = newProductName;
+              updatedProduct[selectedSubservice.name][productIndex] =
+                newProductName;
             }
           }
         }
@@ -357,6 +394,12 @@ const CreateServices = () => {
           </select>
         </label>
       </div>
+      <Button
+        className="bg-blue-500 text-white mb-4 mt-4 px-4 py-2 rounded-md hover:bg-blue-600 transition"
+        onClick={openServiceModal}
+      >
+        Add Service
+      </Button>
 
       {/* Subcategory Actions */}
       {selectedService?._id && (
@@ -366,14 +409,14 @@ const CreateServices = () => {
               className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
               onClick={() => openSubServiceModal("Update")}
             >
-              Update Subservice
+              Update Gender
             </Button>
           )}
           <Button
             className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
             onClick={() => openSubServiceModal("Add")}
           >
-            Add Subservice
+            Add Gender
           </Button>
           {selectedSubservice._id && (
             <Button
@@ -412,6 +455,22 @@ const CreateServices = () => {
           )} */}
         </div>
       )}
+      <Modal
+        title="Add New Service"
+        open={isServiceModalOpen}
+        onOk={closeServiceModal}
+        onCancel={() => setIsServiceModalOpen(false)}
+      >
+        <div className="flex flex-col">
+          <label className="text-gray-700 font-medium">Service Name:</label>
+          <Input
+            value={newService}
+            className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            onChange={(e) => setNewService(e.target.value)}
+          />
+        </div>
+      </Modal>
+
       {/* Subcategory Modal */}
       <Modal
         title={`${modalType} Subcategory`}

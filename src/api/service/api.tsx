@@ -40,6 +40,33 @@ export const getAllServicesById = async (category_id) => {
   }
 };
 
+export const createService = createAsyncThunk(
+  "createService",
+  async (
+    data: { category: string; services: Record<string, string[]> },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState() as RootState;
+      const token = state.Login.token;
+
+      const response = await axios.post(
+        `${BACKEND_URL}/salon-services-categories/create`, 
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Failed to create service");
+    }
+  }
+);
+
 export const updateService = createAsyncThunk(
   "update",
   async (
