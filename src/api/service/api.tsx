@@ -210,7 +210,6 @@ export const getAllServicesForSalon = createAsyncThunk(
         {
           params: {
             page: params.page_no,
-            limit: 8,
             ...(params.status && { status: params.status }),
             ...(params.categoryId && { categoryId: params.categoryId }),
             ...(params.subCategoryName && {
@@ -280,30 +279,29 @@ export const updateSalonServiceApi = createAsyncThunk(
   }
 );
 
+interface GetAdminServicesParams {
+  page_no: number;
+  salonId?: string;
+  categoryId?: string;
+  name?: string;
+}
+
 export const getAllServicesForAdmin = createAsyncThunk(
   "getAllServicesForAdmin",
-  async (
-    payload: {
-      page_no: number;
-      salonId?: string;
-      categoryId?: string;
-      name?: string;
-    },
-    { rejectWithValue, getState }
-  ) => {
+  async (params: GetAdminServicesParams, { rejectWithValue, getState }) => {
     try {
       const state = getState() as RootState;
       const token = state.Login.token;
 
-      const params = new URLSearchParams();
-      params.append("page_no", String(payload.page_no));
-      if (payload.salonId) params.append("salonId", payload.salonId);
-      if (payload.categoryId) params.append("categoryId", payload.categoryId);
-      if (payload.name) params.append("name", payload.name);
-
       const response = await axios.get(
-        `${BACKEND_URL}/salon-services/getAllServicesForAdmin?${params.toString()}`,
+        `${BACKEND_URL}/salon-services/getAllServicesForAdmin`,
         {
+          params: {
+            page_no: params.page_no,
+            ...(params.salonId && { salonId: params.salonId }),
+            ...(params.categoryId && { categoryId: params.categoryId }),
+            ...(params.name && { name: params.name }),
+          },
           headers: {
             Authorization: `Bearer ${token}`,
           },

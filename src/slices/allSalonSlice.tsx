@@ -19,11 +19,13 @@ interface Salon {
 
 interface AllSalon {
   salons: Salon[];
+  total: number;
   page: number;
 }
 
 const initialState: AllSalon = {
   salons: [],
+  total: 0,
   page: 1,
 };
 
@@ -38,11 +40,15 @@ const allSalonSlice = createSlice({
   extraReducers(builder) {
     builder.addCase(getAllServicesForSalon.fulfilled, (state, action) => {
       //   state.products = action.payload;
-      state.salons = action.payload;
+      state.salons = action.payload.services;
+      state.total = action.payload.total;
+      state.page = action.payload.page;
     });
     builder.addCase(getAllServicesForAdmin.fulfilled, (state, action) => {
       //   state.products = action.payload;
-      state.salons = action.payload;
+      state.salons = action.payload.services;
+      state.total = action.payload.total;
+      state.page = action.payload.page;
     });
 
     builder.addCase(updateSalonServiceApi.fulfilled, (state, action) => {

@@ -29,7 +29,7 @@ interface TableData {
 
 const SuperAdmin_Services_List = () => {
   const role = useSelector((state: RootState) => state.Login.role);
-  const serviceList = useSelector((state: RootState) => state.AllSalon.salons);
+  const { salons: serviceList, total } = useSelector((state: RootState) => state.AllSalon);
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -46,9 +46,9 @@ const SuperAdmin_Services_List = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const pageSize = 8;
+  const pageSize = 10;
 
-  const currentPage = Number(searchParams.get("page")) || 1;
+  const currentPage = Number(searchParams.get("page_no")) || 1;
   const categoryIdFilter = searchParams.get("categoryId") || "";
   const nameFilter = searchParams.get("name") || "";
   const salonId = searchParams.get("salonId") || "";
@@ -173,7 +173,7 @@ const SuperAdmin_Services_List = () => {
     const currentParams = Object.fromEntries(searchParams.entries());
     const updatedParams = {
       ...currentParams,
-      page: "1",
+      page_no: "1",
       ...newFilters,
     };
 
@@ -372,10 +372,10 @@ const SuperAdmin_Services_List = () => {
           pagination={{
             current: currentPage,
             pageSize: pageSize,
-            total: salonServiceList?.total,
+            total: total,
             onChange: (page) =>
               setSearchParams({
-                page: page.toString(),
+                page_no: page.toString(),
                 categoryId: categoryIdFilter,
                 name: nameFilter,
               }),
