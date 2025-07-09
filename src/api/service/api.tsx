@@ -209,7 +209,7 @@ export const getAllServicesForSalon = createAsyncThunk(
         `${BACKEND_URL}/salon-services/getAllServicesForSalon`,
         {
           params: {
-            page: params.page_no,
+            page_no: params.page_no,
             ...(params.status && { status: params.status }),
             ...(params.categoryId && { categoryId: params.categoryId }),
             ...(params.subCategoryName && {
