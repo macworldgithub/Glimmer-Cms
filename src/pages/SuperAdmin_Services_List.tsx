@@ -29,7 +29,9 @@ interface TableData {
 
 const SuperAdmin_Services_List = () => {
   const role = useSelector((state: RootState) => state.Login.role);
-  const { salons: serviceList, total } = useSelector((state: RootState) => state.AllSalon);
+  const { salons: serviceList, total } = useSelector(
+    (state: RootState) => state.AllSalon
+  );
 
   const dispatch = useDispatch<AppDispatch>();
 
@@ -191,11 +193,49 @@ const SuperAdmin_Services_List = () => {
   };
 
   const handlePriceUpdate = (id: string) => {
-    const newPrice = editedPrices[id];
-    if (!newPrice) return;
+    const record = filteredServices.find((item) => item._id === id);
+    if (!record) return;
 
-    dispatch(approvePriceUpdate({ adminSetPrice: newPrice, id }));
+    const editedPrice = editedPrices[id];
+
+    const finalPrice =
+      editedPrice !== undefined && editedPrice !== 0
+        ? editedPrice
+        : record.requestedPrice;
+
+    dispatch(approvePriceUpdate({ adminSetPrice: finalPrice, id }));
     alert("Requested Price is set by Admin successfully");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  };
+
+  const handleBulkPriceUpdate = () => {
+    const selectedIds = Object.keys(checkedNames).filter(
+      (id) => checkedNames[id]
+    );
+
+    if (selectedIds.length === 0) {
+      alert("Please select at least one service.");
+      return;
+    }
+
+    selectedIds.forEach((id) => {
+      const record = filteredServices.find((item) => item._id === id);
+      if (!record) return;
+
+      const editedPrice = editedPrices[id];
+
+      const finalPrice =
+        editedPrice !== undefined && editedPrice !== 0
+          ? editedPrice
+          : record.requestedPrice;
+
+      dispatch(approvePriceUpdate({ adminSetPrice: finalPrice, id }));
+    });
+
+    alert("Prices updated for selected services.");
+
     setTimeout(() => {
       window.location.reload();
     }, 1000);
@@ -259,6 +299,9 @@ const SuperAdmin_Services_List = () => {
           >
             Approve
           </button>
+          <Button type="primary" onClick={handleBulkPriceUpdate}>
+            Approve Selected Prices
+          </Button>
         </div>
       ),
     },
