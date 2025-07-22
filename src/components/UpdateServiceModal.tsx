@@ -95,8 +95,8 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
   }, [selectedSubservice.name, subservices]);
 
   useEffect(() => {
-    if (visible && salon) {
-      const matchedService = services.find(s => s._id === salon.categoryId);
+    if (visible && salon && services.length > 0) {
+      const matchedService = services.find((s) => s._id === salon.categoryId);
       setSelectedService({
         _id: salon.categoryId,
         category: matchedService ? matchedService.category : "",
@@ -119,7 +119,7 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
         subSubCategoryName: salon.subSubCategoryName,
       });
     }
-  }, [visible, salon, services]);
+  }, [visible, salon, services]); // make sure services is included here
 
   const fetchServices = async () => {
     try {
@@ -297,17 +297,13 @@ const UpdateServiceModal: React.FC<UpdateModalProps> = ({
           subSubCategoryName: selectedProduct.name,
         }}
       >
-        <Form.Item label="Service" name="categoryName">
+        <Form.Item label="Service" name="categoryId">
           <select value={selectedService._id} onChange={handleSelectService}>
             <option value="" disabled>
               Select Service
             </option>
             {services.map((service) => (
-              <option
-                key={service._id}
-                value={service._id}
-                data-name={service.category}
-              >
+              <option key={service._id} value={service._id}>
                 {service.category}
               </option>
             ))}
