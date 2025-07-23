@@ -371,61 +371,7 @@ export const approvePriceUpdate = createAsyncThunk(
   }
 );
 
-// export const updateServiceDiscount = createAsyncThunk(
-//   "bulk_update_service_discount",
-//   async (
-//     { discountPercentage, id }: { discountPercentage: number; id: string[] },
-//     { getState, rejectWithValue }
-//   ) => {
-//     try {
-//       const state = getState() as RootState;
-//       const token = state.Login.token;
 
-//       // Make the API call to update prices
-//       const response = await axios.patch(
-//         `${BACKEND_URL}/salon-services/applyBulkDiscount`,
-//         { discountPercentage, id },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       return response.data; // Return success data
-//     } catch (error: any) {
-//       return rejectWithValue(error.response?.data || "Failed to update prices");
-//     }
-//   }
-// );
-
-// export const updateSingleServiceDiscount = createAsyncThunk(
-//   "bulk_update_single_service_discount",
-//   async (
-//     { discountPercentage, id }: { discountPercentage: number; id: string },
-//     { getState, rejectWithValue }
-//   ) => {
-//     try {
-//       const state = getState() as RootState;
-//       const token = state.Login.token;
-
-//       // Make the API call to update prices
-//       const response = await axios.patch(
-//         `${BACKEND_URL}/salon-services/applyDiscounttoSingleService`,
-//         { discountPercentage, id },
-//         {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         }
-//       );
-
-//       return response.data; // Return success data
-//     } catch (error: any) {
-//       return rejectWithValue(error.response?.data || "Failed to update prices");
-//     }
-//   }
-// );
 export const updateSingleServiceDiscount = createAsyncThunk(
   "bulk_update_single_service_discount",
   async (
@@ -845,29 +791,6 @@ export const addRecommendedProduct = async (
   }
 };
 
-// export const getAllRecommendedProductsForSalon = createAsyncThunk(
-//   "admin/recommended-products",
-//   async (salonId: string, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.get(`${BACKEND_URL}/admin/get-recommended-products-of-salon/${salonId}`);
-//       return response.data;
-//     } catch (error: any) {
-//       return rejectWithValue(error.response?.data || "Failed to fetch salons");
-//     }
-//   }
-// );
-
-// export const getAllRecommendedProducts = createAsyncThunk(
-//   "admin/recommended-products",
-//   async (salonId: string, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.get(`${BACKEND_URL}/admin/recommended-products?salonId=${salonId}`);
-//       return response.data;
-//     } catch (error: any) {
-//       return rejectWithValue(error.response?.data || "Failed to fetch salons");
-//     }
-//   }
-// );
 export const getAllRecommendedProductsForSalon = createAsyncThunk(
     "admin/get-recommended-products-of-salon",
     async (salonId: string, { rejectWithValue, getState }) => {
