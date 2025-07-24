@@ -22,7 +22,8 @@ import { AppDispatch } from "../store/store";
 const { Option } = Select;
 
 const CreateServices = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch();
+
   const [services, setServices] = useState<{ _id: string; category: string }[]>(
     []
   );
@@ -31,68 +32,31 @@ const CreateServices = () => {
   );
   const [productItems, setProductItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
   const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [isDeleteServiceModalOpen, setIsDeleteServiceModalOpen] =
+    useState(false);
 
   const [isSubServiceModalOpen, setIsSubServiceModalOpen] = useState(false);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [modalType, setModalType] = useState("");
 
-  const [selectedService, setselectedService] = useState({
+  const [selectedService, setSelectedService] = useState({
     _id: "",
     category: "",
   });
-  const [selectedSubservice, setselectedSubservice] = useState({
+  const [selectedSubservice, setSelectedSubservice] = useState({
     _id: "",
     name: "",
   });
   const [selectedProduct, setSelectedProduct] = useState({ _id: "", name: "" });
+
   const [newService, setNewService] = useState("");
-  const [newSubservice, setNewSubService] = useState<string>("");
-  const [newProduct, setNewProduct] = useState<string>("");
+  const [isUpdateServiceModalOpen, setIsUpdateServiceModalOpen] =
+    useState(false);
 
-  // Fetch Categories
-  const fetchServices = async () => {
-    try {
-      setLoading(true);
-      const data = await getAllServices();
-      setServices(data);
-      setLoading(false);
-    } catch (error) {
-      message.error("Failed to fetch services");
-      setLoading(false);
-    }
-  };
-
-  // Fetch Subservices and Products
-  const fetchSubservicesAndProducts = async (categoryId: string) => {
-    if (!categoryId) {
-      console.warn("No category ID provided for fetching subservices.");
-      return;
-    }
-    try {
-      setLoading(true);
-      const data = await getAllServicesById(categoryId);
-
-      if (Array.isArray(data.services)) {
-        // Case 1: Services is an array (direct products)
-        setSubservices({}); // No subservices, so set to empty object
-        setProductItems(data.services); // Set products directly
-      } else if (data.services && typeof data.services === "object") {
-        // Case 2: Services is an object (subservices with nested products)
-        setSubservices(data.services); // Set subservices
-        setProductItems([]); // Reset products
-      } else {
-        // Fallback for invalid data
-        setSubservices({});
-        setProductItems([]);
-      }
-
-      setLoading(false);
-    } catch (error) {
-      message.error("Failed to fetch subservices and products");
-      setLoading(false);
-    }
-  };
+  const [newSubservice, setNewSubService] = useState("");
+  const [newProduct, setNewProduct] = useState("");
 
   useEffect(() => {
     fetchServices();
@@ -106,223 +70,214 @@ const CreateServices = () => {
 
   useEffect(() => {
     if (selectedSubservice.name) {
-      // Extract products (values) for the selected subservice category
-      const selectedProducts = subservices[selectedSubservice.name] || [];
-      setProductItems(selectedProducts);
+      setProductItems(subservices[selectedSubservice.name] || []);
     }
   }, [selectedSubservice.name, subservices]);
 
-  const handleSelectService = (event: any) => {
-    const id = event.target.value;
-    const category = event.target.options[event.target.selectedIndex].text;
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllServices();
+      setServices(data);
+    } catch {
+      message.error("Failed to fetch services");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setselectedService({
-      _id: id,
-      category: category || "",
-    });
-    setselectedSubservice({ _id: "", name: "" });
+  const fetchSubservicesAndProducts = async (categoryId: string) => {
+    if (!categoryId) return;
+    try {
+      setLoading(true);
+      const data = await getAllServicesById(categoryId);
+
+      if (Array.isArray(data.services)) {
+        setSubservices({});
+        setProductItems(data.services);
+      } else if (typeof data.services === "object") {
+        setSubservices(data.services);
+        setProductItems([]);
+      } else {
+        setSubservices({});
+        setProductItems([]);
+      }
+    } catch {
+      message.error("Failed to fetch subservices and products");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectService = (e: any) => {
+    const id = e.target.value;
+    const category = e.target.options[e.target.selectedIndex].text;
+
+    setSelectedService({ _id: id, category });
+    setSelectedSubservice({ _id: "", name: "" });
     setSelectedProduct({ _id: "", name: "" });
   };
 
-  const handleSelectSubservice = (event: any) => {
-    const id = event.target.value;
-    const name =
-      event.target.options[event.target.selectedIndex].getAttribute(
-        "data-name"
-      );
-
-    setselectedSubservice({
-      _id: id,
-      name: name || "",
-    });
-  };
-  const handleSelectProduct = (event: any) => {
-    const id = event.target.value;
-    const name =
-      event.target.options[event.target.selectedIndex].getAttribute(
-        "data-name"
-      );
-
-    setSelectedProduct({
-      _id: id,
-      name: name || "",
-    });
+  const handleSelectSubservice = (e: any) => {
+    const name = e.target.value;
+    setSelectedSubservice({ _id: name, name });
+    setSelectedProduct({ _id: "", name: "" });
   };
 
-  const openServiceModal = () => {
-    setIsServiceModalOpen(true);
+  const handleSelectProduct = (e: any) => {
+    const name = e.target.value;
+    setSelectedProduct({ _id: name, name });
   };
 
-  const closeServiceModal = async () => {
-  const trimmedService = newService.trim();
-  if (!trimmedService) return;
-
-  try {
-    const newServiceData = {
-      category: trimmedService,
-      services: {}, 
-    };
-
-    const res = await dispatch(createService(newServiceData)).unwrap();
-
-    if (res) {
-      message.success("Service added successfully!");
-      setNewService("");
-      fetchServices(); 
-    }
-  } catch (error) {
-    console.error("Failed to add service", error);
-    message.error("Failed to add service");
-  }
-
-  setIsServiceModalOpen(false);
-};
-
-  const openSubServiceModal = (type) => {
+  const openServiceModal = () => setIsServiceModalOpen(true);
+  const openSubServiceModal = (type: string) => {
     setModalType(type);
     setIsSubServiceModalOpen(true);
   };
-  const openProductModal = (type) => {
+  const openProductModal = (type: string) => {
     setModalType(type);
     setIsProductModalOpen(true);
   };
 
+  const closeServiceModal = async () => {
+    const trimmed = newService.trim();
+    if (!trimmed) return;
+
+    try {
+      const res = await dispatch(
+        createService({ category: trimmed, services: {} }) as any
+      ).unwrap();
+      if (res) {
+        message.success("Service added successfully");
+        fetchServices();
+        setNewService("");
+      }
+    } catch {
+      message.error("Failed to add service");
+    }
+
+    setIsServiceModalOpen(false);
+  };
+
   const closeSubServiceModal = async () => {
-    if (
-      modalType === "Add" ||
-      (modalType === "Update" && selectedSubservice?._id)
-    ) {
-      try {
-        const newSubserviceName = newSubservice.trim();
-        const updatedSubservices = { ...subservices };
-        if (modalType === "Add") {
-          if (!updatedSubservices[newSubserviceName]) {
-            // If it's a new category, add it with an empty array
-            updatedSubservices[newSubserviceName] = [];
-          }
-          // Prevent duplicate entries
-          if (
-            !updatedSubservices[selectedService.category]?.includes(
-              newSubserviceName
-            )
-          ) {
-            updatedSubservices[selectedService.category]?.push(
-              newSubserviceName
-            );
-          }
-        }
-        if (modalType === "Update") {
-          const oldSubserviceName = selectedSubservice.name;
+    const name = newSubservice.trim();
+    const updated = { ...subservices };
 
-          if (oldSubserviceName && updatedSubservices[oldSubserviceName]) {
-            updatedSubservices[newSubserviceName] =
-              updatedSubservices[oldSubserviceName];
+    try {
+      if (modalType === "Add") {
+        if (!updated[name]) updated[name] = [];
+      }
 
-            delete updatedSubservices[oldSubserviceName];
-          }
-        }
+      if (modalType === "Update" && selectedSubservice._id) {
+        const old = selectedSubservice.name;
+        updated[name] = updated[old];
+        delete updated[old];
+      }
 
-        const requestBody = {
+      if (modalType === "Delete" && selectedSubservice.name) {
+        delete updated[selectedSubservice.name]; // 🛠️ Delete just the gender
+      }
+
+      // Only proceed if it's Add, Update, or Delete of gender
+      if (
+        modalType === "Add" ||
+        modalType === "Update" ||
+        modalType === "Delete"
+      ) {
+        const payload = {
           category: selectedService.category,
-          services: updatedSubservices,
+          services: updated,
         };
+
         const res = await dispatch(
-          updateService({ category_id: selectedService._id, data: requestBody })
+          updateService({
+            category_id: selectedService._id,
+            data: payload,
+          }) as any
         ).unwrap();
+
         if (res) {
-          alert("New Sub Category Updated");
-          setSubservices(updatedSubservices);
+          const successMsg =
+            modalType === "Delete"
+              ? "Subservice (Gender) deleted"
+              : "Subcategory updated";
+          message.success(successMsg);
+
+          setSubservices(updated);
           setNewSubService("");
+          setSelectedSubservice({ _id: "", name: "" });
         }
-      } catch (error) {
-        console.error("error", error);
       }
+    } catch (err) {
+      console.error(err);
+      message.error(
+        modalType === "Delete"
+          ? "Error deleting subservice"
+          : "Error updating subservice"
+      );
     }
-    if (modalType === "Delete") {
-      try {
-        const res = await dispatch(
-          deleteService({ category_id: selectedService._id })
-        ).unwrap();
-        if (res) {
-          alert(`deleted ${selectedService.category}`);
-        }
-      } catch (error) {
-        console.error("error", error);
-        throw error;
-      }
-    }
+
     setIsSubServiceModalOpen(false);
     setModalType("");
   };
 
   const closeProductModal = async () => {
-    if (
-      modalType === "Add" ||
-      (modalType === "Update" && selectedProduct?._id)
-    ) {
-      try {
-        const newProductName = newProduct.trim();
-        const updatedProduct = { ...subservices };
+    const updated = { ...subservices };
+    const name = newProduct.trim();
 
-        if (modalType === "Add") {
-          if (!updatedProduct[selectedSubservice.name]) {
-            updatedProduct[selectedSubservice.name] = [];
-          }
-
-          // Prevent duplicates and add the new product
-          if (
-            !updatedProduct[selectedSubservice.name].includes(newProductName)
-          ) {
-            updatedProduct[selectedSubservice.name].push(newProductName);
-          }
+    try {
+      if (modalType === "Add") {
+        if (!updated[selectedSubservice.name])
+          updated[selectedSubservice.name] = [];
+        if (!updated[selectedSubservice.name].includes(name)) {
+          updated[selectedSubservice.name].push(name);
         }
-        if (modalType === "Update" && selectedProduct?._id) {
-          const oldProductName = selectedProduct._id;
-
-          if (
-            selectedSubservice._id &&
-            updatedProduct[selectedSubservice._id]
-          ) {
-            // Find index of the existing product and replace it
-            const productIndex =
-              updatedProduct[selectedSubservice.name].indexOf(oldProductName);
-            if (productIndex !== -1) {
-              updatedProduct[selectedSubservice.name][productIndex] =
-                newProductName;
-            }
-          }
-        }
-
-        const requestBody = {
-          category: selectedService.category,
-          services: updatedProduct,
-        };
-        console.log(requestBody);
-        const res = await dispatch(
-          updateService({ category_id: selectedService._id, data: requestBody })
-        ).unwrap();
-        if (res) {
-          alert("New Product Updated");
-          setSubservices(updatedProduct);
-          setNewProduct("");
-        }
-      } catch (error) {
-        console.error("error", error);
       }
+
+      if (modalType === "Update") {
+        const index = updated[selectedSubservice.name].indexOf(
+          selectedProduct._id
+        );
+        if (index !== -1) updated[selectedSubservice.name][index] = name;
+      }
+
+      if (modalType === "Delete") {
+        // ✅ Remove the product from the gender array
+        updated[selectedSubservice.name] = updated[
+          selectedSubservice.name
+        ].filter((item) => item !== selectedProduct._id);
+      }
+
+      const payload = {
+        category: selectedService.category,
+        services: updated,
+      };
+
+      const res = await dispatch(
+        updateService({
+          category_id: selectedService._id,
+          data: payload,
+        }) as any
+      ).unwrap();
+
+      if (res) {
+        let msg = "Product updated";
+        if (modalType === "Add") msg = "Product added";
+        else if (modalType === "Delete") msg = "Product deleted";
+
+        message.success(msg);
+        setSubservices(updated);
+        setNewProduct("");
+        setSelectedProduct({
+          _id: "",
+          name: "",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to update product");
     }
-    // if (modalType === "Delete") {
-    //   try {
-    //     const res = await dispatch(
-    //       deleteService({ category_id: selectedService._id })
-    //     ).unwrap();
-    //     if (res) {
-    //       alert(`deleted ${selectedService.category}`);
-    //     }
-    //   } catch (error) {
-    //     console.error("error", error);
-    //     throw error;
-    //   }
-    // }
+
     setIsProductModalOpen(false);
     setModalType("");
   };
@@ -333,213 +288,273 @@ const CreateServices = () => {
         Manage Services
       </h2>
 
-      {/* Services, Subservices & Product Selection */}
       <div className="flex flex-col gap-4">
         <label className="text-gray-700 font-medium">
-          Select Services:
+          Select Service:
           <select
+            value={selectedService._id}
             onChange={handleSelectService}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            className="w-full mt-1 p-2 border border-gray-300 rounded-lg"
           >
-            <option value="" disabled selected>
-              Select a service
-            </option>
-            {services.map((service) => (
-              <option
-                key={service._id}
-                value={service._id}
-                data-name={service.category}
-              >
-                {service.category}
+            <option value="">-- Select a service --</option>
+            {services.map((s) => (
+              <option key={s._id} value={s._id}>
+                {s.category}
               </option>
             ))}
           </select>
         </label>
 
-        <label className="text-gray-700 font-medium">
-          Select Gender:
-          <select
-            onChange={handleSelectSubservice}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          >
-            <option value="" disabled selected>
-              Select a gender
-            </option>
-            {Object.keys(subservices).map((category) => (
-              <option
-                key={category}
-                value={category} // Use the category name as the value
-                data-name={category}
-              >
-                {category}
-              </option>
-            ))}
-          </select>
-        </label>
+        {Object.keys(subservices).length > 0 && (
+          <label className="text-gray-700 font-medium">
+            Select Gender:
+            <select
+              value={selectedSubservice.name}
+              onChange={handleSelectSubservice}
+              className="w-full mt-1 p-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">-- Select a gender --</option>
+              {Object.keys(subservices).map((key) => (
+                <option key={key} value={key}>
+                  {key}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
 
         <label className="text-gray-700 font-medium">
           Select Sub Service:
           <select
+            value={selectedProduct.name}
             onChange={handleSelectProduct}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+            className="w-full mt-1 p-2 border border-gray-300 rounded-lg"
           >
-            <option value="" disabled selected>
-              Select a sub service
-            </option>
-            {productItems.map((product, index) => (
-              <option key={`${selectedService._id}-${index}`} value={product}>
+            <option value="">-- Select a sub service --</option>
+            {productItems.map((product, idx) => (
+              <option key={`${selectedService._id}-${idx}`} value={product}>
                 {product}
               </option>
             ))}
           </select>
         </label>
       </div>
-      <Button
-        className="bg-blue-500 text-white mb-4 mt-4 px-4 py-2 rounded-md hover:bg-blue-600 transition"
-        onClick={openServiceModal}
-      >
-        Add Service
-      </Button>
 
-      {/* Subcategory Actions */}
-      {selectedService?._id && (
-        <div className="mt-4 flex gap-3">
-          {selectedSubservice?._id && (
+      <div className="mt-4 flex flex-wrap gap-3">
+        <Button className="bg-blue-500 text-white" onClick={openServiceModal}>
+          Add Service
+        </Button>
+
+        {selectedService._id && (
+          <>
             <Button
-              className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
-              onClick={() => openSubServiceModal("Update")}
+              className="bg-yellow-500 text-white"
+              onClick={() => {
+                setNewService(selectedService.category);
+                setIsUpdateServiceModalOpen(true);
+              }}
             >
-              Update Gender
+              Update Service
             </Button>
-          )}
+
+            <Button
+              className="bg-red-500 text-white"
+              onClick={() => setIsDeleteServiceModalOpen(true)}
+            >
+              Delete Service
+            </Button>
+          </>
+        )}
+      </div>
+
+      {selectedService._id && (
+        <div className="mt-4 flex flex-wrap gap-3">
           <Button
-            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+            className="bg-green-500 text-white"
             onClick={() => openSubServiceModal("Add")}
           >
             Add Gender
           </Button>
+
           {selectedSubservice._id && (
-            <Button
-              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-              onClick={() => openSubServiceModal("Delete")}
-            >
-              Delete Service
-            </Button>
+            <>
+              <Button
+                className="bg-yellow-500 text-white"
+                onClick={() => openSubServiceModal("Update")}
+              >
+                Update Gender
+              </Button>
+
+              <Button
+                className="bg-red-500 text-white"
+                onClick={() => openSubServiceModal("Delete")}
+              >
+                Delete Gender
+              </Button>
+            </>
           )}
         </div>
       )}
-      {/* Product Actions */}
-      {selectedSubservice._id && (
-        <div className="mt-4 flex gap-3">
-          {selectedProduct?._id && (
-            <Button
-              className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 transition"
-              onClick={() => openProductModal("Update")}
-            >
-              Update Product
-            </Button>
-          )}
+
+      {selectedService._id && (
+        <div className="mt-4 flex flex-wrap gap-3">
           <Button
-            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
-            onClick={() => openProductModal("Add")}
+            className="bg-green-500 text-white"
+            onClick={() => {
+              if (selectedSubservice.name) {
+                openProductModal("Add");
+              } else {
+                message.warning(
+                  "Please select a gender before adding a product."
+                );
+              }
+            }}
           >
             Add Product
           </Button>
-          {/* {selectedProduct?._id && (
-            <Button
-              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
-              onClick={() => openProductModal("Delete")}
-            >
-              Delete Product
-            </Button>
-          )} */}
+
+          {selectedSubservice.name && selectedProduct._id && (
+            <>
+              <Button
+                className="bg-yellow-500 text-white"
+                onClick={() => openProductModal("Update")}
+              >
+                Update Product
+              </Button>
+
+              <Button
+                className="bg-red-500 text-white"
+                onClick={() => openProductModal("Delete")}
+              >
+                Delete Product
+              </Button>
+            </>
+          )}
         </div>
       )}
+
+      {/* Modals */}
       <Modal
         title="Add New Service"
         open={isServiceModalOpen}
         onOk={closeServiceModal}
         onCancel={() => setIsServiceModalOpen(false)}
       >
-        <div className="flex flex-col">
-          <label className="text-gray-700 font-medium">Service Name:</label>
-          <Input
-            value={newService}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            onChange={(e) => setNewService(e.target.value)}
-          />
-        </div>
+        <Input
+          placeholder="Service name"
+          value={newService}
+          onChange={(e) => setNewService(e.target.value)}
+        />
       </Modal>
 
-      {/* Subcategory Modal */}
       <Modal
-        title={`${modalType} Subcategory`}
+        title="Update Service"
+        open={isUpdateServiceModalOpen}
+        onOk={async () => {
+          const trimmed = newService.trim();
+          if (!trimmed) return;
+
+          try {
+            const payload = {
+              category: trimmed,
+              services: subservices,
+            };
+
+            const res = await dispatch(
+              updateService({
+                category_id: selectedService._id,
+                data: payload,
+              }) as any
+            ).unwrap();
+
+            if (res) {
+              message.success("Service name updated");
+              fetchServices();
+              setSelectedService({ ...selectedService, category: trimmed });
+            }
+          } catch {
+            message.error("Failed to update service name");
+          }
+
+          setIsUpdateServiceModalOpen(false);
+        }}
+        onCancel={() => setIsUpdateServiceModalOpen(false)}
+      >
+        <Input
+          placeholder="Updated service name"
+          value={newService}
+          onChange={(e) => setNewService(e.target.value)}
+        />
+      </Modal>
+
+      <Modal
+        title="Delete Service"
+        open={isDeleteServiceModalOpen}
+        onOk={async () => {
+          try {
+            const res = await dispatch(
+              deleteService({ category_id: selectedService._id }) as any
+            ).unwrap();
+
+            if (res) {
+              message.success("Service deleted successfully");
+              fetchServices(); // refresh
+              setSelectedService({ _id: "", category: "" });
+              setSubservices({});
+              setProductItems([]);
+            }
+          } catch (err) {
+            console.error(err);
+            message.error("Failed to delete service");
+          }
+          setIsDeleteServiceModalOpen(false);
+        }}
+        onCancel={() => setIsDeleteServiceModalOpen(false)}
+      >
+        <p>
+          Are you sure you want to delete the entire service:{" "}
+          <strong>{selectedService.category}</strong>?
+        </p>
+      </Modal>
+
+      <Modal
+        title={`${modalType} Service`}
         open={isSubServiceModalOpen}
         onOk={closeSubServiceModal}
         onCancel={() => setIsSubServiceModalOpen(false)}
       >
-        <p>
-          {modalType === "Update" ? (
-            <div className="flex flex-col">
-              <label className="text-gray-700 font-medium">
-                Subcategory Name:
-              </label>
-              <Input
-                value={newSubservice}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                //@ts-ignore
-                onChange={(e) => setNewSubService(e.target.value)}
-              />
-            </div>
-          ) : modalType === "Add" ? (
-            <div className="flex flex-col">
-              <label className="text-gray-700 font-medium">
-                Subcategory Name:
-              </label>
-              <Input
-                value={newSubservice}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                //@ts-ignore
-                onChange={(e) => setNewSubService(e.target.value)}
-              />
-            </div>
-          ) : (
-            `Are you sure you want to delete the subcategory: ${selectedSubservice.name}?`
-          )}
-        </p>
+        {modalType === "Delete" ? (
+          <p>
+            Are you sure you want to delete the service:{" "}
+            <strong>{selectedService.category}</strong>?
+          </p>
+        ) : (
+          <Input
+            placeholder="Subcategory name"
+            value={newSubservice}
+            onChange={(e) => setNewSubService(e.target.value)}
+          />
+        )}
       </Modal>
-      {/* Product Modal */}
+
       <Modal
         title={`${modalType} Product`}
         open={isProductModalOpen}
         onOk={closeProductModal}
         onCancel={() => setIsProductModalOpen(false)}
       >
-        <p>
-          {modalType === "Update" ? (
-            <div className="flex flex-col">
-              <label className="text-gray-700 font-medium">Add Product:</label>
-              <Input
-                value={newProduct}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                //@ts-ignore
-                onChange={(e) => setNewProduct(e.target.value)}
-              />
-            </div>
-          ) : modalType === "Add" ? (
-            <div className="flex flex-col">
-              <label className="text-gray-700 font-medium">Add Product:</label>
-              <Input
-                value={newProduct}
-                className="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-                //@ts-ignore
-                onChange={(e) => setNewProduct(e.target.value)}
-              />
-            </div>
-          ) : (
-            `Are you sure you want to delete the product: ${selectedProduct.name}?`
-          )}
-        </p>
+        {modalType === "Delete" ? (
+          <p>
+            Are you sure you want to delete product:{" "}
+            <strong>{selectedProduct._id}</strong>?
+          </p>
+        ) : (
+          <Input
+            placeholder="Product name"
+            value={newProduct}
+            onChange={(e) => setNewProduct(e.target.value)}
+          />
+        )}
       </Modal>
     </div>
   );
