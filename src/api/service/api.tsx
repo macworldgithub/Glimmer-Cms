@@ -203,6 +203,7 @@ export const getAllServicesForSalon = createAsyncThunk(
       // Access token from the Redux state
       const state = getState() as RootState;
       const token = state.Login.token;
+      console.log(token);
 
       // Make API request with page number as a query parameter
       const response = await axios.get(

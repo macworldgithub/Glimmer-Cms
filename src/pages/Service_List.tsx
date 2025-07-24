@@ -30,11 +30,9 @@ interface TableData {
   duration: string;
   status: "Active" | "Inactive";
   created_at: string;
-  salonId?: string; 
 }
 
-const ServiceList = ({ salonId }: { salonId: string }) => {
-
+const ServiceList = () => {
   const dispatch = useDispatch<AppDispatch>();
   const role = useSelector((state: RootState) => state.Login.role);
 
@@ -52,8 +50,6 @@ const ServiceList = ({ salonId }: { salonId: string }) => {
     useState<TableData | null>(null);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  
-
 
   const pageSize = 10;
 
@@ -61,19 +57,15 @@ const ServiceList = ({ salonId }: { salonId: string }) => {
   const categoryIdFilter = searchParams.get("categoryId") || "";
   const nameFilter = searchParams.get("name") || "";
 
- useEffect(() => {
-  if (!salonId) return;
-
-  //@ts-ignore
-  dispatch(
-    getAllServicesForSalon({
-      page_no: currentPage,
-      categoryId: categoryIdFilter,
-      salonId: salonId, // ✅ yahan salonId pass kiya
-    })
-  );
-}, [dispatch, currentPage, categoryIdFilter, salonId]);
-
+  useEffect(() => {
+    //@ts-ignore
+    dispatch(
+      getAllServicesForSalon({
+        page_no: currentPage,
+        categoryId: categoryIdFilter,
+      })
+    );
+  }, [dispatch, currentPage, categoryIdFilter]);
 
   const { salons: serviceList, total } = useSelector(
     (state: RootState) => state.AllSalon
@@ -160,19 +152,16 @@ const ServiceList = ({ salonId }: { salonId: string }) => {
     });
   };
 
-const filteredServices = salonServiceList.services.filter((salon) => {
-  const categoryId = salon.categoryId ? salon.categoryId.trim() : "";
-  const name = salon.name ? salon.name.toLowerCase().trim() : "";
+  const filteredServices = salonServiceList.services.filter((salon) => {
+    console.log(salon);
+    const categoryId = salon.categoryId ? salon.categoryId.trim() : "";
+    const name = salon.name ? salon.name.toLowerCase().trim() : "";
 
-  const belongsToSalon = salon.salonId === salonId; // ✅ new check added
-
-  return (
-    belongsToSalon &&
-    (!categoryIdFilter || categoryId === categoryIdFilter) &&
-    (!nameFilter || name.includes(nameFilter.toLowerCase()))
-  );
-});
-
+    return (
+      (!categoryIdFilter || categoryId === categoryIdFilter) &&
+      (!nameFilter || name.includes(nameFilter.toLowerCase()))
+    );
+  });
 
   const handleUpdate = (record: TableData) => {
     setSelectedSalon(null);
@@ -457,4 +446,3 @@ const filteredServices = salonServiceList.services.filter((salon) => {
 };
 
 export default ServiceList;
-
