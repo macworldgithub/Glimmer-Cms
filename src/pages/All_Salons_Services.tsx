@@ -316,7 +316,7 @@ const All_Salons_Services = () => {
 
   const handleDeleteSalon = async (salonId: string) => {
     try {
-      await deleteSalon(salonId,token);
+      await deleteSalon(salonId, token);
       message.success("Salon deleted successfully");
       fetchData();
     } catch (error) {
@@ -502,33 +502,36 @@ const All_Salons_Services = () => {
   };
 
   const toggleStatus = async (record: TableData) => {
-  try {
-    const newStatus = record.status === "active" ? "Active" : "Inactive"; // Use capitalized values
+    try {
+      const newStatus = record.status === "active" ? "Active" : "Inactive"; // Use capitalized values
 
-    if (!token) {
-      message.error("You are not authenticated");
-      return;
-    }
-
-    const response = await axios.patch(
-      `${BACKEND_URL}/salon/update_status?salon_id=${record._id}`,
-      { status: newStatus },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      if (!token) {
+        message.error("You are not authenticated");
+        return;
       }
-    );
 
-    console.log("Response:", response.data);
-    message.success(`Salon status updated to ${newStatus}`);
-    fetchData();
-  } catch (error: any) {
-    console.error("Error updating status:", error.response?.data || error.message);
-    message.error(error.response?.data?.message || "Failed to update status");
-  }
-};
+      const response = await axios.patch(
+        `${BACKEND_URL}/salon/update_status?salon_id=${record._id}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Response:", response.data);
+      message.success(`Salon status updated to ${newStatus}`);
+      fetchData();
+    } catch (error: any) {
+      console.error(
+        "Error updating status:",
+        error.response?.data || error.message
+      );
+      message.error(error.response?.data?.message || "Failed to update status");
+    }
+  };
 
   const StatusTag = ({
     initialStatus,
@@ -702,8 +705,8 @@ const All_Salons_Services = () => {
     [salonActions]
   );
   return (
-    <div className="p-6 bg-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">All Salons</h1>
+    <div className="p-6 bg-white min-h-screen" style={{ overflowY: "scroll" }}>
+      <h1 className="text-2xl font-bold mb-4">All Salons </h1>
       <SalonSearchBar onSearch={handleSearch} />
       <div className="overflow-x-auto shadow-lg">
         <Table
