@@ -67,7 +67,9 @@ const ServiceList = () => {
     );
   }, [dispatch, currentPage, categoryIdFilter]);
 
-  const { salons: serviceList, total } = useSelector((state: RootState) => state.AllSalon);
+  const { salons: serviceList, total } = useSelector(
+    (state: RootState) => state.AllSalon
+  );
 
   const handleUpdateDiscount = async () => {
     const selectedProductIds = Object.keys(checkedNames).filter(
@@ -346,7 +348,7 @@ const ServiceList = () => {
               onClick={() => handleDelete(record)}
               className="text-red-500 hover:underline"
             >
-            Delete
+              Delete
             </button>
           )}
         </div>
@@ -359,7 +361,7 @@ const ServiceList = () => {
     <div>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
-        Service List
+        Service List 
       </div>
 
       {/* SearchBar */}
