@@ -417,11 +417,12 @@ const SuperAdmin_Services_List = () => {
             pageSize: pageSize,
             total: total,
             onChange: (page) =>
-              setSearchParams({
-                page_no: page.toString(),
-                categoryId: categoryIdFilter,
-                name: nameFilter,
-              }),
+          setSearchParams({
+            page_no: page.toString(),
+            categoryId: categoryIdFilter,
+            name: nameFilter,
+            salonId, // Add this line
+          }),
           }}
           className="border-t"
           scroll={{ x: 1000 }}
