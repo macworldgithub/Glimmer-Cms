@@ -100,27 +100,56 @@ const All_Salons_Recommemded_Products = () => {const dispatch = useDispatch<AppD
   ], []);
 
   return (
-    <div className="p-6 bg-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">All Salons Recommended Products</h1>
-      <SalonSearchBar onSearch={handleSearch} />
+    // <div className="p-6 bg-white min-h-screen">
+    //   <h1 className="text-2xl font-bold mb-4">All Salons Recommended Products</h1>
+    //   <SalonSearchBar onSearch={handleSearch} />
 
-      <div className="overflow-x-auto shadow-lg">
-        <Table
-          columns={columns}
-          dataSource={data}
-          rowKey={(record) => record._id}
-          pagination={{
-            current: page,
-            pageSize,
-            total,
-            onChange: handlePageChange,
-          }}
-          className="border-t"
-          scroll={{ x: 1000 }}
-        />
-      </div>
+    //   <div className="overflow-x-auto shadow-lg">
+    //     <Table
+    //       columns={columns}
+    //       dataSource={data}
+    //       rowKey={(record) => record._id}
+    //       pagination={{
+    //         current: page,
+    //         pageSize,
+    //         total,
+    //         onChange: handlePageChange,
+    //       }}
+    //       className="border-t"
+    //       scroll={{ x: 1000 }}
+    //     />
+    //   </div>
+    // </div>
+
+<div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+    <h1 className="text-2xl font-bold mb-4">All Salons Recommended Products</h1>
+    <SalonSearchBar onSearch={handleSearch} />
+
+    {/* Horizontal scroll container */}
+    <div
+      style={{
+        width: '100%',
+        overflowX: 'auto',
+        overflowY: 'visible',
+      }}
+    >
+      <Table
+        columns={columns}
+        dataSource={data}
+        rowKey={(record) => record._id}
+        pagination={{
+          current: page,
+          pageSize,
+          total,
+          onChange: handlePageChange,
+        }}
+        scroll={{ x: 'max-content' }}
+        className="border-t"
+      />
     </div>
-  );
+  </div>
+);
+
 }
 
 export  default All_Salons_Recommemded_Products;
