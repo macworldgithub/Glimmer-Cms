@@ -495,7 +495,7 @@ const OrderList = () => {
           columns={columns}
           dataSource={orders}
           className="shadow-lg w-full"
-          scroll={{ x: 1000 }}
+          scroll={{ x: "max-content" }}
           pagination={{
             current: currentPage,
             pageSize: pageSize,
