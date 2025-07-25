@@ -358,12 +358,12 @@ const ServiceList = () => {
   ];
 
   return (
-    <div>
+    // <div>
+      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
         Service List 
       </div>
-
       {/* SearchBar */}
       <ServiceSearchBar onSearch={handleSearch} />
 
@@ -421,7 +421,7 @@ const ServiceList = () => {
         </Button>
       </div>
       {/* Table Section */}
-      <div className="overflow-x-auto shadow-lg">
+      {/* <div className="overflow-x-auto shadow-lg">
         <Table
           columns={columns}
           //@ts-ignore
@@ -440,7 +440,26 @@ const ServiceList = () => {
           className="border-t"
           scroll={{ x: 1000 }}
         />
-      </div>
+      </div> */}
+        <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+                <Table
+                    columns={columns}
+                    dataSource={filteredServices}
+                    pagination={{
+                        current: currentPage,
+                        pageSize: pageSize,
+                        total: total,
+                        onChange:  (page) =>
+              setSearchParams({
+                page_no: page.toString(),
+                categoryId: categoryIdFilter,
+                name: nameFilter,
+                    }),
+            }}
+                    scroll={{ x: 'max-content' }}
+                    className="border-t"
+                />
+            </div>
     </div>
   );
 };
