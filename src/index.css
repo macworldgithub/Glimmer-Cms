@@ -2,12 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body {
-  overflow-x: auto;
-}
-
-
-
 * {
   font-family: "Roboto", Courier, monospace;
 }
@@ -53,7 +47,7 @@ html, body {
 
 ::-webkit-scrollbar {
   width: 8px; /* Make the scrollbar thinner */
-  height: 8px; /* If there's a horizontal scrollbar */
+  height: 8px; /* If there's a horizontal scrollbar */;
 }
 
 ::-webkit-scrollbar-track {

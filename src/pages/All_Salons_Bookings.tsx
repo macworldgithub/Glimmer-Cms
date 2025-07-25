@@ -144,27 +144,49 @@ const All_Salons_Bookings = () => {
     },
   ], []);
 
-  return (
-    <div className="p-6 bg-white min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">All Salons Bookings</h1>
-      <SalonSearchBar onSearch={handleSearch} />
-      <div className="overflow-x-auto shadow-lg">
-        <Table
-          columns={columns}
-          dataSource={data}
-          rowKey={(record) => record._id}
-          pagination={{
-            current: page,
-            pageSize,
-            total,
-            onChange: handlePageChange,
-          }}
-          className="border-t"
-          scroll={{ x: 1000 }}
-        />
-      </div>
-    </div>
-  );
+  // return (
+  //   <div className="p-6 bg-white min-h-screen">
+  //     <h1 className="text-2xl font-bold mb-4">All Salons Bookings</h1>
+  //     <SalonSearchBar onSearch={handleSearch} />
+  //     <div className="overflow-x-auto shadow-lg">
+  //       <Table
+  //         columns={columns}
+  //         dataSource={data}
+  //         rowKey={(record) => record._id}
+  //         pagination={{
+  //           current: page,
+  //           pageSize,
+  //           total,
+  //           onChange: handlePageChange,
+  //         }}
+  //         className="border-t"
+  //         scroll={{ x: 1000 }}
+  //       />
+  //     </div>
+  //   </div>
+   return (
+  <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+  <h1 className="text-2xl font-bold mb-4">All Salons Bookings</h1>
+  <SalonSearchBar onSearch={handleSearch} />
+
+  {/* Horizontal scroll container with responsive behavior */}
+  <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+    <Table
+      columns={columns}
+      dataSource={data}
+      rowKey={(record) => record._id}
+      pagination={{
+        current: page,
+        pageSize,
+        total,
+        onChange: handlePageChange,
+      }}
+      scroll={{ x: 'max-content' }}
+      className="border-t"
+    />
+  </div>
+</div>
+);
 };
 
 export default All_Salons_Bookings;

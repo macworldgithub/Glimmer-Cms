@@ -120,36 +120,28 @@ const All_Salons_Recommemded_Products = () => {const dispatch = useDispatch<AppD
     //     />
     //   </div>
     // </div>
+    
+  <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+  <h1 className="text-2xl font-bold mb-4">All Salons Recommended Products</h1>
+  <SalonSearchBar onSearch={handleSearch} />
 
-<div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
-    <h1 className="text-2xl font-bold mb-4">All Salons Recommended Products</h1>
-    <SalonSearchBar onSearch={handleSearch} />
-
-    {/* Horizontal scroll container */}
-    <div
-      style={{
-        width: '100%',
-        overflowX: 'auto',
-        overflowY: 'visible',
+  <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+    <Table
+      columns={columns}
+      dataSource={data}
+      rowKey={(record) => record._id}
+      pagination={{
+        current: page,
+        pageSize,
+        total,
+        onChange: handlePageChange,
       }}
-    >
-      <Table
-        columns={columns}
-        dataSource={data}
-        rowKey={(record) => record._id}
-        pagination={{
-          current: page,
-          pageSize,
-          total,
-          onChange: handlePageChange,
-        }}
-        scroll={{ x: 'max-content' }}
-        className="border-t"
-      />
-    </div>
+      scroll={{ x: 'max-content' }}
+      className="border-t"
+    />
   </div>
+</div>
+
 );
-
 }
-
-export  default All_Salons_Recommemded_Products;
+export default All_Salons_Recommemded_Products;
