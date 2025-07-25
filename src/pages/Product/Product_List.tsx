@@ -470,7 +470,7 @@ const ProductTableWithHeader = () => {
   ];
 
   return (
-    <div>
+      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
         Product List
@@ -517,7 +517,7 @@ const ProductTableWithHeader = () => {
         </Button>
       </div>
       {/* Table Section */}
-      <div className="overflow-x-auto shadow-lg">
+        <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
         <Table
           columns={columns}
           //@ts-ignore
