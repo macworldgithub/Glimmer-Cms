@@ -162,13 +162,13 @@ const Dashboard = () => {
       </div>
 
       {/* Orders Table */}
-    <div className="p-6 bg-white " style={{ minWidth: '1000px' }}>
+      <div className="flex max-xl:flex-col">
         <div className="w-full max-xl:w-full">
+      {/* <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}> */}
           <SalonOrderTable />
         </div>
       </div>
-    </div>
-  );
+    </div>);
 };
 
 export default Dashboard;

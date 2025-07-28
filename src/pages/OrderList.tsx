@@ -480,7 +480,7 @@ const OrderList = () => {
   ];
 
   return (
-      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
       {role === "super_admin" && !storeId && !store_id && (
         <p className="text-center text-red-500">
           Please select a store to view orders.
@@ -490,7 +490,8 @@ const OrderList = () => {
         Order List
         <OrderSearchBar onSearch={handleSearch} />
       </div>
-        <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+        <div className="overflow-x-auto w-full">
+          <div style={{ width: '100%' }}>
         <Table
           columns={columns}
           dataSource={orders}
@@ -510,6 +511,8 @@ const OrderList = () => {
           }}
         />
       </div>
+            </div>
+
     </div>
   );
 };

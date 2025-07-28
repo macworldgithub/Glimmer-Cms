@@ -61,32 +61,32 @@ const All_Products_Highlights = () => {
 
     const columns = [
         {
-          title: "Name",
-          dataIndex: "name",
-          key: "name",
+            title: "Name",
+            dataIndex: "name",
+            key: "name",
         },
         { title: "Description", dataIndex: "description", key: "description" },
         {
-          title: "Price",
-          dataIndex: "base_price",
-          key: "base_price",
-          render: (text: number) => {
-            return text.toFixed(2);
-          },
+            title: "Price",
+            dataIndex: "base_price",
+            key: "base_price",
+            render: (text: number) => {
+                return text.toFixed(2);
+            },
         },
         {
-          title: "Discounted Price",
-          dataIndex: "discounted_price",
-          key: "discounted_price",
+            title: "Discounted Price",
+            dataIndex: "discounted_price",
+            key: "discounted_price",
         },
         { title: "Status", dataIndex: "status", key: "status" },
         { title: "Stock", dataIndex: "quantity", key: "quantity" },
         { title: "Created at", dataIndex: "created_at", key: "created_At" },
-      ];
-    
+    ];
+
 
     return (
-    <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+        <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
             <h1 className="text-2xl font-bold mb-4">Product Highlights</h1>
 
             <div className="mb-4 flex items-center gap-4">
@@ -102,7 +102,7 @@ const All_Products_Highlights = () => {
                 </Select>
             </div>
 
-  <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+            <div className="overflow-x-auto w-full" style={{ width: '100%' }}>
                 <Table
                     columns={columns}
                     dataSource={data}

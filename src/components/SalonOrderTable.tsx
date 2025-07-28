@@ -117,28 +117,30 @@ const SalonOrderTable = () => {
   ];
 
   return (
-  <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
-      <Table
-        columns={columns}
-        dataSource={bookingList.map((booking) => ({
-          ...booking,
-          key: booking._id,
-        }))}
-        className="shadow-lg w-full"
-        pagination={{
-          current: currentPage,
-          pageSize: pageSize,
-          total: totalBookings,
-          onChange: (page) =>
-            setSearchParams({
-              page_no: page.toString(),
-              categoryId: categoryIdFilter,
-              subCategoryName: subCategoryNameFilter,
-              subSubCategoryName: subSubCategoryNameFilter,
-            }),
-          showSizeChanger: false,
-        }}
-      />
+    <div className="overflow-x-auto w-full">
+      <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          dataSource={bookingList.map((booking) => ({
+            ...booking,
+            key: booking._id,
+          }))}
+          className="shadow-lg w-full"
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: totalBookings,
+            onChange: (page) =>
+              setSearchParams({
+                page_no: page.toString(),
+                categoryId: categoryIdFilter,
+                subCategoryName: subCategoryNameFilter,
+                subSubCategoryName: subSubCategoryNameFilter,
+              }),
+            showSizeChanger: false,
+          }}
+        />
+      </div>
     </div>
   );
 };

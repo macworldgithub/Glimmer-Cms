@@ -137,11 +137,12 @@ const All_Store_Orders = () => {
         //         />
         //     </div>
         // </div>
-        <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+        <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
             <h1 className="text-2xl font-bold mb-4">All stores</h1>
             <StoreSearchBar onSearch={handleSearch} />
 
-            <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+            <div className="overflow-x-auto w-full">
+                <div style={{ width: '100%' }}>
                 <Table
                     columns={columns}
                     dataSource={stores}
@@ -155,6 +156,7 @@ const All_Store_Orders = () => {
                     className="border-t"
                 />
             </div>
+        </div>
         </div>
     )
 }

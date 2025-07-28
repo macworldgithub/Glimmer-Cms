@@ -359,7 +359,7 @@ const ServiceList = () => {
 
   return (
     // <div>
-     <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1800px' }}>
+     <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
         Service List 
@@ -420,8 +420,8 @@ const ServiceList = () => {
           Apply Discount
         </Button>
       </div>
-      <div className="">
-  {/* <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}> */}
+      {/* <div className=""> */}
+  <div className="overflow-x-auto w-full" style={{ width: '100%' }}>
                 <Table
                     columns={columns}
                     dataSource={filteredServices}
@@ -436,7 +436,6 @@ const ServiceList = () => {
                 name: nameFilter,
                     }),
             }}
-                    // scroll={{ x: 'max-content' }}
                     className="border-t"
                 />
             </div>

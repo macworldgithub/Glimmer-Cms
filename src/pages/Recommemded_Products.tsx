@@ -491,27 +491,9 @@ const Recommemded_Products = () => {
   ], [role]);
 
   return (
-    // <div className="p-6 bg-white min-h-screen">
-    //   <h1 className="text-2xl font-bold mb-4">All Recommended Products</h1>
-
-    //   <div className="overflow-x-auto shadow-lg">
-    //     <Table
-    //       columns={columns}
-    //       dataSource={data}
-    //       rowKey={(record) => record.productId}
-    //       pagination={{
-    //         current: page,
-    //         pageSize,
-    //         total,
-    //         onChange: handlePageChange,
-    //       }}
-    //       className="border-t"
-    //       scroll={{ x: 1000 }}
-    //     />
-    //   </div>
-      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
             <h1 className="text-2xl font-bold mb-4">All Recommended Products</h1>
-            <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+            <div className="overflow-x-auto w-full" style={{ width: '100%' }}>
                 <Table
                     columns={columns}
                     dataSource={data}

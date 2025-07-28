@@ -100,7 +100,7 @@ const OrderTable = () => {
   ];
 
   return (
-  <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+  <div className="overflow-x-auto w-full" style={{ width: '100%' }}>
       <Table
         columns={columns}
         dataSource={orders}
