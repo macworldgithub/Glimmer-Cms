@@ -497,6 +497,7 @@ const ProductTableWithHeader = () => {
       {selectedProduct && role === "super_admin" && (
         <DeleteProductModal
           visible={isDeleteModalVisible}
+          //@ts-ignore
           product={selectedProduct}
           onClose={() => setIsDeleteModalVisible(false)}
           page={currentPage}
@@ -516,29 +517,28 @@ const ProductTableWithHeader = () => {
         </Button>
       </div>
       {/* Table Section */}
-      <div className="w-full overflow-x-auto">
-      <div style={{ minWidth: '2560px' }}>
-    <Table
-      columns={columns}
-      dataSource={filteredProducts}
-      pagination={{
-        current: currentPage,
-        pageSize: pageSize,
-        total: productList?.total,
-        onChange: (page) =>
-          setSearchParams({
-            page: page.toString(),
-            name: nameFilter,
-            category: categoryFilter,
-            created_at: createdAtFilter,
-            store: role === "super_admin" ? storeId : "",
-          }),
-      }}
-      className="border-t"
-    />
-  </div>
-</div>
-
+        <div className="overflow-x-auto w-full">
+          <div style={{ width: '100%' }}>
+        <Table
+          columns={columns}
+          dataSource={filteredProducts}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: productList?.total,
+            onChange: (page) =>
+              setSearchParams({
+                page: page.toString(),
+                name: nameFilter,
+                category: categoryFilter,
+                created_at: createdAtFilter,
+                store: role === "super_admin" ? storeId : "",
+              }),
+          }}
+          className="border-t"
+        />
+      </div>
+    </div>
     </div>
   );
 };
