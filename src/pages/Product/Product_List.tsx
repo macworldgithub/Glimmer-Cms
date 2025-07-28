@@ -517,10 +517,9 @@ const ProductTableWithHeader = () => {
         </Button>
       </div>
       {/* Table Section */}
-        <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+        {/* <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
         <Table
           columns={columns}
-          //@ts-ignore
           dataSource={filteredProducts}
           pagination={{
             current: currentPage,
@@ -537,7 +536,29 @@ const ProductTableWithHeader = () => {
           }}
           className="border-t"
         />
-      </div>
+      </div> */}
+      <div className="w-full overflow-x-auto">
+  <div style={{ minWidth: '2560px' }}>
+    <Table
+      columns={columns}
+      dataSource={filteredProducts}
+      pagination={{
+        current: currentPage,
+        pageSize: pageSize,
+        total: productList?.total,
+        onChange: (page) =>
+          setSearchParams({
+            page: page.toString(),
+            name: nameFilter,
+            category: categoryFilter,
+            created_at: createdAtFilter,
+            store: role === "super_admin" ? storeId : "",
+          }),
+      }}
+      className="border-t"
+    />
+  </div>
+</div>
     </div>
   );
 };
