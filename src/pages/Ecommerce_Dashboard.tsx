@@ -141,7 +141,7 @@ const Dashboard = () => {
       </div>
       {/* Orders Table */}
       <div className="flex max-xl:flex-col">
-        <div className="w-full max-xl:w-full">
+    <div className="p-6 bg-white " style={{ minWidth: '1000px' }}>
           <OrderTable />
         </div>
       </div>

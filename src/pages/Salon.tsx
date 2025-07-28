@@ -133,8 +133,8 @@ const Salon = () => {
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
       <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
-        Salon
-      </h1>
+        salon 
+      </h1> 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="flex flex-col">
           <label className="font-medium text-gray-700">Profile</label>

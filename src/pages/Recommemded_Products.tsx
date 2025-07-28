@@ -522,7 +522,6 @@ const Recommemded_Products = () => {
                         total,
                         onChange: handlePageChange,
                     }}
-                    scroll={{ x: 'max-content' }}
                     className="border-t"
                 />
             </div>

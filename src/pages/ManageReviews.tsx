@@ -444,9 +444,9 @@ const ManageReviews = () => {
   );
 
   return (
-    <div className="p-6 bg-white min-h-screen">
+    <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
       <h1 className="text-2xl font-bold mb-4">Manage Reviews</h1>
-      <div className="overflow-x-auto shadow-lg">
+  <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
         <Table
           columns={columns}
           dataSource={ratings}
@@ -458,7 +458,6 @@ const ManageReviews = () => {
             onChange: handlePageChange,
           }}
           className="border-t"
-          scroll={{ x: 1000 }}
         />
       </div>
 

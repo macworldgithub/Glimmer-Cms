@@ -181,7 +181,6 @@ const All_Salons_Bookings = () => {
         total,
         onChange: handlePageChange,
       }}
-      scroll={{ x: 'max-content' }}
       className="border-t"
     />
   </div>

@@ -359,7 +359,7 @@ const ServiceList = () => {
 
   return (
     // <div>
-      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+     <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1800px' }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
         Service List 
@@ -420,28 +420,8 @@ const ServiceList = () => {
           Apply Discount
         </Button>
       </div>
-      {/* Table Section */}
-      {/* <div className="overflow-x-auto shadow-lg">
-        <Table
-          columns={columns}
-          //@ts-ignore
-          dataSource={filteredServices}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: total,
-            onChange: (page) =>
-              setSearchParams({
-                page_no: page.toString(),
-                categoryId: categoryIdFilter,
-                name: nameFilter,
-              }),
-          }}
-          className="border-t"
-          scroll={{ x: 1000 }}
-        />
-      </div> */}
-        <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
+      <div className="">
+  {/* <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}> */}
                 <Table
                     columns={columns}
                     dataSource={filteredServices}
@@ -456,7 +436,7 @@ const ServiceList = () => {
                 name: nameFilter,
                     }),
             }}
-                    scroll={{ x: 'max-content' }}
+                    // scroll={{ x: 'max-content' }}
                     className="border-t"
                 />
             </div>

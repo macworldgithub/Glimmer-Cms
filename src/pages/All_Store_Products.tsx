@@ -120,26 +120,7 @@ const All_Stores_Product = () => {
     ], []);
 
     return (
-        // <div className="p-6 bg-white min-h-screen">
-        //     <h1 className="text-2xl font-bold mb-4">All Stores</h1>
-        //     <StoreSearchBar onSearch={handleSearch} />
-
-        //     <div className="overflow-x-auto shadow-lg">
-        //         <Table
-        //             columns={columns}
-        //             dataSource={stores}
-        //             rowKey={(record) => record._id}
-        //             pagination={{
-        //                 current: page,
-        //                 pageSize,
-        //                 total,
-        //                 onChange: handlePageChange,
-        //             }}
-        //             className="border-t"
-        //             scroll={{ x: 1000 }}
-        //         />
-        //     </div>
-        // </div>
+        
         <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
             <h1 className="text-2xl font-bold mb-4">All stores</h1>
             <StoreSearchBar onSearch={handleSearch} />
@@ -155,7 +136,6 @@ const All_Stores_Product = () => {
                         total,
                         onChange: handlePageChange,
                     }}
-                    scroll={{ x: 'max-content' }}
                     className="border-t"
                 />
             </div>

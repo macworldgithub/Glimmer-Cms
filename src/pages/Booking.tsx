@@ -208,7 +208,6 @@ const booking = () => {
             total: totalBookings,
             onChange: (page) => setSearchParams({ page: page.toString() }),
           }}
-           scroll={{ x: 'max-content' }}
            className="border-t"
         />
       </div>

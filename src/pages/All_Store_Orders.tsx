@@ -152,7 +152,6 @@ const All_Store_Orders = () => {
                         total,
                         onChange: handlePageChange,
                     }}
-                    scroll={{ x: 'max-content' }}
                     className="border-t"
                 />
             </div>

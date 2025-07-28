@@ -473,7 +473,7 @@ const ProductTableWithHeader = () => {
       <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
-        Product List
+        Product List 
       </div>
 
       {/* SearchBar */}
@@ -536,7 +536,6 @@ const ProductTableWithHeader = () => {
               }),
           }}
           className="border-t"
-          scroll={{ x: 1000 }}
         />
       </div>
     </div>

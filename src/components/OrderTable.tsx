@@ -100,12 +100,11 @@ const OrderTable = () => {
   ];
 
   return (
-    <div className="w-full h-full flex flex-col items-center p-2 gap-2">
+  <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
       <Table
         columns={columns}
         dataSource={orders}
         className="shadow-lg w-full"
-        scroll={{ x: 1000 }}
         pagination={{
           current: currentPage,
           pageSize: pageSize,

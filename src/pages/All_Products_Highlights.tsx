@@ -86,7 +86,7 @@ const All_Products_Highlights = () => {
     
 
     return (
-        <div className="p-6 bg-white min-h-screen">
+    <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
             <h1 className="text-2xl font-bold mb-4">Product Highlights</h1>
 
             <div className="mb-4 flex items-center gap-4">
@@ -102,14 +102,13 @@ const All_Products_Highlights = () => {
                 </Select>
             </div>
 
-            <div className="overflow-x-auto shadow-lg">
+  <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
                 <Table
                     columns={columns}
                     dataSource={data}
                     rowKey={(record) => record._id}
                     pagination={false}
                     className="border-t"
-                    scroll={{ x: 1000 }}
                 />
             </div>
         </div>
