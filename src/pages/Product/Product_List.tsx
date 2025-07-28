@@ -470,7 +470,7 @@ const ProductTableWithHeader = () => {
   ];
 
   return (
-      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '1000px' }}>
+      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
         Product List 
@@ -497,7 +497,6 @@ const ProductTableWithHeader = () => {
       {selectedProduct && role === "super_admin" && (
         <DeleteProductModal
           visible={isDeleteModalVisible}
-          //@ts-ignore
           product={selectedProduct}
           onClose={() => setIsDeleteModalVisible(false)}
           page={currentPage}
@@ -517,28 +516,8 @@ const ProductTableWithHeader = () => {
         </Button>
       </div>
       {/* Table Section */}
-        {/* <div className="overflow-x-auto md:overflow-x-hidden lg:overflow-x-auto" style={{ width: '100%' }}>
-        <Table
-          columns={columns}
-          dataSource={filteredProducts}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: productList?.total,
-            onChange: (page) =>
-              setSearchParams({
-                page: page.toString(),
-                name: nameFilter,
-                category: categoryFilter,
-                created_at: createdAtFilter,
-                store: role === "super_admin" ? storeId : "",
-              }),
-          }}
-          className="border-t"
-        />
-      </div> */}
       <div className="w-full overflow-x-auto">
-  <div style={{ minWidth: '2560px' }}>
+      <div style={{ minWidth: '2560px' }}>
     <Table
       columns={columns}
       dataSource={filteredProducts}
@@ -559,6 +538,7 @@ const ProductTableWithHeader = () => {
     />
   </div>
 </div>
+
     </div>
   );
 };
