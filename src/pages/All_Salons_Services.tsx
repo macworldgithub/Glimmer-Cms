@@ -705,11 +705,10 @@ const All_Salons_Services = () => {
     [salonActions]
   );
   return (
-    // <div className="p-6 bg-white min-h-screen" style={{ overflowY: "scroll" }}>
-      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
+    <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
       <h1 className="text-2xl font-bold mb-4">All Salons </h1>
       <SalonSearchBar onSearch={handleSearch} />
-       <div className="overflow-x-auto w-full">
+      <div className="overflow-x-auto w-full">
         <div style={{ width: '100%' }}>
           <Table
             columns={columns}
@@ -724,7 +723,7 @@ const All_Salons_Services = () => {
             className="border-t"
           />
         </div>
-</div>
+      </div>
       <Modal
         title="Manage Recommended Products"
         visible={isModalVisible}
