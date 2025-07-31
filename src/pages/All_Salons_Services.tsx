@@ -75,11 +75,6 @@ const All_Salons_Services = () => {
 
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
-  // ADD THIS LINE
-const [activeHighlightFilter, setActiveHighlightFilter] = useState<string | null>(
-  localStorage.getItem("highlightFilter")
-);
-
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDropdownModalVisible, setIsDropdownModalVisible] = useState(false);
@@ -138,33 +133,16 @@ const [activeHighlightFilter, setActiveHighlightFilter] = useState<string | null
       const result = await dispatch(
         getAllSalons({ page_no: page, salon_name })
       ).unwrap();
-     let salons = result.salons;
-
-if (activeHighlightFilter) {
-  const actionMapping: Record<string, string> = {
-    "new-to-glimmer": "New To Glimmer",
-    "recommended-salon": "Recommended Salons",
-    "trending-salon": "Trending Salons",
-  };
-
-  const expectedText = actionMapping[activeHighlightFilter];
-
-  salons = salons.filter((salon) =>
-    salonActions[salon._id]?.includes(expectedText)
-  );
-}
-
-setData(salons);
-setTotal(salons.length);
-
+      setData(result.salons);
+      setTotal(result.total);
     } catch (error) {
       message.error("Failed to fetch salons");
     }
   };
 
- useEffect(() => {
-  fetchData();
-}, [page, salon_name, activeHighlightFilter]);
+  useEffect(() => {
+    fetchData();
+  }, [page, salon_name]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -727,37 +705,9 @@ setTotal(salons.length);
     [salonActions]
   );
   return (
-    // <div className="p-6 bg-white min-h-screen" style={{ overflowY: "scroll" }}>
     <div className="p-6 bg-white min-h-screen" style={{ minWidth: "2560px" }}>
-     <h1 className="text-2xl font-bold mb-4">All Salons </h1>
-
-{/* 🔽 New Filter Buttons */}
-<div className="mb-4 flex gap-2">
-  {["new-to-glimmer", "recommended-salon", "trending-salon"].map((key) => (
-    <Button
-      key={key}
-      type={activeHighlightFilter === key ? "primary" : "default"}
-      onClick={() => {
-        setActiveHighlightFilter(key);
-        localStorage.setItem("highlightFilter", key);
-      }}
-    >
-      {key.replace(/-/g, " ")}
-    </Button>
-  ))}
-  <Button
-    type={!activeHighlightFilter ? "primary" : "default"}
-    onClick={() => {
-      setActiveHighlightFilter(null);
-      localStorage.removeItem("highlightFilter");
-    }}
-  >
-    Clear Filter
-  </Button>
-</div>
-
-<SalonSearchBar onSearch={handleSearch} />
-
+      <h1 className="text-2xl font-bold mb-4">All Salons </h1>
+      <SalonSearchBar onSearch={handleSearch} />
       <div className="overflow-x-auto w-full">
         <div style={{ width: "100%" }}>
           <Table
