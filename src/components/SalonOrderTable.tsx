@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Table, Tag, Space } from "antd";
 import { useSearchParams } from "react-router-dom";
+import dayjs from "dayjs";
 import { AppDispatch, RootState } from "../store/store";
 import {
   approveBooking,
@@ -93,6 +94,16 @@ const SalonOrderTable = () => {
         return <Tag color={color}>{status}</Tag>;
       },
     },
+      {
+    title: "Booking Time",
+    dataIndex: "bookingTime",
+    key: "bookingTime",
+    render: (time: string) =>
+      time
+        ? dayjs(time, ["h:mm A", "HH:mm"]).format("h:mm A")
+        : "N/A",
+  },
+
     {
       title: "Actions",
       key: "action",
