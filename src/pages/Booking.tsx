@@ -109,84 +109,98 @@ const booking = () => {
     }
   };
 
-  const columns = [
-    {
-      title: "Salon ID",
-      dataIndex: "salonId",
-      key: "salonId",
-    },
-    {
-      title: "Customer Name",
-      dataIndex: "customerName",
-      key: "customerName",
-    },
-    { title: "Service Name", dataIndex: "serviceName", key: "serviceName" },
-    {
-      title: "Duration",
-      dataIndex: "serviceDuration",
-      key: "serviceDuration",
-    },
-    {
-      title: "Price",
-      dataIndex: "finalPrice",
-      key: "finalPrice",
-    },
-    {
-      title: "Payment Method",
-      dataIndex: "paymentMethod",
-      key: "paymentMethod",
-    },
-    {
-      title: "Booking Status",
-      dataIndex: "bookingStatus",
-      key: "bookingStatus",
-      render: (status: string, record: any) => {
-        let color = "blue";
-        if (status === "Approved") color = "green";
-        if (status === "Rejected") color = "red";
-        if (status === "Confirmed") color = "blue";
+ const columns = [
+  {
+    title: "Salon ID",
+    dataIndex: "salonId",
+    key: "salonId",
+    width: 100,
+  },
+  {
+    title: "Customer Name",
+    dataIndex: "customerName",
+    key: "customerName",
+    width: 130,
+  },
+  {
+    title: "Service Name",
+    dataIndex: "serviceName",
+    key: "serviceName",
+    width: 130,
+  },
+  {
+    title: "Duration",
+    dataIndex: "serviceDuration",
+    key: "serviceDuration",
+    width: 90,
+  },
+  {
+    title: "Price",
+    dataIndex: "finalPrice",
+    key: "finalPrice",
+    width: 90,
+  },
+  {
+    title: "Payment Method",
+    dataIndex: "paymentMethod",
+    key: "paymentMethod",
+    width: 130,
+  },
+  {
+    title: "Booking Status",
+    dataIndex: "bookingStatus",
+    key: "bookingStatus",
+    width: 160,
+    render: (status: string, record: any) => {
+      let color = "blue";
+      if (status === "Approved") color = "green";
+      if (status === "Rejected") color = "red";
+      if (status === "Confirmed") color = "blue";
 
-        return (
-          <>
-            <Tag color={color}>{status}</Tag>
-            {status === "Approved" && (
-              <Dropdown
-                overlay={
-                  <Menu onClick={(e) => handleUpdateStatus(record._id, e.key)}>
-                    <Menu.Item key="Completed">Completed</Menu.Item>
-                    <Menu.Item key="Completed And Paid">
-                      Completed and Paid
-                    </Menu.Item>
-                  </Menu>
-                }
-              >
-                <Tag color="orange">
-                  <button>Change Status</button>
-                </Tag>
-              </Dropdown>
-            )}
-          </>
-        );
-      },
+      return (
+        <>
+          <Tag color={color}>{status}</Tag>
+          {status === "Approved" && (
+            <Dropdown
+              overlay={
+                <Menu onClick={(e) => handleUpdateStatus(record._id, e.key)}>
+                  <Menu.Item key="Completed">Completed</Menu.Item>
+                  <Menu.Item key="Completed And Paid">
+                    Completed and Paid
+                  </Menu.Item>
+                </Menu>
+              }
+            >
+              <Tag color="orange">
+                <button>Change</button>
+              </Tag>
+            </Dropdown>
+          )}
+        </>
+      );
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Space>
-          <Button type="primary" onClick={() => handleViewDetails(record._id)}>
-            View Details
-          </Button>
-        </Space>
-      ),
-    },
-  ];
+  },
+  {
+    title: "Action",
+    key: "action",
+    width: 100,
+    render: (_, record) => (
+      <Space>
+        <Button type="primary" onClick={() => handleViewDetails(record._id)}>
+          View Details
+        </Button>
+      </Space>
+    ),
+  },
+];
+
+  
 
   return (
     <div className="p-6 bg-white min-h-screen" style={{ minWidth: "2560px" }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
-        Booking List and Details
+        Booking List and Details 
       </div>
 
       {/* SearchBar */}
@@ -195,20 +209,22 @@ const booking = () => {
       {/* Table Section */}
       <div className="overflow-x-auto w-full">
         <div style={{ width: "100%" }}>
-          <Table
-            columns={columns}
-            dataSource={bookingList.map((booking) => ({
-              ...booking,
-              key: booking._id,
-            }))}
-            pagination={{
-              current: currentPage,
-              pageSize: pageSize,
-              total: totalBookings,
-              onChange: (page) => setSearchParams({ page: page.toString() }),
-            }}
-            className="border-t"
-          />
+         <Table
+  columns={columns}
+  dataSource={bookingList.map((booking) => ({
+    ...booking,
+    key: booking._id,
+  }))}
+  pagination={{
+    current: currentPage,
+    pageSize: pageSize,
+    total: totalBookings,
+    onChange: (page) => setSearchParams({ page: page.toString() }),
+  }}
+  className="border-t"
+  scroll={{ x: "max-content" }} // 👈 important for horizontal scroll
+/>
+
         </div>
       </div>
       {/* Booking Details Modal */}
