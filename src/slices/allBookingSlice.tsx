@@ -26,6 +26,7 @@ interface Booking {
   actualPrice: number;
   finalPrice: number;
   bookingDate: string;
+  bookingTime: string;
   paymentMethod: string;
   bookingStatus: string;
   isPaid: boolean;

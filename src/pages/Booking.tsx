@@ -19,6 +19,10 @@ import { useDispatch, useSelector } from "react-redux";
 import SearchBar from "../components/SearchBar";
 import { AppDispatch, RootState } from "../store/store";
 import { useSearchParams } from "react-router-dom";
+import dayjs from "dayjs"; // make sure it's imported
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 import {
   getBookingDetailsById,
   getSalonBookings,
@@ -56,12 +60,7 @@ const booking = () => {
         serviceName: serviceNameFilter,
       })
     );
-  }, [
-    dispatch,
-    currentPage,
-    customerNameFilter,
-    serviceNameFilter,
-  ]);
+  }, [dispatch, currentPage, customerNameFilter, serviceNameFilter]);
 
   const handleSearch = (newFilters: {
     customerName?: string;
@@ -102,7 +101,7 @@ const booking = () => {
       message.success(`Booking status updated to ${newStatus}`);
       setTimeout(() => {
         window.location.reload();
-      }, 1000); 
+      }, 1000);
     } else {
       alert(
         "A booking can only be marked as 'Completed' if the payment was made via 'Prepaid (Card)'. This booking uses 'Pay at Counter'."
@@ -162,9 +161,8 @@ const booking = () => {
                 }
               >
                 <Tag color="orange">
-                  <button >
-                    Change Status
-                  </button></Tag>
+                  <button>Change Status</button>
+                </Tag>
               </Dropdown>
             )}
           </>
@@ -185,33 +183,33 @@ const booking = () => {
   ];
 
   return (
-      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
+    <div className="p-6 bg-white min-h-screen" style={{ minWidth: "2560px" }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
-        Booking List and Details 
+        Booking List and Details
       </div>
 
       {/* SearchBar */}
       <SearchBar onSearch={handleSearch} showCategories={false} />
 
       {/* Table Section */}
-        <div className="overflow-x-auto w-full">
-          <div style={{ width: '100%' }}>
-        <Table
-          columns={columns}
-          dataSource={bookingList.map((booking) => ({
-            ...booking,
-            key: booking._id,
-          }))}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: totalBookings,
-            onChange: (page) => setSearchParams({ page: page.toString() }),
-          }}
-           className="border-t"
-        />
-      </div>
+      <div className="overflow-x-auto w-full">
+        <div style={{ width: "100%" }}>
+          <Table
+            columns={columns}
+            dataSource={bookingList.map((booking) => ({
+              ...booking,
+              key: booking._id,
+            }))}
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: totalBookings,
+              onChange: (page) => setSearchParams({ page: page.toString() }),
+            }}
+            className="border-t"
+          />
+        </div>
       </div>
       {/* Booking Details Modal */}
       <Modal
@@ -268,6 +266,17 @@ const booking = () => {
                       day: "numeric",
                     }
                   )}
+                </p>
+              </Col>
+              <Col span={12}>
+                <Text strong>Booking Time:</Text>
+                <p>
+                  {bookingDetails.bookingTime
+                    ? dayjs(bookingDetails.bookingTime, [
+                        "h:mm A",
+                        "HH:mm",
+                      ]).format("h:mm A")
+                    : "N/A"}
                 </p>
               </Col>
             </Row>

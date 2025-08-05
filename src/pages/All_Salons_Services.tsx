@@ -439,10 +439,10 @@ const All_Salons_Services = () => {
   // Handle menu click to update salon actions
   const handleMenuClick = async (key: string, salonId: string) => {
     const { actionText, status } = getActionDetails(key, salonId);
-    if (!actionText) return; // Prevent errors if actionText is invalid
+    if (!actionText) return; 
 
     try {
-      // Dispatch the appropriate action based on the key
+      
       switch (key) {
         case "new-to-glimmer":
           await dispatch(updateNewToGlimmer({ salonId, status }));
@@ -494,7 +494,7 @@ const All_Salons_Services = () => {
 
     if (filters.salon_name) {
       updatedParams.salon_name = filters.salon_name;
-    }
+    }  
 
     updatedParams.page = "1";
 
