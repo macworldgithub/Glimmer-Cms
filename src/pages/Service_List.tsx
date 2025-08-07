@@ -39,8 +39,10 @@ const ServiceList = () => {
   const [selectedSalon, setSelectedSalon] = useState<TableData | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const [checkedNames, setCheckedNames] = useState({});
-  const [allChecked, setAllChecked] = useState(false);
+const [checkedNames, setCheckedNames] = useState<Record<string, boolean>>({});
+
+// State to hold header checkbox state
+const [allChecked, setAllChecked] = useState(false);
   const [discount, setDiscount] = useState<number>(0);
   const [editedPrices, setEditedPrices] = useState<{ [key: string]: number }>(
     {}
@@ -67,9 +69,9 @@ const ServiceList = () => {
     );
   }, [dispatch, currentPage, categoryIdFilter]);
 
-  const { salons: serviceList, total } = useSelector(
-    (state: RootState) => state.AllSalon
-  );
+const { salons: serviceList, total, allServices } = useSelector(
+  (state: RootState) => state.AllSalon
+);
 
   const handleUpdateDiscount = async () => {
     const selectedProductIds = Object.keys(checkedNames).filter(
@@ -132,25 +134,43 @@ const ServiceList = () => {
       return newCheckedState;
     });
   }, [serviceList]);
+const handleCheck = (serviceId: string) => {
+  setCheckedNames((prev) => {
+    const newChecked = { ...prev, [serviceId]: !prev[serviceId] };
 
-  const handleCheck = (serviceId) => {
-    setCheckedNames((prev) => ({ ...prev, [serviceId]: !prev[serviceId] }));
-  };
+    // Check if all are selected after this toggle
+    const services = Array.isArray(allServices) ? allServices : [];
+    const allSelected = services.length > 0 && services.every(s => newChecked[s._id]);
 
-  const handleCheckAll = () => {
-    const newChecked = !allChecked;
-    setAllChecked(newChecked);
+    setAllChecked(allSelected);
 
-    const services = salonServiceList.services || [];
+    return newChecked;
+  });
+};
 
-    setCheckedNames((prev) => {
-      const updatedChecked = { ...prev };
-      services.forEach((salon) => {
-        updatedChecked[salon._id] = newChecked;
-      });
-      return updatedChecked;
-    });
-  };
+const handleCheckAll = () => {
+  const newChecked = !allChecked;
+
+  const services = Array.isArray(allServices) ? allServices : [];
+
+  const updatedChecked = services.reduce((acc, service) => {
+    acc[service._id] = newChecked;
+    return acc;
+  }, {} as Record<string, boolean>);
+
+  setCheckedNames(updatedChecked);
+  setAllChecked(newChecked);
+};
+useEffect(() => {
+  const services = Array.isArray(allServices) ? allServices : [];
+  if (services.length === 0) {
+    setAllChecked(false);
+    return;
+  }
+    const allSelected = services.every((service) => checkedNames[service._id]);
+  setAllChecked(allSelected);
+}, [checkedNames, allServices]);
+
 
   const filteredServices = salonServiceList.services.filter((salon) => {
     console.log(salon);

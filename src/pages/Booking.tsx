@@ -198,7 +198,7 @@ const booking = () => {
     <div className="p-6 bg-white min-h-screen" style={{ minWidth: "2560px" }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
-        Booking List and Details
+        Booking List and Details 
       </div>
 
       {/* SearchBar */}

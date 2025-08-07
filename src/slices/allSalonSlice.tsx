@@ -21,12 +21,14 @@ interface AllSalon {
   salons: Salon[];
   total: number;
   page: number;
+  allServices: Salon[];
 }
 
 const initialState: AllSalon = {
   salons: [],
   total: 0,
   page: 1,
+  allServices: [], 
 };
 
 const allSalonSlice = createSlice({
@@ -41,6 +43,7 @@ const allSalonSlice = createSlice({
     builder.addCase(getAllServicesForSalon.fulfilled, (state, action) => {
       //   state.products = action.payload;
       state.salons = action.payload.services;
+      state.allServices = action.payload.services; // ✅ Add this
       state.total = action.payload.total;
       state.page = action.payload.page;
     });
