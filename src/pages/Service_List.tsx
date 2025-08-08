@@ -124,15 +124,17 @@ const { salons: serviceList, total, allServices } = useSelector(
   useEffect(() => {
     if (!Array.isArray(serviceList)) return;
 
-    setCheckedNames((prev) => {
-      const newCheckedState = { ...prev };
-      serviceList.forEach((salon) => {
-        if (!(salon._id in newCheckedState)) {
-          newCheckedState[salon._id] = false;
-        }
-      });
-      return newCheckedState;
-    });
+setCheckedNames((prev) => {
+  const newCheckedState = { ...prev };
+  serviceList.forEach((salon) => {
+    // Sirf un items ko false karo jo naye hain
+    if (!(salon._id in newCheckedState)) {
+      newCheckedState[salon._id] = false;
+    }
+  });
+  return newCheckedState;
+});
+
   }, [serviceList]);
 const handleCheck = (serviceId: string) => {
   setCheckedNames((prev) => {
@@ -161,6 +163,7 @@ const handleCheckAll = () => {
   setCheckedNames(updatedChecked);
   setAllChecked(newChecked);
 };
+
 useEffect(() => {
   const services = Array.isArray(allServices) ? allServices : [];
   if (services.length === 0) {
