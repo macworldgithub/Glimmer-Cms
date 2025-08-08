@@ -39,10 +39,10 @@ const ServiceList = () => {
   const [selectedSalon, setSelectedSalon] = useState<TableData | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-const [checkedNames, setCheckedNames] = useState<Record<string, boolean>>({});
+  const [checkedNames, setCheckedNames] = useState<Record<string, boolean>>({});
 
-// State to hold header checkbox state
-const [allChecked, setAllChecked] = useState(false);
+  // State to hold header checkbox state
+  const [allChecked, setAllChecked] = useState(false);
   const [discount, setDiscount] = useState<number>(0);
   const [editedPrices, setEditedPrices] = useState<{ [key: string]: number }>(
     {}
@@ -69,9 +69,11 @@ const [allChecked, setAllChecked] = useState(false);
     );
   }, [dispatch, currentPage, categoryIdFilter]);
 
-const { salons: serviceList, total, allServices } = useSelector(
-  (state: RootState) => state.AllSalon
-);
+  const {
+    salons: serviceList,
+    total,
+    allServices,
+  } = useSelector((state: RootState) => state.AllSalon);
 
   const handleUpdateDiscount = async () => {
     const selectedProductIds = Object.keys(checkedNames).filter(
@@ -124,56 +126,55 @@ const { salons: serviceList, total, allServices } = useSelector(
   useEffect(() => {
     if (!Array.isArray(serviceList)) return;
 
-setCheckedNames((prev) => {
-  const newCheckedState = { ...prev };
-  serviceList.forEach((salon) => {
-    // Sirf un items ko false karo jo naye hain
-    if (!(salon._id in newCheckedState)) {
-      newCheckedState[salon._id] = false;
-    }
-  });
-  return newCheckedState;
-});
-
+    setCheckedNames((prev) => {
+      const newCheckedState = { ...prev };
+      serviceList.forEach((salon) => {
+        // Sirf un items ko false karo jo naye hain
+        if (!(salon._id in newCheckedState)) {
+          newCheckedState[salon._id] = false;
+        }
+      });
+      return newCheckedState;
+    });
   }, [serviceList]);
-const handleCheck = (serviceId: string) => {
-  setCheckedNames((prev) => {
-    const newChecked = { ...prev, [serviceId]: !prev[serviceId] };
+  const handleCheck = (serviceId: string) => {
+    setCheckedNames((prev) => {
+      const newChecked = { ...prev, [serviceId]: !prev[serviceId] };
 
-    // Check if all are selected after this toggle
+      // Check if all are selected after this toggle
+      const services = Array.isArray(allServices) ? allServices : [];
+      const allSelected =
+        services.length > 0 && services.every((s) => newChecked[s._id]);
+
+      setAllChecked(allSelected);
+
+      return newChecked;
+    });
+  };
+
+  const handleCheckAll = () => {
+    const newChecked = !allChecked;
+
     const services = Array.isArray(allServices) ? allServices : [];
-    const allSelected = services.length > 0 && services.every(s => newChecked[s._id]);
 
-    setAllChecked(allSelected);
+    const updatedChecked = services.reduce((acc, service) => {
+      acc[service._id] = newChecked;
+      return acc;
+    }, {} as Record<string, boolean>);
 
-    return newChecked;
-  });
-};
+    setCheckedNames(updatedChecked);
+    setAllChecked(newChecked);
+  };
 
-const handleCheckAll = () => {
-  const newChecked = !allChecked;
-
-  const services = Array.isArray(allServices) ? allServices : [];
-
-  const updatedChecked = services.reduce((acc, service) => {
-    acc[service._id] = newChecked;
-    return acc;
-  }, {} as Record<string, boolean>);
-
-  setCheckedNames(updatedChecked);
-  setAllChecked(newChecked);
-};
-
-useEffect(() => {
-  const services = Array.isArray(allServices) ? allServices : [];
-  if (services.length === 0) {
-    setAllChecked(false);
-    return;
-  }
+  useEffect(() => {
+    const services = Array.isArray(allServices) ? allServices : [];
+    if (services.length === 0) {
+      setAllChecked(false);
+      return;
+    }
     const allSelected = services.every((service) => checkedNames[service._id]);
-  setAllChecked(allSelected);
-}, [checkedNames, allServices]);
-
+    setAllChecked(allSelected);
+  }, [checkedNames, allServices]);
 
   const filteredServices = salonServiceList.services.filter((salon) => {
     console.log(salon);
@@ -382,10 +383,10 @@ useEffect(() => {
 
   return (
     // <div>
-     <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
+    <div className="p-6 bg-white min-h-screen" style={{ minWidth: "2560px" }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
-        Service List 
+        Service List
       </div>
       {/* SearchBar */}
       <ServiceSearchBar onSearch={handleSearch} />
@@ -444,24 +445,24 @@ useEffect(() => {
         </Button>
       </div>
       {/* <div className=""> */}
-  <div className="overflow-x-auto w-full" style={{ width: '100%' }}>
-                <Table
-                    columns={columns}
-                    dataSource={filteredServices}
-                    pagination={{
-                        current: currentPage,
-                        pageSize: pageSize,
-                        total: total,
-                        onChange:  (page) =>
+      <div className="overflow-x-auto w-full" style={{ width: "100%" }}>
+        <Table
+          columns={columns}
+          dataSource={filteredServices}
+          pagination={{
+            current: currentPage,
+            pageSize: pageSize,
+            total: total,
+            onChange: (page) =>
               setSearchParams({
                 page_no: page.toString(),
                 categoryId: categoryIdFilter,
                 name: nameFilter,
-                    }),
-            }}
-                    className="border-t"
-                />
-            </div>
+              }),
+          }}
+          className="border-t"
+        />
+      </div>
     </div>
   );
 };
