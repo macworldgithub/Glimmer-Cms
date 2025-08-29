@@ -64,6 +64,20 @@ interface ProductOption {
   image1: string;
 }
 
+interface Salon {
+  _id: string;
+  salon_name: string;
+  email: string;
+  address: string;
+  about: string;
+  openingHour: string;
+  closingHour: string;
+  status: "active" | "inactive";
+  newToGlimmer: boolean;
+  trendingSalon: boolean;
+  recommendedSalon: boolean;
+}
+
 const pageSize = 8;
 
 const All_Salons_Services = () => {
@@ -72,7 +86,7 @@ const All_Salons_Services = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const token = useSelector((state: RootState) => state.Login.token);
-
+  const salons = useSelector((state: RootState) => state.AllSalon.salons);
   const [data, setData] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
 
@@ -397,95 +411,49 @@ const All_Salons_Services = () => {
     return `${formattedHour}:${minute} ${suffix}`;
   };
 
-  const loadSalonActionsFromLocalStorage = () => {
-    const storedSalonActions = localStorage.getItem("salonActions");
-    if (storedSalonActions) {
-      setSalonActions(JSON.parse(storedSalonActions));
-    }
-  };
-
-  const saveSalonActionsToLocalStorage = (
-    updatedActions: Record<string, string[]>
-  ) => {
-    localStorage.setItem("salonActions", JSON.stringify(updatedActions));
-  };
-
-  // Load salon actions from localStorage on mount
-  useEffect(() => {
-    loadSalonActionsFromLocalStorage();
-  }, []);
-
-  // Save salon actions to localStorage when updated
-  useEffect(() => {
-    if (Object.keys(salonActions).length > 0) {
-      saveSalonActionsToLocalStorage(salonActions);
-    }
-  }, [salonActions]);
-
-  // Helper function to get action details
-  const getActionDetails = (key: string, salonId: string) => {
-    const actionMapping: Record<string, string> = {
-      "new-to-glimmer": "New To Glimmer",
-      "recommended-salon": "Recommended Salons",
-      "trending-salon": "Trending Salons",
-    };
-
-    const actionText = actionMapping[key];
-    const status = salonActions[salonId]?.includes(actionText) ? false : true;
-
-    return { actionText, status };
-  };
 
   // Handle menu click to update salon actions
   const handleMenuClick = async (key: string, salonId: string) => {
-    const { actionText, status } = getActionDetails(key, salonId);
-    if (!actionText) return; 
-
     try {
-      
+      let action;
+
       switch (key) {
         case "new-to-glimmer":
-          await dispatch(updateNewToGlimmer({ salonId, status }));
+          action = updateNewToGlimmer;
           break;
         case "recommended-salon":
-          await dispatch(updateRecommendedSalon({ salonId, status }));
+          action = updateRecommendedSalon;
           break;
         case "trending-salon":
-          await dispatch(updateTrendingSalon({ salonId, status }));
+          action = updateTrendingSalon;
           break;
         default:
           console.error("Unknown action key:", key);
           return;
       }
 
-      // Update salonActions state
-      setSalonActions((prev) => {
-        const updatedActions = { ...prev };
-        if (!Array.isArray(updatedActions[salonId])) {
-          updatedActions[salonId] = [];
-        }
+      const salon = salons.find((s) => s._id === salonId);
+      if (!salon) return;
 
-        if (status) {
-          if (!updatedActions[salonId].includes(actionText)) {
-            updatedActions[salonId].push(actionText);
-          }
-        } else {
-          updatedActions[salonId] = updatedActions[salonId].filter(
-            (action) => action !== actionText
-          );
-        }
+      let status: boolean;
+      if (key === "new-to-glimmer") status = !salon.newToGlimmer;
+      else if (key === "recommended-salon") status = !salon.recommendedSalon;
+      else status = !salon.trendingSalon;
 
-        // Save updated actions to localStorage
-        saveSalonActionsToLocalStorage(updatedActions);
-        return updatedActions;
-      });
+      await dispatch(action({ salonId, status })).unwrap();
 
-      alert(
-        `Successfully ${status ? "added to" : "removed from"} ${actionText}!`
+      message.success(
+        `Successfully ${status ? "added to" : "removed from"} ${
+          key === "new-to-glimmer"
+            ? "New To Glimmer"
+            : key === "recommended-salon"
+            ? "Recommended Salons"
+            : "Trending Salons"
+        }`
       );
     } catch (error) {
       console.error("Error performing action:", error);
-      alert("There was an error performing the action.");
+      message.error("There was an error performing the action.");
     }
   };
 
@@ -494,7 +462,7 @@ const All_Salons_Services = () => {
 
     if (filters.salon_name) {
       updatedParams.salon_name = filters.salon_name;
-    }  
+    }
 
     updatedParams.page = "1";
 
@@ -654,12 +622,15 @@ const All_Salons_Services = () => {
       {
         title: "Website Highlights",
         key: "actions",
-        render: (_: any, record: any) => {
-          const salonActionNames = salonActions[record._id] || [];
+        render: (_: any, record: Salon) => {
+          const highlights: string[] = [];
+
+          if (record.newToGlimmer) highlights.push("New To Glimmer");
+          if (record.recommendedSalon) highlights.push("Recommended Salons");
+          if (record.trendingSalon) highlights.push("Trending Salons");
+
           const displayText =
-            salonActionNames.length > 0
-              ? salonActionNames.join(", ")
-              : "More Option";
+            highlights.length > 0 ? highlights.join(", ") : "More Option";
 
           return (
             <div className="flex space-x-2">
@@ -712,7 +683,7 @@ const All_Salons_Services = () => {
         <div style={{ width: "100%" }}>
           <Table
             columns={columns}
-            dataSource={data}
+            dataSource={salons}
             rowKey={(record) => record._id}
             pagination={{
               current: page,

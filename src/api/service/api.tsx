@@ -685,15 +685,17 @@ export const deleteBookingApi = async (bookingId: string, token: string) => {
 };
 
 interface Salon {
-  _id: number;
+  _id: string;
   salon_name: string;
-  rating: number;
-  reviews: number;
+  email: string;
   address: string;
+  about: string;
   openingHour: string;
   closingHour: string;
-  image1: string;
-  about: string;
+  status: "active" | "inactive";
+  newToGlimmer: boolean;
+  trendingSalon: boolean;
+  recommendedSalon: boolean;
 }
 interface GetAllSalonsResponse {
   salons: Salon[];
