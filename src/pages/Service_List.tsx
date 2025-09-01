@@ -70,7 +70,7 @@ const ServiceList = () => {
   }, [dispatch, currentPage, categoryIdFilter]);
 
   const {
-    salons: serviceList,
+    services: serviceList,
     total,
     services,
   } = useSelector((state: RootState) => state.AllSalon);
@@ -115,13 +115,13 @@ const ServiceList = () => {
   };
 
   const salonServiceList = useMemo(() => {
-    return Array.isArray(serviceList)
-      ? {
-          services: serviceList,
-          total: serviceList.length,
-        }
-      : serviceList || { services: [], total: 0 };
-  }, [serviceList]);
+  return Array.isArray(serviceList)
+    ? {
+        services: serviceList,
+        total: serviceList.length,
+      }
+    : { services: [], total: 0 };
+}, [serviceList]);
 
   useEffect(() => {
     if (!Array.isArray(serviceList)) return;

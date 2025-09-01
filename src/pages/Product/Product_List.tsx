@@ -212,19 +212,22 @@ const ProductTableWithHeader = () => {
     }
   };
   const filteredProducts = productList.products.filter((product: TableData) => {
-    const productCategory = product.category ? product.category.trim() : "";
-    const productName = product.name ? product.name.toLowerCase().trim() : "";
-    const productCreatedAt = product.created_at
-      ? dayjs(product.created_at).format("YYYY-MM-DD")
-      : "";
+  const productCategory =
+    typeof product.category === "string"
+      ? product.category.trim()
+      : product?.name.trim?.() || "";
 
-    return (
-      (!categoryFilter || productCategory === categoryFilter) &&
-      (!nameFilter || productName.includes(nameFilter.toLowerCase())) &&
-      (!createdAtFilter ||
-        dayjs(productCreatedAt).isSame(createdAtFilter, "day"))
-    );
-  });
+  const productName = product.name ? product.name.toLowerCase().trim() : "";
+  const productCreatedAt = product.created_at
+    ? dayjs(product.created_at).format("YYYY-MM-DD")
+    : "";
+
+  return (
+    (!categoryFilter || productCategory === categoryFilter) &&
+    (!nameFilter || productName.includes(nameFilter.toLowerCase())) &&
+    (!createdAtFilter || dayjs(productCreatedAt).isSame(createdAtFilter, "day"))
+  );
+});
 
   const handleUpdate = (record: TableData) => {
     setSelectedProduct(null);
