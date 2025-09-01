@@ -1,14 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { 
+import { getAllProducts, updateProductApi } from "../api/products/api";
+import {
   getAllSalons,
-  getAllServicesForAdmin, 
-  getAllServicesForSalon, 
-  updateNewToGlimmer, 
-  updateRecommendedSalon, 
-  updateSalonServiceApi, 
-  updateTrendingSalon
+  getAllServicesForAdmin,
+  getAllServicesForSalon,
+  updateNewToGlimmer,
+  updateRecommendedSalon,
+  updateSalonServiceApi,
+  updateTrendingSalon,
 } from "../api/service/api";
-
 
 interface Service {
   _id: string;
@@ -27,25 +27,31 @@ interface Service {
 
 interface Salon {
   _id: string;
-  salon_name: string;
-  email: string;
-  address: string;
-  about: string;
-  openingHour: string;
-  closingHour: string;
-  status: "active" | "inactive";
-  newToGlimmer: boolean;
-  trendingSalon: boolean;
-  recommendedSalon: boolean;
+  name: string;
+  description: string;
+  duration: number;
+  images: { name: string; url: string }[];
+  requestedPrice: number;
+  base_price: number;
+  discounted_price: number;
+  status: "Active" | "Inactive"; // Enum-like string literals
+  categoryId: string;
+  subCategoryName: string;
+  subSubCategoryName: string;
+
+  newToGlimmer?: boolean;
+  trendingSalon?: boolean;
+  recommendedSalon?: boolean;
 }
 
-interface AllSalonState {
+
+interface AllSalon {
   salons: Salon[];
   services: Service[];
   total: number;
   page: number;
 }
-const initialState: AllSalonState = {
+const initialState: AllSalon = {
   salons: [],
   services: [],
   total: 0,
@@ -56,21 +62,16 @@ const allSalonSlice = createSlice({
   initialState,
   reducers: {
     addToServiceList: (state, action) => {
-      state.services.push(action.payload);
+      state.salons.push(action.payload);
     },
   },
   extraReducers(builder) {
-    builder.addCase(getAllSalons.fulfilled, (state, action) => {
-      state.salons = action.payload.salons;
-      state.total = action.payload.total;
-    });
-
     builder.addCase(getAllServicesForSalon.fulfilled, (state, action) => {
       state.services = action.payload.services;
       state.total = action.payload.total;
       state.page = action.payload.page;
     });
-
+    
     builder.addCase(getAllServicesForAdmin.fulfilled, (state, action) => {
       state.services = action.payload.services;
       state.total = action.payload.total;
@@ -78,13 +79,16 @@ const allSalonSlice = createSlice({
     });
 
     builder.addCase(updateSalonServiceApi.fulfilled, (state, action) => {
-      const updatedService = action.payload;
-      state.services = state.services.map((s) =>
-        s._id === updatedService._id ? updatedService : s
+      const updatedSalon = action.payload; 
+      state.salons = state.salons.map((salon) =>
+        salon._id === updatedSalon.id ? updatedSalon : salon
       );
-      alert("Service Updated");
+      alert("Record Updated");
     });
-
+    builder.addCase(getAllSalons.fulfilled, (state, action) => {
+      state.salons = action.payload.salons;
+      state.total = action.payload.total;
+    });
     builder.addCase(updateNewToGlimmer.fulfilled, (state, action) => {
       const updatedSalon = action.payload;
       state.salons = state.salons.map((s) =>

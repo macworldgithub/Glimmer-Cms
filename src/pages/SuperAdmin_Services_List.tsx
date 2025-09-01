@@ -29,10 +29,10 @@ interface TableData {
 
 const SuperAdmin_Services_List = () => {
   const role = useSelector((state: RootState) => state.Login.role);
-  const { salons: serviceList, total } = useSelector(
+  const { services: serviceList, total } = useSelector(
     (state: RootState) => state.AllSalon
   );
-
+  console.log("ServiceList: ", serviceList);
   const dispatch = useDispatch<AppDispatch>();
 
   const [selectedSalon, setSelectedSalon] = useState<TableData | null>(null);
@@ -119,14 +119,10 @@ const SuperAdmin_Services_List = () => {
     }
   };
 
-  const salonServiceList = useMemo(() => {
-    return Array.isArray(serviceList)
-      ? {
-          services: serviceList,
-          total: serviceList.length,
-        }
-      : serviceList || { services: [], total: 0 };
-  }, [serviceList]);
+  const salonServiceList = {
+    services: serviceList || [],
+    total: total || 0,
+  };
 
   useEffect(() => {
     if (!Array.isArray(serviceList)) return;
@@ -321,14 +317,10 @@ const SuperAdmin_Services_List = () => {
       title: "Description",
       dataIndex: "description",
       key: "description",
-      render: (text: string) => (
-        <Tooltip title={text}>
-          {" "}
-          <span
-            className="truncate"
-            style={{ maxWidth: "200px", display: "inline-block" }}
-          >
-            {text.length > 30 ? `${text.substring(0, 30)}...` : text}{" "}
+      render: (text?: string) => (
+        <Tooltip title={text || ""}>
+          <span style={{ maxWidth: "200px", display: "inline-block" }}>
+            {text?.length > 30 ? `${text.substring(0, 30)}...` : text || ""}
           </span>
         </Tooltip>
       ),
@@ -417,12 +409,12 @@ const SuperAdmin_Services_List = () => {
             pageSize: pageSize,
             total: total,
             onChange: (page) =>
-          setSearchParams({
-            page_no: page.toString(),
-            categoryId: categoryIdFilter,
-            name: nameFilter,
-            salonId, // Add this line
-          }),
+              setSearchParams({
+                page_no: page.toString(),
+                categoryId: categoryIdFilter,
+                name: nameFilter,
+                salonId, // Add this line
+              }),
           }}
           className="border-t"
           scroll={{ x: 1000 }}

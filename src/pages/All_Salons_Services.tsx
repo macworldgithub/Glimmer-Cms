@@ -66,16 +66,21 @@ interface ProductOption {
 
 interface Salon {
   _id: string;
-  salon_name: string;
-  email: string;
-  address: string;
-  about: string;
-  openingHour: string;
-  closingHour: string;
-  status: "active" | "inactive";
-  newToGlimmer: boolean;
-  trendingSalon: boolean;
-  recommendedSalon: boolean;
+  name: string;
+  description: string;
+  duration: number;
+  images: { name: string; url: string }[];
+  requestedPrice: number;
+  base_price: number;
+  discounted_price: number;
+  status: "Active" | "Inactive"; // Enum-like string literals
+  categoryId: string;
+  subCategoryName: string;
+  subSubCategoryName: string;
+
+  newToGlimmer?: boolean;
+  trendingSalon?: boolean;
+  recommendedSalon?: boolean;
 }
 
 const pageSize = 8;
@@ -416,7 +421,7 @@ const All_Salons_Services = () => {
   const handleMenuClick = async (key: string, salonId: string) => {
     try {
       let action;
-
+      
       switch (key) {
         case "new-to-glimmer":
           action = updateNewToGlimmer;
@@ -462,7 +467,7 @@ const All_Salons_Services = () => {
 
     if (filters.salon_name) {
       updatedParams.salon_name = filters.salon_name;
-    }
+    }  
 
     updatedParams.page = "1";
 
