@@ -152,8 +152,8 @@ const All_Salons_Services = () => {
       const result = await dispatch(
         getAllSalons({ page_no: page, salon_name })
       ).unwrap();
-      setData(result.salons);
-      setTotal(result.total);
+      // setData(result.salons);
+      // setTotal(result.total);
     } catch (error) {
       message.error("Failed to fetch salons");
     }
