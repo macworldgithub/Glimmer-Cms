@@ -147,40 +147,77 @@ const ProductPage = () => {
   }, [sub_category_options]); // Runs whenever sub_category_options changes
 
   useEffect(() => {}, [subcategory]);
-const handleDiscountChange = (value) => {
-  let discountPercentage = parseFloat(value);
+  const handleDiscountChange = (value) => {
+    let discountPercentage = parseFloat(value);
 
-  // Ensure discount percentage does not exceed 100
-  if (discountPercentage > 100) discountPercentage = 100;
-  if (discountPercentage < 0 || isNaN(discountPercentage)) discountPercentage = 0;
+    // Ensure discount percentage does not exceed 100
+    if (discountPercentage > 100) discountPercentage = 100;
+    if (discountPercentage < 0 || isNaN(discountPercentage))
+      discountPercentage = 0;
 
-  // Store the percentage in discounted_price for UI
-  HandleChange("discounted_price", discountPercentage);
+    // Store the percentage in discounted_price for UI
+    HandleChange("discounted_price", discountPercentage);
 
-  // Calculate and update final price for display
-  const basePrice = parseFloat((addProduct.base_price || 0).toString()); // Convert to string
-  const finalPrice = basePrice - (basePrice * discountPercentage) / 100;
-  HandleChange("final_price_display", finalPrice.toFixed(2));
-};
+    // Calculate and update final price for display
+    const basePrice = parseFloat((addProduct.base_price || 0).toString()); // Convert to string
+    const finalPrice = basePrice - (basePrice * discountPercentage) / 100;
+    HandleChange("final_price_display", finalPrice.toFixed(2));
+  };
   return (
-    <div className=" mx-auto overflow-hidden">
+    <div className="mx-auto overflow-hidden">
       <div className="p-6 flex flex-col md:flex-row md:items-center md:justify-between ">
         <div>
           <h1 className="text-2xl text-gray-600">Add a new Product</h1>
           <p className="text-gray-400">Orders placed across your store</p>
         </div>
-        <div className="flex gap-2 mt-4 md:mt-0 max-sm:gap-1 max-sm:flex-col">
-          <div>
-            <button
-              onClick={() => {
-                HandleConfirm();
-              }}
-              className="bg-[#5f61e6] text-white px-4 py-2 rounded-md "
-            >
-              Publish Product
-            </button>
-          </div>
+        <div className="flex flex-wrap gap-3 mt-4 md:mt-0">
+          <button
+            onClick={() => {
+              HandleConfirm();
+            }}
+            className="bg-[#5f61e6] text-white px-4 py-2 rounded-md"
+          >
+            Publish Product
+          </button>
         </div>
+      </div>
+      <div className="mb-4">
+        <label className="bg-green-600 text-white px-4 py-2 rounded-md cursor-pointer">
+          Upload Bulk Products 
+          <input
+            type="file"
+            accept=".csv"
+            className="hidden"
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+
+              const formData = new FormData();
+              formData.append("file", file);
+
+              try {
+                const res = await fetch(`${BACKEND_URL}/product/upload-csv`, {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: formData,
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                  alert(`${data.count} products uploaded successfully!`);
+                  console.log("Bulk Upload Result:", data);
+                } else {
+                  alert(`Upload failed: ${data.message || "Unknown error"}`);
+                }
+              } catch (err) {
+                console.error("Bulk upload error:", err);
+                alert("Something went wrong during upload.");
+              }
+            }}
+          />
+        </label>
       </div>
       {/* Main Content */}
       <div className="flex gap-x-4 flex-col lg:flex-row ">
@@ -201,7 +238,7 @@ const handleDiscountChange = (value) => {
                 onChange={(e) => HandleChange("name", e.target.value)}
               />
             </div>
-           
+
             <div>
               <label className="block text-sm font-medium text-gray-500 mb-1">
                 Description (Optional)
@@ -266,20 +303,20 @@ const handleDiscountChange = (value) => {
 
           <div className="border-gray-200  rounded-md max-md:w-full bg-white px-4 py-2 my-4 shadow-md">
             <h2 className="text-lg  mt-6 mb-4">Inventory (Quantity)</h2>
-           
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 
                 <input
                   type="number"
                   placeholder="Quantity"
-                  value={addProduct.quantity }
-                 onChange={(e) =>
-  HandleChange(
-    "quantity",
-    e.target.value === "" ? "" : parseInt(e.target.value)
-  )
-}
+                  value={addProduct.quantity}
+                  onChange={(e) =>
+                    HandleChange(
+                      "quantity",
+                      e.target.value === "" ? "" : parseInt(e.target.value)
+                    )
+                  }
 
                   className="w-full border-gray-400 rounded-md shadow-sm p-3  border-solid border"
                 />
@@ -342,49 +379,49 @@ const handleDiscountChange = (value) => {
             </div>
         
           </div> */}
-          <div className="w-1/3 max-lg:w-full">
-    <div className="p-6 bg-white rounded-md my-4 shadow-md">
-      <h2 className="text-lg font-medium mb-4">Pricing</h2>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Actual Price
-        </label>
-        <input
-          type="number"
-          placeholder="Price"
-          className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
-          value={addProduct.base_price || ""}
-          onChange={(e) =>
-            HandleChange("base_price", parseFloat(e.target.value))
-          }
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Discount Percentage (%)
-        </label>
-        <input
-          type="number"
-          placeholder="Discount Percentage"
-          className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
-          value={addProduct.discounted_price || ""}
-          onChange={(e) => handleDiscountChange(e.target.value)}
-          max="100"
-        />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Final Price
-        </label>
-        <input
-          type="number"
-          placeholder="Final Price"
-          className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400 bg-gray-100"
+        <div className="w-1/3 max-lg:w-full">
+          <div className="p-6 bg-white rounded-md my-4 shadow-md">
+            <h2 className="text-lg font-medium mb-4">Pricing</h2>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Actual Price
+              </label>
+              <input
+                type="number"
+                placeholder="Price"
+                className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
+                value={addProduct.base_price || ""}
+                onChange={(e) =>
+                  HandleChange("base_price", parseFloat(e.target.value))
+                }
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Discount Percentage (%)
+              </label>
+              <input
+                type="number"
+                placeholder="Discount Percentage"
+                className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400"
+                value={addProduct.discounted_price || ""}
+                onChange={(e) => handleDiscountChange(e.target.value)}
+                max="100"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Final Price
+              </label>
+              <input
+                type="number"
+                placeholder="Final Price"
+                className="w-full rounded-md shadow-sm p-3 border-solid border border-gray-400 bg-gray-100"
           value={addProduct.final_price_display || addProduct.base_price || ""}
-          readOnly
-        />
-      </div>
-    </div>
+                readOnly
+              />
+            </div>
+          </div>
 
           <div className="shadow-md  p-6 bg-white rounded-md max-md:w-full">
             <h2 className="text-lg font-medium text-gray-700 mb-4">Organize</h2>
