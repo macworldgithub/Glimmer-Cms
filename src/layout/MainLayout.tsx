@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import io from "socket.io-client";
 import { addNotification } from "../slices/notificationSlice";
 import { BACKEND_URL } from "../config/server";
+import AdminProfile from "../components/AdminProfile";
 
 // Sound effect (can be customized)
 const notificationSound = new Audio("/notification.mp3");
@@ -26,6 +27,7 @@ const MainLayout = () => {
   const role = useSelector((state: RootState) => state.Login.role);
   console.log(role);
   const id = useSelector((state: RootState) => state.Login._id);
+  console.log(id)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -37,12 +39,12 @@ const MainLayout = () => {
         userId: role === "super_admin" ? id : undefined,
       },
     });
-
     socket.on("connect", () => {
       console.log("Connected to WebSocket:", socket.id);
     });
 
     if (role === "store" || role === "super_admin") {
+      console.log(role);
       socket.on("newOrder", (order) => {
         const orderData = order._doc || order; // fallback if it's already plain
 
@@ -121,11 +123,14 @@ const MainLayout = () => {
           />
           <div className="flex items-center gap-2 pr-2">
             <Bell />
-            {(role === "store" || role === "super_admin") && (
+            {role === "store" && (
               <Profile profile={profile} setProfile={setProfile} />
             )}
             {role === "salon" && (
               <SalonProfile profile={profile} setProfile={setProfile} />
+            )}
+            {role === "super_admin" && (
+              <AdminProfile profile={profile} setProfile={setProfile} />
             )}
           </div>
         </Header>

@@ -17,10 +17,9 @@ interface PropsProfile {
   setProfile: Dispatch<SetStateAction<boolean>>;
 }
 
-const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
+const AdminProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   const data = useSelector((state: RootState) => state.Login);
   const dispatch = useDispatch();
-  console.log(data);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [showResetOption, setShowResetOption] = useState(false);
   const [resetPasswordVisible, setResetPasswordVisible] = useState(false);
@@ -37,20 +36,6 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
 
   const HandleProfileClick = () => {
     setProfile(true);
-  };
-
-  const showModal = () => {
-    setIsModalVisible(true);
-    setShowResetOption(false); // hide reset option after modal opens
-  };
-
-  const handleOk = () => {
-    // Password reset logic here
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalVisible(false);
   };
 
   const toggleResetOption = () => {
@@ -88,25 +73,21 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
     <div className="h-max flex flex-col">
       {/* User Info */}
       <div className="flex items-center w-full p-2">
-        <Avatar
-          size={"large"}
-          src={data.role === "salon" ? data.images[0] : Profilepic}
-          icon="user"
-        />
+        <Avatar size={"large"} src={Profilepic} icon={<UserOutlined />} />
         <div className="ml-2">
-          <h1 className="text-sm font-medium">{data.salon_name}</h1>
-          <h1 className="text-xs font-light text-gray-500">Salon</h1>
+          <h1 className="text-sm font-medium">{"Admin"}</h1>
+          <h1 className="text-xs font-light text-gray-500">Super Admin</h1>
         </div>
       </div>
       <Divider className="my-1" />
 
-      {/* Salon Profile */}
+      {/* Profile Section */}
       <div
         onClick={HandleProfileClick}
         className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors"
       >
         <UserOutlined className="text-base mr-2" />
-        <h2 className="text-sm font-normal">Salon Profile</h2>
+        <h2 className="text-sm font-normal">Admin Profile</h2>
       </div>
       <Divider className="my-1" />
 
@@ -144,16 +125,8 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
 
   return (
     <>
-      <Popover content={content} title="Salon Profile Info" trigger="click">
-        <Avatar
-          size={"large"}
-          src={
-            data.role === "salon" && data.images?.length > 0
-              ? data.images[0]
-              : Profilepic
-          }
-          icon={<UserOutlined />}
-        />
+      <Popover content={content} title="Admin Profile Info" trigger="click">
+        <Avatar size={"large"} src={Profilepic} icon={<UserOutlined />} />
       </Popover>
 
       {/* Reset Password Modal */}
@@ -162,7 +135,7 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
         open={resetPasswordVisible}
         onOk={handleResetPassword}
         onCancel={() => setResetPasswordVisible(false)}
-        okText="Submit"
+        okText="Reset"
         cancelText="Cancel"
       >
         <div className="flex flex-col gap-4">
@@ -171,7 +144,6 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email Address"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md"
             disabled
           />
           <Input
@@ -179,21 +151,18 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="Current Password"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md"
           />
           <Input
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="New Password"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md"
           />
           <Input
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirm New Password"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md"
           />
         </div>
       </Modal>
@@ -202,15 +171,15 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
       <Modal
         title="Settings"
         open={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="Submit"
+        onOk={() => setIsModalVisible(false)}
+        onCancel={() => setIsModalVisible(false)}
+        okText="Save"
         cancelText="Cancel"
       >
-        {/* Password reset logic here */}
+        {/* Add settings content here if needed */}
       </Modal>
     </>
   );
 };
 
-export default SalonProfile;
+export default AdminProfile;

@@ -86,7 +86,8 @@ const loginSlice = createSlice({
       state.store_name = store_name ?? state.store_name;
       state.vendor_name = vendor_name ?? state.vendor_name;
       state.description = description ?? state.description;
-      state.store_contact_email = store_contact_email ?? state.store_contact_email;
+      state.store_contact_email =
+        store_contact_email ?? state.store_contact_email;
       state.email = email ?? state.email;
       state.country = country ?? state.country; // Fixed: Assign to country
       state.address = address ?? state.address;
@@ -94,24 +95,29 @@ const loginSlice = createSlice({
     },
     addImages: (state, action) => {
       if (!state.images) {
-        state.images = []; 
+        state.images = [];
       }
-      
-      if (Array.isArray(action.payload) && (state.images.length + action.payload.length <= 4)) {
+
+      if (
+        Array.isArray(action.payload) &&
+        state.images.length + action.payload.length <= 4
+      ) {
         state.images = [...state.images, ...action.payload];
       } else {
         alert("You can only upload up to 4 images.");
       }
     },
     removeImage: (state, action: PayloadAction<number>) => {
-      state.images = state.images.filter((_, index) => index !== action.payload);
+      state.images = state.images.filter(
+        (_, index) => index !== action.payload
+      );
     },
     resetImage: (state) => {
       state.images = [];
     },
     updateSalon: (state, action) => {
       const {
-         salon_name,
+        salon_name,
         about,
         contact_number,
         email,
@@ -128,7 +134,9 @@ const loginSlice = createSlice({
       state.address = address ?? state.address;
       state.openingHour = openingHour ?? state.openingHour;
       state.closingHour = closingHour ?? state.closingHour;
-      state.images = Array.isArray(images) ? images.slice(0, 4).filter(Boolean) : state.images;
+      state.images = Array.isArray(images)
+        ? images.slice(0, 4).filter(Boolean)
+        : state.images;
     },
   },
   extraReducers(builder) {
@@ -151,6 +159,7 @@ const loginSlice = createSlice({
     builder.addCase(signInAdmin.fulfilled, (state, action) => {
       const { admin, token, role, store_image } = action.payload;
 
+      state._id = admin._id;
       state.email = admin.email;
       state.name = admin.name;
 
@@ -195,5 +204,13 @@ const loginSlice = createSlice({
   },
 });
 
-export const { changeAuthentication, logout, updateStore, updateSalon, addImages, removeImage, resetImage } = loginSlice.actions;
+export const {
+  changeAuthentication,
+  logout,
+  updateStore,
+  updateSalon,
+  addImages,
+  removeImage,
+  resetImage,
+} = loginSlice.actions;
 export default loginSlice;

@@ -156,7 +156,6 @@
 
 // export default SalonProfile;
 
-
 import React, { SetStateAction, Dispatch, useState } from "react";
 import { Popover, Avatar, Divider, Modal, Input, message } from "antd";
 import {
@@ -176,7 +175,7 @@ interface PropsProfile {
   setProfile: Dispatch<SetStateAction<boolean>>;
 }
 
-const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
+const Profile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   const data = useSelector((state: RootState) => state.Login);
   console.log(data);
   const dispatch = useDispatch();
@@ -258,21 +257,19 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
           icon={<UserOutlined />}
         />
         <div className="ml-2">
-          <h1 className="text-sm font-medium">{data.salon_name || data.store_name}</h1>
-          <h1 className="text-xs font-light text-gray-500">
-            {data.role === "store" ? "Store" : "Salon"}
-          </h1>
+          <h1 className="text-sm font-medium">{data.store_name}</h1>
+          <h1 className="text-xs font-light text-gray-500">{"Store"}</h1>
         </div>
       </div>
       <Divider className="my-1" />
 
-      {/* Salon Profile */}
+      {/* Profile Section */}
       <div
         onClick={HandleProfileClick}
         className="flex items-center p-2 cursor-pointer hover:bg-gray-100 transition-colors"
       >
         <UserOutlined className="text-base mr-2" />
-        <h2 className="text-sm font-normal">Salon Profile</h2>
+        <h2 className="text-sm font-normal">Store Profile</h2>
       </div>
       <Divider className="my-1" />
 
@@ -310,7 +307,7 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
 
   return (
     <>
-      <Popover content={content} title="Salon Profile Info" trigger="click">
+      <Popover content={content} title="Store Profile Info" trigger="click">
         <Avatar
           size={"large"}
           src={
@@ -381,4 +378,4 @@ const SalonProfile: React.FC<PropsProfile> = ({ profile, setProfile }) => {
   );
 };
 
-export default SalonProfile;
+export default Profile;
