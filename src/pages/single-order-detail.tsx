@@ -16,14 +16,16 @@ const OrderDetailPage = () => {
   const token = useSelector((state: RootState) => state.Login.token);
   const store_id = useSelector((state: RootState) => state.Login._id);
 
-  const storeId = searchParams.get('store');
+  const storeIdFromQuery = searchParams.get("store");
+
+  const effectiveStoreId = storeIdFromQuery || store_id;
 
   const fetchData = async () => {
     if (!orderId) return;
 
     try {
       const response = await axios.get(
-        `${BACKEND_URL}/order/get_store_order_by_id?order_id=${orderId}&store_id=${store_id || storeId}`,
+        `${BACKEND_URL}/order/get_store_order_by_id?order_id=${orderId}&store_id=${effectiveStoreId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,7 +40,7 @@ const OrderDetailPage = () => {
 
   useEffect(() => {
     fetchData();
-  }, [orderId, store_id, storeId, token]);
+  }, [orderId, effectiveStoreId, token]);
 
   if (!order) {
     return <p className="text-center text-lg">No order details available.</p>;
@@ -119,28 +121,28 @@ const OrderDetailPage = () => {
     },
     ...(showActionColumn
       ? [
-        {
-          title: "Action",
-          key: "action",
-          render: (_, record) =>
-            record.orderProductStatus === "Pending" && (
-              <div className="space-x-5">
-                <Button
-                  className="bg-green-500 text-white"
-                  onClick={() => handleAccept(record.key)}
-                >
-                  Accept
-                </Button>
-                <Button
-                  className="bg-red-500 text-white"
-                  onClick={() => handleReject(record.key)}
-                >
-                  Reject
-                </Button>
-              </div>
-            ),
-        },
-      ]
+          {
+            title: "Action",
+            key: "action",
+            render: (_, record) =>
+              record.orderProductStatus === "Pending" && (
+                <div className="space-x-5">
+                  <Button
+                    className="bg-green-500 text-white"
+                    onClick={() => handleAccept(record.key)}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    className="bg-red-500 text-white"
+                    onClick={() => handleReject(record.key)}
+                  >
+                    Reject
+                  </Button>
+                </div>
+              ),
+          },
+        ]
       : []),
   ];
   const handleAccept = async (prodId) => {
@@ -149,7 +151,7 @@ const OrderDetailPage = () => {
       {
         order_id: order?._id,
         product_id: prodId,
-        store_id: store_id || storeId,
+        store_id: store_id || effectiveStoreId,
         order_product_status: "Accepted",
       },
       {
@@ -163,24 +165,36 @@ const OrderDetailPage = () => {
     const productDetails = order.productList.find(
       (item) => item.product._id === prodId
     );
-    console.log(productDetails)
+    console.log(productDetails);
     const salonId = productDetails.product.ref_of_salon;
     const quantity = productDetails.quantity;
     const price = productDetails.total_price;
-    const salonCut = productDetails.product.rate_of_salon * (productDetails.product.discounted_price ? productDetails.product.discounted_price : productDetails.product.base_price) / 100;
+    const salonCut =
+      (productDetails.product.rate_of_salon *
+        (productDetails.product.discounted_price
+          ? productDetails.product.discounted_price
+          : productDetails.product.base_price)) /
+      100;
 
     console.log(productDetails);
 
     if (salonId && salonCut !== undefined && salonCut !== null) {
-
       try {
-        await createSaleRecordForSalonCut(salonId, prodId, quantity, price, salonCut);
+        await createSaleRecordForSalonCut(
+          salonId,
+          prodId,
+          quantity,
+          price,
+          salonCut
+        );
         message.success(`Sale record created for product ${prodId}.`);
       } catch (err) {
         message.error("Failed to create sale record.");
       }
     } else {
-      message.warning("Rate and Ref of Salon is missing for this product or no recommeded products found for this salon");
+      message.warning(
+        "Rate and Ref of Salon is missing for this product or no recommeded products found for this salon"
+      );
     }
 
     setTimeout(() => {
@@ -194,7 +208,7 @@ const OrderDetailPage = () => {
       {
         order_id: order?._id,
         product_id: prodId,
-        store_id: store_id || storeId,
+        store_id: store_id || effectiveStoreId,
         order_product_status: "Rejected",
       },
       {
