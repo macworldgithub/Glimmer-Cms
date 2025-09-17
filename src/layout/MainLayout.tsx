@@ -15,6 +15,7 @@ import io from "socket.io-client";
 import { addNotification } from "../slices/notificationSlice";
 import { BACKEND_URL } from "../config/server";
 import AdminProfile from "../components/AdminProfile";
+import dayjs from "dayjs";
 
 // Sound effect (can be customized)
 const notificationSound = new Audio("/notification.mp3");
@@ -27,7 +28,7 @@ const MainLayout = () => {
   const role = useSelector((state: RootState) => state.Login.role);
   console.log(role);
   const id = useSelector((state: RootState) => state.Login._id);
-  console.log(id)
+  console.log(id);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -46,20 +47,25 @@ const MainLayout = () => {
     if (role === "store" || role === "super_admin") {
       console.log(role);
       socket.on("newOrder", (order) => {
-        const orderData = order._doc || order; // fallback if it's already plain
-
-        console.log("Order received:", orderData);
-
+        const orderData = order._doc || order;
+        console.log(orderData)
         const storeId = order.storeId || orderData.productList?.[0]?.storeId;
 
         if (role === "super_admin" || storeId === id) {
           notificationSound.play();
-          toast.success(`New order from ${orderData.customerName}`);
+
+          const orderDate = orderData.created_at
+            ? dayjs(orderData.createdAt).format("DD MMM YYYY, hh:mm A")
+            : dayjs().format("DD MMM YYYY, hh:mm A");
+
+          toast.success(
+            `New order from ${orderData.customerName} on ${orderDate}`
+          );
 
           dispatch(
             addNotification({
               id: orderData._id,
-              message: `A new order has been placed by ${orderData.customerName}. Please review and process it. Order ID: ${orderData._id}`,
+              message: `A new order has been placed by ${orderData.customerName} on ${orderDate}. Please review and process it. Order ID: ${orderData._id}`,
               timestamp: new Date().toISOString(),
               read: false,
               data: orderData,
@@ -73,11 +79,19 @@ const MainLayout = () => {
       socket.on("newBooking", (booking) => {
         if (role === "super_admin" || booking.salonId === id) {
           notificationSound.play();
-          toast.success(`New booking from ${booking.customerName}`);
+
+          const bookingDate = booking.created_at
+            ? dayjs(booking.createdAt).format("DD MMM YYYY, hh:mm A")
+            : dayjs().format("DD MMM YYYY, hh:mm A");
+
+          toast.success(
+            `New booking from ${booking.customerName} on ${bookingDate}`
+          );
+
           dispatch(
             addNotification({
               id: booking._id,
-              message: `A new salon appointment has been booked by ${booking.customerName}. Please review the details. Salon ID: ${booking._id}`,
+              message: `A new salon appointment has been booked by ${booking.customerName} on ${bookingDate}. Please review the details. Salon ID: ${booking._id}`,
               timestamp: new Date().toISOString(),
               read: false,
               data: booking,

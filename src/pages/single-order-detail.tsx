@@ -32,6 +32,7 @@ const OrderDetailPage = () => {
           },
         }
       );
+      console.log(response.data)
       setOrders(response.data);
     } catch (error) {
       message.error("Failed to fetch order details.");
@@ -222,6 +223,17 @@ const OrderDetailPage = () => {
       fetchData();
     }, 2000);
   };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
   return (
     <div className="container mx-auto p-6">
       <Card
@@ -314,6 +326,9 @@ const OrderDetailPage = () => {
             <Tag color={order.status === "Confirmed" ? "blue" : "orange"}>
               {order.status}
             </Tag>
+          </p>
+          <p>
+            <strong>Order Date:</strong> {formatDate(order.createdAt)}
           </p>
         </div>
       </Card>
