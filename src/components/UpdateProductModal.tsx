@@ -60,9 +60,9 @@ interface Product {
   store: string;
   _id: string;
   actions: string;
-  category: string;
-  sub_category: string;
-  item: string;
+  category: { _id: string; name: string; slug: string };
+  sub_category: { _id: string; name: string; slug: string };
+  item: { _id: string; name: string; slug: string };
   type: any[];
   size: any[];
 }
@@ -290,27 +290,26 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
   };
 
   useEffect(() => {
-    //@ts-ignore
-    setSelectedCategory((item) => ({
-      ...item,
-      id: product.category,
-      name: getCategoryById(selections, product.category)?.name,
-    }));
-    //@ts-ignore
-    setSelectedSubCategory((item) => ({
-      ...item,
-      id: product.sub_category,
-      name: getSubCategoryById(selections, product.sub_category)?.name,
-    }));
-    setSelectedItem((item) => ({
-      ...item,
-      id: product.item,
-      name: getItemById(selections, product.item)?.name,
-    }));
+    if (!product) return;
 
-    setType(product.type);
-    setSize(product.size);
-  }, [selections]);
+    setSelectedCategory({
+      id: product.category?._id || "",
+      name: product.category?.name || "",
+    });
+
+    setSelectedSubCategory({
+      id: product.sub_category?._id || "",
+      name: product.sub_category?.name || "",
+    });
+
+    setSelectedItem({
+      id: product.item?._id || "",
+      name: product.item?.name || "",
+    });
+
+    setType(product.type || []);
+    setSize(product.size || []);
+  }, [selections, product]);
 
   useEffect(() => {
     form.setFieldValue("categoryName", selectedCategory.name);
@@ -408,19 +407,20 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
           base_price: product.base_price,
           discounted_price: product.discounted_price,
           status: product.status,
-          categoryId: selectedCategory.id,
-          categoryName: selectedCategory.name,
-          sub_categoryId: selectedSubCategory.id,
-          sub_categoryName: selectedSubCategory.name,
-          itemId: selectedItem.id,
-          itemName: selectedItem.name,
+          categoryId: product.category?._id,
+          categoryName: product.category?.name,
+          sub_categoryId: product.sub_category?._id,
+          sub_categoryName: product.sub_category?.name,
+          itemId: product.item?._id,
+          itemName: product.item?.name,
         }}
       >
-        <Form.Item label="Category" name="categoryName">
+        <Form.Item label="Category" name="categoryId">
           <Select
             placeholder="Select a category"
             //@ts-ignore
             onChange={HandleChangeCategory}
+            value={selectedCategory.id}
           >
             {selections?.map((item: any) => (
               <Select.Option key={item.category_id} value={item.category_id}>
@@ -431,11 +431,12 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
           </Select>
         </Form.Item>
 
-        <Form.Item label="Subcategory" name="sub_categoryName">
+        <Form.Item label="Subcategory" name="sub_categoryId">
           <Select
             placeholder="Select a subcategory"
             //@ts-ignore
             onChange={HandleChangeSubCategory}
+            value={selectedSubCategory.id}
             disabled={!selectedCategory.id}
           >
             {selections
@@ -452,11 +453,12 @@ const UpdateModal: React.FC<UpdateModalProps> = ({
           </Select>
         </Form.Item>
 
-        <Form.Item label="Item" name="itemName">
+        <Form.Item label="Item" name="itemId">
           <Select
             placeholder="Select a Item"
             //@ts-ignore
             onChange={HandleChangeItem}
+            value={selectedItem.id}
             disabled={!selectedSubCategory.id}
           >
             {selections
