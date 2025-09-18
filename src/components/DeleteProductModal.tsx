@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Modal, Button, message } from "antd";
+import React from "react";
+import { Modal } from "antd";
 import { deleteProductApi, getAllProducts } from "../api/products/api";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "../store/store";
+import { AppDispatch, RootState } from "../store/store";
 
 interface Product {
   name: string;
@@ -21,57 +21,66 @@ interface DeleteProductModalProps {
   product: Product;
   visible: boolean;
   page: number;
+  role: string;
+  name?: string;
+  category?: string;
+  createdAt?: string;
+  storeId?: string;
   onClose: () => void;
 }
 
 const DeleteProductModal: React.FC<DeleteProductModalProps> = ({
   product,
-  onClose,
   visible,
   page,
+  role,
+  name,
+  category,
+  createdAt,
+  storeId,
+  onClose,
 }) => {
   const token = useSelector((state: RootState) => state.Login.token);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+
   const handleOk = async () => {
     try {
-      // Attempt to delete the product
-      const result = await deleteProductApi(product._id, token);
+      // Delete API call
+      await deleteProductApi(product._id, token);
 
-      // If successful, fetch the updated list of products
+      // Re-fetch with the same filters
       //@ts-ignore
-      dispatch(getAllProducts({ page_no: page })); // Avoiding ts-ignore if possible
+      dispatch(
+        getAllProducts({
+          page_no: page,
+          name,
+          category,
+          created_at: createdAt,
+          storeId: role === "super_admin" ? storeId : undefined,
+        })
+      );
 
-      // Close the modal or UI after a successful operation
-      //@ts-ignore
       onClose();
-
-      // Notify the user
       alert("Product deleted successfully.");
     } catch (error: any) {
-      // Handle and log errors properly
       console.error("Error deleting product:", error.message || error);
-
-      // Optionally, show a user-friendly error message
-      alert("Failed to delete the product. Please try again.");
     }
   };
 
   return (
-    <>
-      <Modal
-        title="Confirm Delete"
-        visible={visible}
-        onCancel={onClose}
-        onOk={handleOk}
-        okText="Yes, Delete"
-        cancelText="Cancel"
-        okButtonProps={{ className: "ant-btn-dangerous-delete-modal" }} // Add danger class
-      >
-        <p>
-          Are you sure you want to delete <strong>{product.name}</strong>?
-        </p>
-      </Modal>
-    </>
+    <Modal
+      title="Confirm Delete"
+      open={visible}
+      onCancel={onClose}
+      onOk={handleOk}
+      okText="Yes, Delete"
+      cancelText="Cancel"
+      okButtonProps={{ className: "ant-btn-dangerous-delete-modal" }}
+    >
+      <p>
+        Are you sure you want to delete <strong>{product.name}</strong>?
+      </p>
+    </Modal>
   );
 };
 

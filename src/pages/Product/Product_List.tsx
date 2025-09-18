@@ -212,22 +212,23 @@ const ProductTableWithHeader = () => {
     }
   };
   const filteredProducts = productList.products.filter((product: TableData) => {
-  const productCategory =
-    typeof product.category === "string"
-      ? product.category.trim()
-      : product?.name.trim?.() || "";
+    const productCategory =
+      typeof product.category === "string"
+        ? product.category.trim()
+        : product?.name.trim?.() || "";
 
-  const productName = product.name ? product.name.toLowerCase().trim() : "";
-  const productCreatedAt = product.created_at
-    ? dayjs(product.created_at).format("YYYY-MM-DD")
-    : "";
+    const productName = product.name ? product.name.toLowerCase().trim() : "";
+    const productCreatedAt = product.created_at
+      ? dayjs(product.created_at).format("YYYY-MM-DD")
+      : "";
 
-  return (
-    (!categoryFilter || productCategory === categoryFilter) &&
-    (!nameFilter || productName.includes(nameFilter.toLowerCase())) &&
-    (!createdAtFilter || dayjs(productCreatedAt).isSame(createdAtFilter, "day"))
-  );
-});
+    return (
+      (!categoryFilter || productCategory === categoryFilter) &&
+      (!nameFilter || productName.includes(nameFilter.toLowerCase())) &&
+      (!createdAtFilter ||
+        dayjs(productCreatedAt).isSame(createdAtFilter, "day"))
+    );
+  });
 
   const handleUpdate = (record: TableData) => {
     setSelectedProduct(null);
@@ -473,10 +474,10 @@ const ProductTableWithHeader = () => {
   ];
 
   return (
-      <div className="p-6 bg-white min-h-screen" style={{ minWidth: '2560px' }}>
+    <div className="p-6 bg-white min-h-screen" style={{ minWidth: "2560px" }}>
       {/* Header Section */}
       <div className="p-4 text-lg font-semibold text-gray-800 border-b">
-        Product List 
+        Product List
       </div>
 
       {/* SearchBar */}
@@ -504,6 +505,11 @@ const ProductTableWithHeader = () => {
           product={selectedProduct}
           onClose={() => setIsDeleteModalVisible(false)}
           page={currentPage}
+          role={role}
+          name={nameFilter}
+          category={categoryFilter}
+          createdAt={createdAtFilter}
+          storeId={storeId}
         />
       )}
 
@@ -520,28 +526,28 @@ const ProductTableWithHeader = () => {
         </Button>
       </div>
       {/* Table Section */}
-        <div className="overflow-x-auto w-full">
-          <div style={{ width: '100%' }}>
-        <Table
-          columns={columns}
-          dataSource={filteredProducts}
-          pagination={{
-            current: currentPage,
-            pageSize: pageSize,
-            total: productList?.total,
-            onChange: (page) =>
-              setSearchParams({
-                page: page.toString(),
-                name: nameFilter,
-                category: categoryFilter,
-                created_at: createdAtFilter,
-                store: role === "super_admin" ? storeId : "",
-              }),
-          }}
-          className="border-t"
-        />
+      <div className="overflow-x-auto w-full">
+        <div style={{ width: "100%" }}>
+          <Table
+            columns={columns}
+            dataSource={filteredProducts}
+            pagination={{
+              current: currentPage,
+              pageSize: pageSize,
+              total: productList?.total,
+              onChange: (page) =>
+                setSearchParams({
+                  page: page.toString(),
+                  name: nameFilter,
+                  category: categoryFilter,
+                  created_at: createdAtFilter,
+                  store: role === "super_admin" ? storeId : "",
+                }),
+            }}
+            className="border-t"
+          />
+        </div>
       </div>
-    </div>
     </div>
   );
 };
