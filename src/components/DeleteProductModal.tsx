@@ -21,7 +21,7 @@ interface DeleteProductModalProps {
   product: Product;
   visible: boolean;
   page: number;
-  role: string;
+  role?: string;
   name?: string;
   category?: string;
   createdAt?: string;
